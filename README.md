@@ -1,0 +1,2 @@
+googleads-shopping-samples
+==========================
