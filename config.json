@@ -1,0 +1,7 @@
+{
+  "clientId": "<YOUR CLIENT ID>",
+  "clientSecret": "<YOUR CLIENT SECRET>",
+  "merchantId": "<YOUR MERCHANT ID>",
+  "applicationName": "<YOUR APPLICATION NAME>",
+  "refreshToken": "<A VALID REFRESH TOKEN>"
+}
