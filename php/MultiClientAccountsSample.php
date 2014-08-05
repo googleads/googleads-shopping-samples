@@ -58,7 +58,8 @@ class MultiClientAccountsSample extends BaseSample {
     $this->deleteAccountBatch($example_account_batch_ids);
   }
 
-  public function insertAccount(Google_Service_Content_Account $account) {
+  public function insertAccount(
+      Google_Service_ShoppingContent_Account $account) {
     $response = $this->service->accounts->insert($this->merchant_id, $account);
 
     printf("Created a new account, '%s', with ID %d\n", $response->getName(),
@@ -73,7 +74,8 @@ class MultiClientAccountsSample extends BaseSample {
         $account->getName());
   }
 
-  public function updateAccount(Google_Service_Content_Account $account) {
+  public function updateAccount(
+      Google_Service_ShoppingContent_Account $account) {
     $original = $account->getName();
 
     $account->setName('updated example account');
@@ -95,7 +97,8 @@ class MultiClientAccountsSample extends BaseSample {
     $entries = array();
 
     foreach ($accounts as $key => $account) {
-      $entry = new Google_Service_Content_AccountsCustomBatchRequestEntry();
+      $entry =
+          new Google_Service_ShoppingContent_AccountsCustomBatchRequestEntry();
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setAccount($account);
@@ -104,7 +107,8 @@ class MultiClientAccountsSample extends BaseSample {
       $entries[] = $entry;
     }
 
-    $batch_request = new Google_Service_Content_AccountsCustomBatchRequest();
+    $batch_request =
+        new Google_Service_ShoppingContent_AccountsCustomBatchRequest();
     $batch_request->setEntries($entries);
 
     $batch_response = $this->service->accounts->custombatch($batch_request);
@@ -158,7 +162,8 @@ class MultiClientAccountsSample extends BaseSample {
     $entries = array();
 
     foreach ($ids as $key => $id) {
-      $entry = new Google_Service_Content_AccountsCustomBatchRequestEntry();
+      $entry =
+          new Google_Service_ShoppingContent_AccountsCustomBatchRequestEntry();
       $entry->setMethod('delete');
       $entry->setBatchId($key);
       $entry->setAccountId($id);
@@ -167,7 +172,8 @@ class MultiClientAccountsSample extends BaseSample {
       $entries[] = $entry;
     }
 
-    $batch_request = new Google_Service_Content_AccountsCustomBatchRequest();
+    $batch_request =
+        new Google_Service_ShoppingContent_AccountsCustomBatchRequest();
     $batch_request->setEntries($entries);
 
     $batch_responses = $this->service->accounts->custombatch($batch_request);
@@ -193,7 +199,7 @@ class MultiClientAccountsSample extends BaseSample {
   }
 
   private function createExampleAccount($name) {
-    $account = new Google_Service_Content_Account();
+    $account = new Google_Service_ShoppingContent_Account();
 
     $account->setName($name);
     $account->setWebsiteUrl('https://' . $name . '.example.com/');

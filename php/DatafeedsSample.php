@@ -32,7 +32,8 @@ class DatafeedsSample extends BaseSample {
     $this->deleteDatafeedBatch($example_datafeed_batch_ids);
   }
 
-  public function insertDatafeed(Google_Service_Content_Datafeed $datafeed) {
+  public function insertDatafeed(
+      Google_Service_ShoppingContent_Datafeed $datafeed) {
     $response =
         $this->service->datafeeds->insert($this->merchant_id, $datafeed);
     printf("Datafeed created with ID %d\n", $response->getId());
@@ -46,7 +47,8 @@ class DatafeedsSample extends BaseSample {
         $datafeed->getName());
   }
 
-  public function updateDatafeed(Google_Service_Content_Datafeed $datafeed) {
+  public function updateDatafeed(
+      Google_Service_ShoppingContent_Datafeed $datafeed) {
     // Changing the scheduled fetch time
     $original = $datafeed->getFetchSchedule()->getHour();
     $datafeed->getFetchSchedule()->setHour(7);
@@ -68,7 +70,8 @@ class DatafeedsSample extends BaseSample {
     $entries = array();
 
     foreach ($datafeeds as $key => $datafeed) {
-      $entry = new Google_Service_Content_DatafeedsCustomBatchRequestEntry();
+      $entry =
+          new Google_Service_ShoppingContent_DatafeedsCustomBatchRequestEntry();
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setDatafeed($datafeed);
@@ -77,7 +80,8 @@ class DatafeedsSample extends BaseSample {
       $entries[] = $entry;
     }
 
-    $batch_request = new Google_Service_Content_DatafeedsCustomBatchRequest();
+    $batch_request =
+        new Google_Service_ShoppingContent_DatafeedsCustomBatchRequest();
     $batch_request->setEntries($entries);
 
     $batch_response = $this->service->datafeeds->custombatch($batch_request);
@@ -115,7 +119,8 @@ class DatafeedsSample extends BaseSample {
     $entries = array();
 
     foreach ($ids as $key => $id) {
-      $entry = new Google_Service_Content_DatafeedsCustomBatchRequestEntry();
+      $entry =
+          new Google_Service_ShoppingContent_DatafeedsCustomBatchRequestEntry();
       $entry->setMethod('delete');
       $entry->setBatchId($key);
       $entry->setDatafeedId($id);
@@ -124,7 +129,8 @@ class DatafeedsSample extends BaseSample {
       $entries[] = $entry;
     }
 
-    $batch_request = new Google_Service_Content_DatafeedsCustomBatchRequest();
+    $batch_request =
+        new Google_Service_ShoppingContent_DatafeedsCustomBatchRequest();
     $batch_request->setEntries($entries);
 
     $batch_responses = $this->service->datafeeds->custombatch($batch_request);
@@ -150,7 +156,7 @@ class DatafeedsSample extends BaseSample {
   }
 
   private function createExampleDatafeed($name) {
-    $datafeed = new Google_Service_Content_Datafeed();
+    $datafeed = new Google_Service_ShoppingContent_Datafeed();
 
     // The file name must unique per account, so we add a unique part to avoid
     // clashing with any existing feeds.
@@ -164,7 +170,8 @@ class DatafeedsSample extends BaseSample {
     $datafeed->setFileName($filename . '.txt');
     $datafeed->setTargetCountry('US');
 
-    $fetch_schedule = new Google_Service_Content_DatafeedFetchSchedule();
+    $fetch_schedule =
+        new Google_Service_ShoppingContent_DatafeedFetchSchedule();
     /* You can schedule monthly, weekly or daily.
 
     Monthly - set day of month and hour
@@ -185,10 +192,10 @@ class DatafeedsSample extends BaseSample {
     $fetch_schedule->setUsername('feedsuser');
     $fetch_schedule->setPassword('F33d5u4eR');
 
-    $format = new Google_Service_Content_DatafeedFormat();
+    $format = new Google_Service_ShoppingContent_DatafeedFormat();
     $format->setFileEncoding('utf-8');
     $format->setColumnDelimiter('tab');
-    $format->setQuotingMode('valueQuoting');
+    $format->setQuotingMode('value quoting');
 
     $datafeed->setFetchSchedule($fetch_schedule);
     $datafeed->setFormat($format);

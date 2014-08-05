@@ -37,7 +37,8 @@ class ProductsSample extends BaseSample {
     $this->deleteProductBatch($example_product_batch_ids);
   }
 
-  public function insertProduct(Google_Service_Content_Product $product) {
+  public function insertProduct(
+      Google_Service_ShoppingContent_Product $product) {
     $response = $this->service->products->insert($this->merchant_id, $product);
 
     // Our example product generator does not set a product_type, so we should
@@ -56,7 +57,8 @@ class ProductsSample extends BaseSample {
         $product->getTitle());
   }
 
-  public function updateProduct(Google_Service_Content_Product $product) {
+  public function updateProduct(
+      Google_Service_ShoppingContent_Product $product) {
     // Let's fix the warning about product_type and update the product
     $product->setProductType('English/Classics');
     // Notice that we use insert. The products service does not have an update
@@ -82,7 +84,8 @@ class ProductsSample extends BaseSample {
     $entries = array();
 
     foreach ($products as $key => $product) {
-      $entry = new Google_Service_Content_ProductsCustomBatchRequestEntry();
+      $entry =
+          new Google_Service_ShoppingContent_ProductsCustomBatchRequestEntry();
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setProduct($product);
@@ -91,7 +94,8 @@ class ProductsSample extends BaseSample {
       $entries[] = $entry;
     }
 
-    $batch_request = new Google_Service_Content_ProductsCustomBatchRequest();
+    $batch_request =
+        new Google_Service_ShoppingContent_ProductsCustomBatchRequest();
     $batch_request->setEntries($entries);
 
     $batch_response = $this->service->products->custombatch($batch_request);
@@ -143,7 +147,8 @@ class ProductsSample extends BaseSample {
     $entries = array();
 
     foreach ($offer_ids as $key => $offer_id) {
-      $entry = new Google_Service_Content_ProductsCustomBatchRequestEntry();
+      $entry =
+          new Google_Service_ShoppingContent_ProductsCustomBatchRequestEntry();
       $entry->setMethod('delete');
       $entry->setBatchId($key);
       $entry->setProductId($this->buildProductId($offer_id));
@@ -152,7 +157,8 @@ class ProductsSample extends BaseSample {
       $entries[] = $entry;
     }
 
-    $batch_request = new Google_Service_Content_ProductsCustomBatchRequest();
+    $batch_request =
+        new Google_Service_ShoppingContent_ProductsCustomBatchRequest();
     $batch_request->setEntries($entries);
 
     $batch_responses = $this->service->products->custombatch($batch_request);
@@ -182,7 +188,7 @@ class ProductsSample extends BaseSample {
   }
 
   private function createExampleProduct($offer_id) {
-    $product = new Google_Service_Content_Product();
+    $product = new Google_Service_ShoppingContent_Product();
 
     $product->setOfferId($offer_id);
     $product->setTitle('A Tale of Two Cities');
@@ -197,24 +203,25 @@ class ProductsSample extends BaseSample {
     $product->setGoogleProductCategory('Media > Books');
     $product->setGtin('9780007350896');
 
-    $price = new Google_Service_Content_Price();
+    $price = new Google_Service_ShoppingContent_Price();
     $price->setValue('2.50');
     $price->setCurrency('USD');
 
     $product->setPrice($price);
 
-    $shipping_price = new Google_Service_Content_Price();
+    $shipping_price = new Google_Service_ShoppingContent_Price();
     $shipping_price->setValue('0.99');
     $shipping_price->setCurrency('USD');
 
-    $shipping = new Google_Service_Content_ProductShipping();
+    $shipping = new Google_Service_ShoppingContent_ProductShipping();
     $shipping->setPrice($shipping_price);
     $shipping->setCountry('US');
     $shipping->setService('Standard shipping');
 
     $product->setShipping(array($shipping));
 
-    $shipping_weight = new Google_Service_Content_ProductShippingWeight();
+    $shipping_weight =
+        new Google_Service_ShoppingContent_ProductShippingWeight();
     $shipping_weight->setValue(200);
     $shipping_weight->setUnit('grams');
 

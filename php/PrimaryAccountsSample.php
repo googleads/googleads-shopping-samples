@@ -25,8 +25,9 @@ class PrimaryAccountsSample extends BaseSample {
     return $this->service->accounts->get($this->merchant_id, $account_id);
   }
 
-  public function addUser(Google_Service_Content_Account $account, $email) {
-    $user = new Google_Service_Content_AccountUser();
+  public function addUser(Google_Service_ShoppingContent_Account $account,
+      $email) {
+    $user = new Google_Service_ShoppingContent_AccountUser();
     $user->setEmailAddress($email);
     $user->setAdmin(false); // Creating a regular, non-admin user
 
@@ -46,7 +47,8 @@ class PrimaryAccountsSample extends BaseSample {
     }
   }
 
-  public function removeUser(Google_Service_Content_Account $account, $email) {
+  public function removeUser(Google_Service_ShoppingContent_Account $account,
+      $email) {
     $users = array();
     $found = false;
 
@@ -77,7 +79,7 @@ class PrimaryAccountsSample extends BaseSample {
   }
 
   public function linkAdWordsAccount($account, $adwords_id) {
-    $adwords_link = new Google_Service_Content_AccountAdwordsLink();
+    $adwords_link = new Google_Service_ShoppingContent_AccountAdwordsLink();
     $adwords_link->setAdwordsId($adwords_id);
     $adwords_link->setStatus('active');
 
@@ -99,8 +101,8 @@ class PrimaryAccountsSample extends BaseSample {
     }
   }
 
-  public function unlinkAdWordsAccount(Google_Service_Content_Account $account,
-      $adwords_id) {
+  public function unlinkAdWordsAccount(
+      Google_Service_ShoppingContent_Account $account, $adwords_id) {
     $adwords_links = array();
     $found = false;
 

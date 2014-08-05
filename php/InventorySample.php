@@ -15,10 +15,10 @@ class InventorySample extends BaseSample {
 
     // Now we create an inventory update. We will change the availability and
     // increase the price.
-    $inventory = new Google_Service_Content_InventorySetRequest();
+    $inventory = new Google_Service_ShoppingContent_InventorySetRequest();
     $inventory->setAvailability('out of stock');
 
-    $price = new Google_Service_Content_Price();
+    $price = new Google_Service_ShoppingContent_Price();
     $price->setValue('3.00');
     $price->setCurrency('USD');
 
@@ -42,7 +42,7 @@ class InventorySample extends BaseSample {
     // In this example we are going to update both of our products in a single
     // batch request. We will set a special sale price of 1 USD for the whole of
     // December 2014.
-    $sale_price = new Google_Service_Content_Price();
+    $sale_price = new Google_Service_ShoppingContent_Price();
     $sale_price->setValue('1.00');
     $sale_price->setCurrency('USD');
 
@@ -54,12 +54,12 @@ class InventorySample extends BaseSample {
     // the date.
     $sale_date = '2014-12-01 2014-12-31';
 
-    $inventory = new Google_Service_Content_Inventory();
+    $inventory = new Google_Service_ShoppingContent_Inventory();
     $inventory->setSalePrice($sale_price);
     $inventory->setSalePriceEffectiveDate($sale_date);
 
     $batch_entry_1 =
-        new Google_Service_Content_InventoryCustomBatchRequestEntry();
+        new Google_Service_ShoppingContent_InventoryCustomBatchRequestEntry();
     $batch_entry_1->setBatchId(1);
     $batch_entry_1->setStoreCode('online');
     $batch_entry_1->setProductId('online:en:US:book1');
@@ -67,14 +67,15 @@ class InventorySample extends BaseSample {
     $batch_entry_1->setMerchantId($this->merchant_id);
 
     $batch_entry_2 =
-        new Google_Service_Content_InventoryCustomBatchRequestEntry();
+        new Google_Service_ShoppingContent_InventoryCustomBatchRequestEntry();
     $batch_entry_2->setBatchId(2);
     $batch_entry_2->setStoreCode('online');
     $batch_entry_2->setProductId('online:en:US:book2');
     $batch_entry_2->setInventory($inventory);
     $batch_entry_2->setMerchantId($this->merchant_id);
 
-    $batch_request = new Google_Service_Content_InventoryCustomBatchRequest();
+    $batch_request =
+        new Google_Service_ShoppingContent_InventoryCustomBatchRequest();
     $batch_request->setEntries(array($batch_entry_1, $batch_entry_2));
 
     $batch_response = $this->service->inventory->custombatch($batch_request);
@@ -85,7 +86,7 @@ class InventorySample extends BaseSample {
   }
 
   private function createExampleProduct($offer_id) {
-    $product = new Google_Service_Content_Product();
+    $product = new Google_Service_ShoppingContent_Product();
 
     $product->setOfferId($offer_id);
     $product->setTitle('A Tale of Two Cities');
@@ -100,24 +101,25 @@ class InventorySample extends BaseSample {
     $product->setGoogleProductCategory('Media > Books');
     $product->setGtin('9780007350896');
 
-    $price = new Google_Service_Content_Price();
+    $price = new Google_Service_ShoppingContent_Price();
     $price->setValue('2.50');
     $price->setCurrency('USD');
 
     $product->setPrice($price);
 
-    $shipping_price = new Google_Service_Content_Price();
+    $shipping_price = new Google_Service_ShoppingContent_Price();
     $shipping_price->setValue('0.99');
     $shipping_price->setCurrency('USD');
 
-    $shipping = new Google_Service_Content_ProductShipping();
+    $shipping = new Google_Service_ShoppingContent_ProductShipping();
     $shipping->setPrice($shipping_price);
     $shipping->setCountry('US');
     $shipping->setService('Standard shipping');
 
     $product->setShipping(array($shipping));
 
-    $shipping_weight = new Google_Service_Content_ProductShippingWeight();
+    $shipping_weight =
+        new Google_Service_ShoppingContent_ProductShippingWeight();
     $shipping_weight->setValue(200);
     $shipping_weight->setUnit('grams');
 

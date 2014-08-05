@@ -1,4 +1,4 @@
-import com.google.api.services.content.Content.Products.List;
+import com.google.api.services.content.ShoppingContent.Products.List;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductsListResponse;
 

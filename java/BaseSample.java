@@ -4,7 +4,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.content.Content;
+import com.google.api.services.content.ShoppingContent;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -14,7 +14,7 @@ import java.math.BigInteger;
  */
 public abstract class BaseSample {
   protected BigInteger merchantId;
-  protected Content content;
+  protected ShoppingContent content;
 
   private final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
   private final Credential credential;
@@ -51,8 +51,8 @@ public abstract class BaseSample {
     return null;
   }
 
-  protected Content createContentService() {
-    return new Content.Builder(httpTransport, jsonFactory, credential)
+  protected ShoppingContent createContentService() {
+    return new ShoppingContent.Builder(httpTransport, jsonFactory, credential)
         .setApplicationName(config.getApplicationName())
         .build();
   }

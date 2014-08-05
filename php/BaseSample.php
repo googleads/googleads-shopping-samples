@@ -1,7 +1,7 @@
 <?php
 
 require_once 'Google/Client.php';
-require_once 'Google/Service/Content.php';
+require_once 'Google/Service/ShoppingContent.php';
 
 abstract class BaseSample {
   protected $merchant_id;
@@ -40,7 +40,7 @@ abstract class BaseSample {
     }
 
     $this->merchant_id = $config->merchantId;
-    $this->service = new Google_Service_Content($client);
+    $this->service = new Google_Service_ShoppingContent($client);
   }
 
   abstract public function run();
