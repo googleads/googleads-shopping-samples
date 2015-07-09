@@ -34,6 +34,8 @@ CONTENT_LANGUAGE = 'en'
 TARGET_COUNTRY = 'US'
 # Number of products to insert.
 BATCH_SIZE = 5
+# Root URL of your site, claimed in merchant center
+ROOT_URL = 'www.example.com'
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
@@ -41,23 +43,13 @@ argparser.add_argument(
     'merchant_id',
     help='The ID of the merchant center.')
 
-
-def product_inserted(unused_request_id, response, exception):
-  if exception is not None:
-    # Do something with the exception.
-    print 'There was an error: ' + str(exception)
-  else:
-    print ('Product with offerId "%s" and title "%s" was created.' %
-           (response['offerId'], response['title']))
-
-
 def main(argv):
   # Authenticate and construct service.
   service, flags = sample_tools.init(
       argv, 'content', 'v2', __doc__, __file__, parents=[argparser])
   merchant_id = flags.merchant_id
 
-  batch = BatchHttpRequest(callback=product_inserted)
+  batch = { "entries": [ ] }
 
   for i in range(BATCH_SIZE):
     offer_id = 'book#%s' % shopping_common.get_unique_id()
@@ -65,7 +57,7 @@ def main(argv):
         'offerId': offer_id,
         'title': 'This is book number %d' % (i,),
         'description': 'Sample book',
-        'link': 'http://my-book-shop.com/book.html',
+        'link': 'http://%s/book.html' % ROOT_URL,
         'imageLink': 'http://my-book-shop.com/book.jpg',
         'contentLanguage': CONTENT_LANGUAGE,
         'targetCountry': TARGET_COUNTRY,
@@ -83,10 +75,28 @@ def main(argv):
         'shippingWeight': {'value': '200', 'unit': 'grams'}
     }
     # Add product to the batch.
-    batch.add(service.products().insert(merchantId=merchant_id,
-                                        body=product))
+    batch['entries'].append({
+      'batchId': i,
+      'merchantId': merchant_id,
+      'method': 'insert',
+      'product': product
+    })
+
   try:
-    batch.execute()
+    request = service.products().custombatch(body=batch)
+    result = request.execute()
+
+    if result['kind'] == 'content#productsCustomBatchResponse':
+      entries = result['entries']
+      for entry in entries:
+        if 'product' in entry:
+          product = entry['product']
+          print ('Product with offerId "%s" and title "%s" was created.' %
+                (product['offerId'], product['title']))
+        elif 'errors' in entry:
+          print entry['errors']
+    else:
+      print 'There was an error. Response: %s' % (result)
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired, please re-run the '
            'application to re-authorize')
