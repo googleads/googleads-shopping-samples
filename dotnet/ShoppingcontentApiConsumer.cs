@@ -54,11 +54,8 @@ namespace ContentShoppingSamples
             DeleteProduct(merchantId, newProduct);
 
             // Products - batches
-            Task<List<Product>> insertTask = InsertProductBatch(merchantId);
-            insertTask.Wait();
-            List<Product> insertedProduct = insertTask.Result;
-            Task deleteTask = DeleteProductsBatch(merchantId, insertedProduct);
-            deleteTask.Wait();
+            List<String> productList = InsertProductCustombatch(merchantId);
+            DeleteProductCustombatch(merchantId, productList);
 
             // Datafeeds
             var datafeed = GetAllDatafeeds(merchantId);
@@ -243,59 +240,97 @@ namespace ContentShoppingSamples
         }
 
         /// <summary>
-        /// Adds several products to the specified account, as a batch.
+        /// Inserts several products to the specified account, using custombatch.
         /// </summary>
-        /// <returns>The task containing the list of products</returns>
-        private async Task<List<Product>> InsertProductBatch(ulong merchantId)
+        /// <returns>The list of product IDs, which can be used to get or delete them.</returns>
+        private List<String> InsertProductCustombatch(ulong merchantId)
         {
-
             Console.WriteLine("=================================================================");
-            Console.WriteLine("Inserting several products");
+            Console.WriteLine("Inserting products using custombatch");
             Console.WriteLine("=================================================================");
 
-            // Create a batch request.
-            BatchRequest request = new BatchRequest(service);
-
-            List<Product> products = new List<Product>();
-            // Add three product insertions to the queue.
+            ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
+            batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
             for (int i = 0; i < 3; i++)
             {
-                ProductsResource.InsertRequest insertRequest =
-                    service.Products.Insert(shoppingUtil.GenerateProduct(), merchantId);
-                request.Queue<Product>(
-                         insertRequest,
-                         (content, error, index, message) =>
-                         {
-                             products.Add(content);
-                             Console.WriteLine(String.Format("Product inserted with id {0}", ((Product)content).Id));
-                         });
+                ProductsCustomBatchRequestEntry entry = new ProductsCustomBatchRequestEntry();
+                entry.BatchId = i;
+                entry.MerchantId = merchantId;
+                entry.Method = "insert";
+                entry.Product = shoppingUtil.GenerateProduct();
+                batchRequest.Entries.Add(entry);
             }
-            await request.ExecuteAsync(CancellationToken.None);
-            return products;
+
+            ProductsCustomBatchResponse response = service.Products.Custombatch(batchRequest).Execute();
+            List<String> productsInserted = new List<String>();
+            if (response.Kind == "content#productsCustomBatchResponse")
+            {
+                for (int i = 0; i < response.Entries.Count; i++)
+                {
+                    Product product = response.Entries[i].Product;
+                    productsInserted.Add(product.Id);
+                    Console.WriteLine(
+                        "Product inserted with ID \"{0}\" and title \"{1}\".",
+                        product.OfferId,
+                        product.Title);
+                }
+            }
+            else
+            {
+                Console.WriteLine(
+                        "There was an error. Response: {0}",
+                        response.ToString());
+            }
+            return productsInserted;
+            
         }
 
         /// <summary>
-        /// Deletes several products from the specified account, as a batch.
+        /// Deletes several products from the specified account, using custombatch.
         /// </summary>
-        private async Task DeleteProductsBatch(ulong merchantId, List<Product> newProductsBatch)
+        private void DeleteProductCustombatch(ulong merchantId, List<String> productList)
         {
             Console.WriteLine("=================================================================");
-            Console.WriteLine("Deleting several products");
+            Console.WriteLine("Deleting products using custombatch");
             Console.WriteLine("=================================================================");
 
-            // Create a batch request.
-            BatchRequest request = new BatchRequest(service);
-            foreach (Product product in newProductsBatch) {
-                ProductsResource.DeleteRequest deleteRequest = service.Products.Delete(merchantId, product.Id);
-                request.Queue<Product>(
-                         deleteRequest,
-                         (content, error, i, message) =>
-                         {
-                             Console.WriteLine("Product deleted.");
-                         });
+            ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
+            batchRequest.Entries = new List<ProductsCustomBatchRequestEntry>();
+            for (int i = 0; i < productList.Count; i++)
+            {
+                ProductsCustomBatchRequestEntry entry = new ProductsCustomBatchRequestEntry();
+                entry.BatchId = i;
+                entry.MerchantId = merchantId;
+                entry.Method = "delete";
+                entry.ProductId = productList[i]; // Use the full product ID here, not the OfferId
+                batchRequest.Entries.Add(entry);
             }
 
-            await request.ExecuteAsync(CancellationToken.None);
+            ProductsCustomBatchResponse response = service.Products.Custombatch(batchRequest).Execute();
+            if (response.Kind == "content#productsCustomBatchResponse")
+            {
+                for (int i = 0; i < response.Entries.Count; i++)
+                {
+                    Errors errors = response.Entries[i].Errors;
+                    if (errors != null)
+                    {
+                        for (int j = 0; j < errors.ErrorsValue.Count; j++)
+                        {
+                            Console.WriteLine(errors.ErrorsValue[j].ToString());
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Product deleted, batchId {0}", response.Entries[i].BatchId);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine(
+                    "There was an error. Response: {0}",
+                    response);
+            }
         }
 
         /// <summary>Gets and prints all datafeeds for the given merchant ID.</summary>
