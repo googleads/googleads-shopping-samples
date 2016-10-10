@@ -36,7 +36,7 @@ directory. If not, check out the code to a local directory.  Also make sure the
 files are in your [GOPATH](https://github.com/golang/go/wiki/GOPATH).
 
 1. Download your [OAuth 2.0 client ID]
-   (console.developers.google.com/apis/credentials)
+   (https://console.developers.google.com/apis/credentials)
    to `content-oauth2.json` in the root of the code directory.
 
 2. Compile all the sample code together in that directory:
