@@ -10,10 +10,10 @@ import (
 	"math/rand"
 
 	"golang.org/x/net/context"
-	content "google.golang.org/api/content/v2"
+	"google.golang.org/api/content/v2"
 )
 
-func productsBatchDemo(contentService *content.APIService, merchantID uint64) {
+func productsBatchDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
 	productsToSend := [](*content.Product){
 		createSampleProduct(fmt.Sprintf("book#test%d", rand.Int())),
 		createSampleProduct(fmt.Sprintf("book#test%d", rand.Int())),
@@ -21,7 +21,7 @@ func productsBatchDemo(contentService *content.APIService, merchantID uint64) {
 		createSampleProduct(fmt.Sprintf("book#test%d", rand.Int())),
 	}
 
-	products := content.NewProductsService(contentService)
+	products := content.NewProductsService(service)
 
 	fmt.Printf("Inserting %d products... ", len(productsToSend))
 	var insertReqs = make([](*content.ProductsCustomBatchRequestEntry),
@@ -59,7 +59,7 @@ func productsBatchDemo(contentService *content.APIService, merchantID uint64) {
 
 	fmt.Printf("Listing products:\n")
 	listCall := products.List(merchantID)
-	err = listCall.Pages(context.Background(), printProductsPage)
+	err = listCall.Pages(ctx, printProductsPage)
 	checkAPI(err, "Listing products failed")
 	fmt.Printf("\n")
 

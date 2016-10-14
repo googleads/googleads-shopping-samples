@@ -10,17 +10,17 @@ import (
 	"math/rand"
 
 	"golang.org/x/net/context"
-	content "google.golang.org/api/content/v2"
+	"google.golang.org/api/content/v2"
 )
 
-func datafeedDemo(contentService *content.APIService, merchantID uint64) {
+func datafeedDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
 	feedName := fmt.Sprintf("feed%d", rand.Int())
 
 	fmt.Printf("Inserting datafeed with filename %s... ", feedName)
-	datafeeds := content.NewDatafeedsService(contentService)
+	datafeeds := content.NewDatafeedsService(service)
 	feed := createSampleDatafeed(feedName)
-	insertCall := datafeeds.Insert(merchantID, feed)
-	insertedFeed, err := insertCall.Do()
+
+	insertedFeed, err := datafeeds.Insert(merchantID, feed).Do()
 	checkAPI(err, "Insertion failed")
 	fmt.Printf("done.\n")
 	feedID := insertedFeed.Id
@@ -28,19 +28,20 @@ func datafeedDemo(contentService *content.APIService, merchantID uint64) {
 
 	fmt.Printf("Listing datafeeds:\n")
 	listCall := datafeeds.List(merchantID)
-	err = listCall.Pages(context.Background(), printFeedsPage)
+	// Uncomment this to change the number of results listed by
+	// per page:
+	//   listCall.MaxResults(100)
+	err = listCall.Pages(ctx, printFeedsPage)
 	checkAPI(err, "Listing feeds failed")
 	fmt.Printf("\n")
 
 	fmt.Printf("Retrieving datafeed %d... ", feedID)
-	getCall := datafeeds.Get(merchantID, uint64(feedID))
-	_, err = getCall.Do()
+	_, err = datafeeds.Get(merchantID, uint64(feedID)).Do()
 	checkAPI(err, "Retrieving feed failed")
 	fmt.Printf("done.\n")
 
 	fmt.Printf("Removing datafeed %d... ", feedID)
-	deleteCall := datafeeds.Delete(merchantID, uint64(feedID))
-	err = deleteCall.Do()
+	err = datafeeds.Delete(merchantID, uint64(feedID)).Do()
 	checkAPI(err, "Removing feed failed")
 	fmt.Printf("done.\n\n")
 }

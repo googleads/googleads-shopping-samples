@@ -9,18 +9,17 @@ import (
 	"math/rand"
 
 	"golang.org/x/net/context"
-	content "google.golang.org/api/content/v2"
+	"google.golang.org/api/content/v2"
 )
 
-func productDemo(contentService *content.APIService, merchantID uint64) {
+func productDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
 	offerID := fmt.Sprintf("book#test%d", rand.Int())
 	product := createSampleProduct(offerID)
 
-	products := content.NewProductsService(contentService)
+	products := content.NewProductsService(service)
 
 	fmt.Printf("Inserting product with offerId %s... ", offerID)
-	insertCall := products.Insert(merchantID, product)
-	productInfo, err := insertCall.Do()
+	productInfo, err := products.Insert(merchantID, product).Do()
 	checkAPI(err, "Insertion failed")
 	fmt.Printf("done.\n")
 	checkContentErrors(productInfo.Warnings, false)
@@ -28,21 +27,24 @@ func productDemo(contentService *content.APIService, merchantID uint64) {
 
 	fmt.Printf("Listing products:\n")
 	listCall := products.List(merchantID)
-	err = listCall.Pages(context.Background(), printProductsPage)
+	// Uncomment this to see even invalid offers:
+	//   listCall.IncludeInvalidInsertedItems(true)
+	// Uncomment this to change the number of results listed by
+	// per page:
+	//   listCall.MaxResults(100)
+	err = listCall.Pages(ctx, printProductsPage)
 	checkAPI(err, "Listing products failed")
 	fmt.Printf("\n")
 
 	fmt.Printf("Retrieving product ID %s...", productID)
-	getCall := products.Get(merchantID, productID)
-	productInfo, err = getCall.Do()
+	productInfo, err = products.Get(merchantID, productID).Do()
 	checkAPI(err, "Retrieval failed")
 	fmt.Printf("done.\n")
 	fmt.Printf("Retrieved product %s with title %s\n",
 		productInfo.Id, productInfo.Title)
 
 	fmt.Printf("Deleting product ID %s...", productID)
-	deleteCall := products.Delete(merchantID, productID)
-	err = deleteCall.Do()
+	err = products.Delete(merchantID, productID).Do()
 	checkAPI(err, "Deletion failed")
 	fmt.Printf("done.\n")
 }

@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"math/rand"
 
-	content "google.golang.org/api/content/v2"
+	"golang.org/x/net/context"
+	"google.golang.org/api/content/v2"
 )
 
-func inventoryDemo(contentService *content.APIService, merchantID uint64) {
+func inventoryDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
 	offerID := fmt.Sprintf("book#test%d", rand.Int())
 	product := createSampleProduct(offerID)
 
@@ -25,19 +26,17 @@ func inventoryDemo(contentService *content.APIService, merchantID uint64) {
 		Availability: "out of stock",
 	}
 
-	products := content.NewProductsService(contentService)
-	inventory := content.NewInventoryService(contentService)
+	products := content.NewProductsService(service)
+	inventory := content.NewInventoryService(service)
 
 	fmt.Printf("Inserting product with offerId %s... ", offerID)
-	insertCall := products.Insert(merchantID, product)
-	productInfo, err := insertCall.Do()
+	productInfo, err := products.Insert(merchantID, product).Do()
 	checkAPI(err, "Insertion failed")
 	fmt.Printf("done.\n")
 	productID := productInfo.Id
 
 	fmt.Printf("Retrieving product ID %s...", productID)
-	getCall := products.Get(merchantID, productID)
-	productInfo, err = getCall.Do()
+	productInfo, err = products.Get(merchantID, productID).Do()
 	checkAPI(err, "Retrieval failed")
 	fmt.Printf("done.")
 	fmt.Printf("Retrieved product %s @ (%s, %s)\n\n",
@@ -45,15 +44,12 @@ func inventoryDemo(contentService *content.APIService, merchantID uint64) {
 		productInfo.Price.Currency)
 
 	fmt.Printf("Setting new price and availability...")
-	invCall := inventory.Set(merchantID, product.Channel,
-		productID, &invReq)
-	_, err = invCall.Do()
+	_, err = inventory.Set(merchantID, product.Channel, productID, &invReq).Do()
 	checkAPI(err, "Inventory set failed")
 	fmt.Printf("done.\n\n")
 
 	fmt.Printf("Retrieving product ID %s...", productID)
-	getCall = products.Get(merchantID, productID)
-	productInfo, err = getCall.Do()
+	productInfo, err = products.Get(merchantID, productID).Do()
 	checkAPI(err, "Retrieval failed")
 	fmt.Printf("done.\n")
 	fmt.Printf("Retrieved product %s @ (%s, %s)\n\n",
@@ -61,8 +57,7 @@ func inventoryDemo(contentService *content.APIService, merchantID uint64) {
 		productInfo.Price.Currency)
 
 	fmt.Printf("Deleting product ID %s...", productID)
-	deleteCall := products.Delete(merchantID, productID)
-	err = deleteCall.Do()
+	err = products.Delete(merchantID, productID).Do()
 	checkAPI(err, "Deletion failed")
 	fmt.Printf("done.\n")
 }

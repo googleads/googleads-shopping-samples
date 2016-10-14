@@ -22,11 +22,10 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
-	content "google.golang.org/api/content/v2"
+	"google.golang.org/api/content/v2"
 )
 
-func authWithGoogle() *http.Client {
-	ctx := context.Background()
+func authWithGoogle(ctx context.Context) *http.Client {
 	json, err := ioutil.ReadFile("content-oauth2.json")
 	check(err)
 	config, err := google.ConfigFromJSON(json, content.ContentScope)

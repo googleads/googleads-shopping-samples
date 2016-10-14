@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	content "google.golang.org/api/content/v2"
+	"google.golang.org/api/content/v2"
 	"google.golang.org/api/googleapi"
 )
 
