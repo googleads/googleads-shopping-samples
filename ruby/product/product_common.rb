@@ -35,16 +35,21 @@ def create_example_product(offer_id)
     :condition => 'new',
     :google_product_category => 'Media > Books',
     :gtin => '9780007350896',
-    :price => Google::Apis::ContentV2::Price({
+    :price => {
         :value => '2.50',
-        :currency => 'USD'}),
-    :shipping => Google::Apis::ContentV2::ProductShipping({
+        :currency => 'USD'
+    },
+    :shipping => {
         :country => 'US',
         :service => 'Standard shipping',
-        :price => Google::Apis::ContentV2::Price({
+        :price => {
             :value => '0.99',
-            :currency => 'USD'})}),
-    shipping_weight: Google::Apis::ContentV2::ProductShippingWeight({
+            :currency => 'USD'
+        }
+    },
+    :shipping_weight => {
         :value => '200',
-        :unit => 'grams'})})
+        :unit => 'grams'
+    }
+  })
 end
