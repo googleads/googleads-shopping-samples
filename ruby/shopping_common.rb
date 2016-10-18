@@ -29,6 +29,7 @@ API_VERSION = 'v2'
 API_SCOPE = 'https://www.googleapis.com/auth/content'
 BASE_DIR = File.expand_path(File.dirname(__FILE__))
 CLIENT_ID_FILE = File.join(BASE_DIR, "#{API_NAME}-oauth2.json")
+SERVICE_ACCOUNT_FILE = File.join(BASE_DIR, "#{API_NAME}-service.json")
 CREDENTIAL_STORE_FILE = File.join(BASE_DIR, "#{API_NAME}-tokens.yaml")
 
 # These constants define the identifiers for all of our example products/feeds.
@@ -44,29 +45,39 @@ OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
 # Handles authentication and loading of the API.
 def service_setup()
-  authorization = nil
-  client_id = Google::Auth::ClientId.from_file(CLIENT_ID_FILE)
-  token_store = Google::Auth::Stores::FileTokenStore.new(
-    file: CREDENTIAL_STORE_FILE)
-  authorizer = Google::Auth::UserAuthorizer.new(
-    client_id, API_SCOPE, token_store)
-  user_id = '{USER ID HERE}'
+  credentials = nil
 
-  credentials = authorizer.get_credentials(user_id)
-  if credentials.nil?
-    url = authorizer.get_authorization_url(base_url: OOB_URI)
-    puts "Open #{url} in your browser and enter the resulting code:"
-    code = STDIN.gets
-    credentials = authorizer.get_and_store_credentials_from_code(
-      user_id: user_id, code: code, base_url: OOB_URI)
+  # Check for both kinds of authentication. Let service accounts win, as
+  # they're an easier flow to authenticate.
+  if File.exist?(SERVICE_ACCOUNT_FILE)
+    credentials = Google::Auth::DefaultCredentials.make_creds(
+        scope: API_SCOPE,
+        json_key_io: File.open(SERVICE_ACCOUNT_FILE))
+  elsif File.exist?(CLIENT_ID_FILE)
+    client_id = Google::Auth::ClientId.from_file(CLIENT_ID_FILE)
+    token_store = Google::Auth::Stores::FileTokenStore.new(
+        file: CREDENTIAL_STORE_FILE)
+    authorizer = Google::Auth::UserAuthorizer.new(
+        client_id, API_SCOPE, token_store)
+    user_id = '{USER ID HERE}'
+
+    credentials = authorizer.get_credentials(user_id)
+    if credentials.nil?
+      url = authorizer.get_authorization_url(base_url: OOB_URI)
+      puts "Open #{url} in your browser and enter the resulting code:"
+      code = STDIN.gets
+      credentials = authorizer.get_and_store_credentials_from_code(
+          user_id: user_id, code: code, base_url: OOB_URI)
+    end
+  else
+    puts "No OAuth2 authentication files found. Checked:"
+    puts "- #{SERVICE_ACCOUNT_FILE}"
+    puts "- #{CLIENT_ID_FILE}"
+    puts "Please read the accompanying README.md for instructions."
+    exit
   end
 
   # Initialize API Service.
-  #
-  # Note: the client library automatically creates a cache file for discovery
-  # documents, to avoid calling the discovery service on every invocation.
-  # Here, we're overriding the default so that the cache gets stored on the
-  # base directory rather than on each example's subdirectory.
   service = Google::Apis::ContentV2::ShoppingContentService.new
   service.authorization = credentials
 
