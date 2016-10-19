@@ -13,6 +13,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -26,11 +27,36 @@ import (
 )
 
 func authWithGoogle(ctx context.Context) *http.Client {
-	json, err := ioutil.ReadFile("content-oauth2.json")
+	cwd, err := os.Getwd()
 	check(err)
-	config, err := google.ConfigFromJSON(json, content.ContentScope)
-	check(err)
-	return newOAuthClient(ctx, config)
+	serviceAccountPath := path.Join(cwd, "content-service.json")
+	oauth2ClientPath := path.Join(cwd, "content-oauth2.json")
+
+	// First check for service account info, since it's the easier auth
+	// flow. Fall back to OAuth2 client if it's not there.
+	if _, err = os.Stat(serviceAccountPath); err == nil {
+		json, err := ioutil.ReadFile(serviceAccountPath)
+		check(err)
+		config, err := google.JWTConfigFromJSON(json, content.ContentScope)
+		check(err)
+		fmt.Printf("Service account credentials for user %s found.\n", config.Email)
+		return config.Client(ctx)
+	}
+	if _, err := os.Stat(oauth2ClientPath); err == nil {
+		json, err := ioutil.ReadFile(oauth2ClientPath)
+		check(err)
+		config, err := google.ConfigFromJSON(json, content.ContentScope)
+		check(err)
+		fmt.Printf("OAuth2 client credentials for application %s found.\n", config.ClientID)
+		return newOAuthClient(ctx, config)
+	}
+
+	fmt.Fprintln(os.Stderr, "No OAuth2 authentication files found. Checked:")
+	fmt.Fprintln(os.Stderr, "- ", serviceAccountPath)
+	fmt.Fprintln(os.Stderr, "- ", oauth2ClientPath)
+	fmt.Fprintln(os.Stderr, "Please read the accompanying documentation.")
+	log.Fatalln("Authentication failed")
+	return nil
 }
 
 func osUserCacheDir() string {

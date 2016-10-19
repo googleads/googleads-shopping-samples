@@ -15,16 +15,20 @@ for Go and its support for interfacing with Google APIs:
         $ go get golang.org/x/oauth2/google
         $ go get google.golang.org/api/content/v2
 
-This code also uses the github/pkg/browser package
+This code also uses the github.com/pkg/browser package
 to open the authentication URL in your browser automatically:
 
         $ go get github.com/pkg/browser
 
 Setup Authentication
 
-Before getting started, check the Getting Started section on the Go client
-library documentation page:
-https://github.com/google/google-api-go-client/blob/master/GettingStarted.md
+Before getting started, check the Getting Started section of the
+Content API for Shopping documentation:
+https://developers.google.com/shopping-content/v2/quickstart).
+
+You may want to use service accounts instead to simplify the authentication
+flow:
+https://developers.google.com/shopping-content/v2/how-tos/service-accounts
 
 Running the Samples
 
@@ -32,11 +36,17 @@ We are assuming you've checked out the code and are reading this from a local
 directory. If not, check out the code to a local directory.  Also make sure the
 files are in your GOPATH.
 
-1. Download your OAuth 2.0 client ID
-   from https://console.developers.google.com/apis/credentials
-   to `content-oauth2.json` in the root of the code directory.
+1. Set up your desired authentication method.
 
-2. Compile all the sample code together in that directory:
+If you are using an OAuth2 client ID, download your OAuth2 client
+credentials from http://console.developers.google.com/apis/credentials
+to `content-oauth2.json` in the root of the code directory.
+
+If you are using a service account, put the JSON file you downloaded
+when creating the service account in the root of the code directory
+with the filename `content-service.json`.
+
+2. Compile all the sample code together directory:
 
         $ go build -o content-api-demo *.go
 
@@ -48,9 +58,9 @@ files are in your GOPATH.
 
         $ ./content-api-demo <merchant ID> products inventory
 
-5. Complete the authorization steps. The application will automatically open a
-Chrome window for you to approve the OAuth2 request.
+If using an OAuth2 client ID for the first time, the application will
+open a browser automatically so you can agree to the OAuth2 access.
 
-6. Examine your shell output, be inspired and start hacking an amazing new app!
+5. Examine your shell output, be inspired and start hacking an amazing new app!
 */
 package main
