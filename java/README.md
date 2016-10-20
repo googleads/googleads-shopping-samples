@@ -49,8 +49,8 @@ project appropriately for access to the Google APIs Client Library for Java.
 
 4. Build and run any of the included samples.
 
-   If using an OAuth2 client ID for the first time, you will need to
-   enter your Google login in the terminal.  The application will then
+   You will need to enter your Google login in the terminal.
+   If using an OAuth2 client ID for the first time, the application will then
    open a browser so you can authorize it to access your Merchant Center
    account.
 
