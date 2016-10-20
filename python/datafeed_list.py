@@ -16,23 +16,15 @@
 
 """Gets all datafeeds on the specified account."""
 
-import argparse
 import sys
 
-from apiclient import sample_tools
 from oauth2client import client
-
-# Declare command-line flags.
-argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'merchant_id',
-    help='The ID of the merchant center.')
+import shopping_common
 
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = sample_tools.init(
-      argv, 'content', 'v2', __doc__, __file__, parents=[argparser])
+  service, flags = shopping_common.init(argv, __doc__, __file__)
   merchant_id = flags.merchant_id
 
   try:

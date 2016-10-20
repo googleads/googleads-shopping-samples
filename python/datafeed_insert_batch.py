@@ -16,22 +16,14 @@
 
 """Adds several datafeeds to the specified account, in a single batch."""
 
-import argparse
 import sys
 
-from apiclient import sample_tools
 from apiclient.http import BatchHttpRequest
 from oauth2client import client
 import shopping_common
 
 # Number of datafeeds to insert.
 BATCH_SIZE = 5
-
-# Declare command-line flags.
-argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'merchant_id',
-    help='The ID of the merchant center.')
 
 
 def datafeed_inserted(unused_request_id, response, exception):
@@ -45,8 +37,7 @@ def datafeed_inserted(unused_request_id, response, exception):
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = sample_tools.init(
-      argv, 'content', 'v2', __doc__, __file__, parents=[argparser])
+  service, flags = shopping_common.init(argv, __doc__, __file__)
   merchant_id = flags.merchant_id
 
   batch = BatchHttpRequest(callback=datafeed_inserted)

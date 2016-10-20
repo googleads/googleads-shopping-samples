@@ -16,26 +16,18 @@
 
 """Gets all products on the specified account."""
 
-import argparse
 import sys
 
-from apiclient import sample_tools
 from oauth2client import client
+import shopping_common
 
 # The maximum number of results to be returned in a page.
 MAX_PAGE_SIZE = 50
 
-# Declare command-line flags.
-argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'merchant_id',
-    help='The ID of the merchant center.')
-
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = sample_tools.init(
-      argv, 'content', 'v2', __doc__, __file__, parents=[argparser])
+  service, flags = shopping_common.init(argv, __doc__, __file__)
   merchant_id = flags.merchant_id
 
   try:

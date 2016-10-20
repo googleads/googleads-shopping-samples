@@ -24,14 +24,11 @@ for performance reasons.
 import argparse
 import sys
 
-from apiclient import sample_tools
 from oauth2client import client
+import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'merchant_id',
-    help='The ID of the merchant center.')
 argparser.add_argument(
     'product_id',
     help='The ID of the product to update.')
@@ -39,8 +36,8 @@ argparser.add_argument(
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = sample_tools.init(
-      argv, 'content', 'v2', __doc__, __file__, parents=[argparser])
+  service, flags = shopping_common.init(
+      argv, __doc__, __file__, parents=[argparser])
   merchant_id = flags.merchant_id
   product_id = flags.product_id
 

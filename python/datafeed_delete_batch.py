@@ -19,15 +19,12 @@
 import argparse
 import sys
 
-from apiclient import sample_tools
 from apiclient.http import BatchHttpRequest
 from oauth2client import client
+import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'merchant_id',
-    help='The ID of the merchant center.')
 argparser.add_argument(
     'datafeed_ids', nargs='*',
     help='The IDs of the datafeeds to delete.')
@@ -43,8 +40,8 @@ def datafeed_deleted(unused_request_id, unused_response, exception):
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = sample_tools.init(
-      argv, 'content', 'v2', __doc__, __file__, parents=[argparser])
+  service, flags = shopping_common.init(
+      argv, __doc__, __file__, parents=[argparser])
   merchant_id = flags.merchant_id
   datafeed_ids = flags.datafeed_ids
 

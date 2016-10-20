@@ -16,11 +16,8 @@
 
 """Adds several products to the specified account, in a single batch."""
 
-import argparse
 import sys
 
-from apiclient import sample_tools
-from apiclient.http import BatchHttpRequest
 from oauth2client import client
 import shopping_common
 
@@ -37,19 +34,13 @@ BATCH_SIZE = 5
 # Root URL of your site, claimed in merchant center
 ROOT_URL = 'www.example.com'
 
-# Declare command-line flags.
-argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'merchant_id',
-    help='The ID of the merchant center.')
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = sample_tools.init(
-      argv, 'content', 'v2', __doc__, __file__, parents=[argparser])
+  service, flags = shopping_common.init(argv, __doc__, __file__)
   merchant_id = flags.merchant_id
 
-  batch = { "entries": [ ] }
+  batch = {'entries': []}
 
   for i in range(BATCH_SIZE):
     offer_id = 'book#%s' % shopping_common.get_unique_id()
@@ -75,12 +66,10 @@ def main(argv):
         'shippingWeight': {'value': '200', 'unit': 'grams'}
     }
     # Add product to the batch.
-    batch['entries'].append({
-      'batchId': i,
-      'merchantId': merchant_id,
-      'method': 'insert',
-      'product': product
-    })
+    batch['entries'].append({'batchId': i,
+                             'merchantId': merchant_id,
+                             'method': 'insert',
+                             'product': product})
 
   try:
     request = service.products().custombatch(body=batch)
@@ -92,7 +81,7 @@ def main(argv):
         if 'product' in entry:
           product = entry['product']
           print ('Product with offerId "%s" and title "%s" was created.' %
-                (product['offerId'], product['title']))
+                 (product['offerId'], product['title']))
         elif 'errors' in entry:
           print entry['errors']
     else:

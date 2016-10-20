@@ -1,35 +1,52 @@
-# Content API for Shopping v2 Samples
+# Google Content API for Shopping Python Samples
 
-A collection of command-line samples for the Content API for Shopping
+This is a set of simple samples written in Python, which provide a minimal
+example of Google Shopping integration within a command line application.
 
-##Installation and first request
+This starter project provides a great place to start your experimentation into
+the Google Content API for Shopping.
 
-1. Download Google APIs Client Library for Python (google-api-python-client):
-  https://code.google.com/p/google-api-python-client/
+## Prerequisites
 
-  or use pip:
-
-  ```bash
-  $ pip install google-api-python-client
-  ```
-
-2. Make sure you can import the client library:
+Please make sure that you've installed the
+[Google APIs Client Library for Python](https://developers.google.com/api-client-library/python/start/installation).
+After installing, make sure you can import the client library:
 
   ```
   $ python
-  >>> import apiclient
+  >>> import googleapiclient
   ```
 
-3. Execute any of the scripts to begin the auth flow:
+## Setup Authentication
 
-  ```bash
-  $ python product_list.py
-  ```
+Before getting started, check the Getting Started section of the
+[Content API for Shopping documentation](https://developers.google.com/shopping-content/v2/quickstart).
+You may want to use
+[service accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
+instead to simplify the authentication flow.
 
-  A browser window will open and ask you to login.
+## Running the Samples
 
-4. Accept the permissions dialog. The browser should display
+We are assuming you've checked out the code and are reading this from a local
+directory. If not, check out the code to a local directory.
 
-  `The authentication flow has completed.`
+1. Set up your desired authentication method.
 
-  Close the window and go back to the shell.
+   If you are using an OAuth2 client ID:
+
+   * Download your [OAuth2 client credentials](https://console.developers.google.com/apis/credentials)
+     to `content-oauth2.json` in the root of the code directory.
+
+   If you are using a service account:
+
+    * Put the JSON file you downloaded when creating the service account in
+      the root of the code directory with the filename `content-service.json`.
+
+2. Start up a sample:
+
+        $ python product_list.py <merchant ID>
+
+   If using an OAuth2 client ID for the first time, the application will
+   open a browser automatically so you can agree to the OAuth2 access.
+
+3. Examine your shell output, be inspired and start hacking an amazing new app!
