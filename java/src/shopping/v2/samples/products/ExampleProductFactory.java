@@ -1,3 +1,5 @@
+package shopping.v2.samples.products;
+
 import com.google.api.services.content.model.Price;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductShipping;

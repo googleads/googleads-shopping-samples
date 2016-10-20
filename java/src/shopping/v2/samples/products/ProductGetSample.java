@@ -1,13 +1,18 @@
+package shopping.v2.samples.products;
+
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.Product;
 
 import java.io.IOException;
+import shopping.v2.samples.BaseSample;
 
 /**
  * Sample that shows how to retrieve the details of the product that we inserted with the
  * ProductInsert sample.
  */
 public class ProductGetSample extends BaseSample {
+  public ProductGetSample() throws IOException {}
+
   @Override
   public void execute() throws IOException {
     try {

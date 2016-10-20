@@ -1,13 +1,18 @@
+package shopping.v2.samples.products;
+
 import com.google.api.services.content.ShoppingContent.Products.List;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductsListResponse;
 
 import java.io.IOException;
+import shopping.v2.samples.BaseSample;
 
 /**
  * Sample demonstrating retrieving only a subset of fields for an item.
  */
 public class PartialResponseSample extends BaseSample {
+  public PartialResponseSample() throws IOException {}
+
   @Override
   public void execute() throws IOException {
     List productsList = content.products().list(merchantId);

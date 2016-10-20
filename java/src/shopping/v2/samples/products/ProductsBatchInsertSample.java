@@ -1,3 +1,5 @@
+package shopping.v2.samples.products;
+
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductsCustomBatchRequest;
 import com.google.api.services.content.model.ProductsCustomBatchRequestEntry;
@@ -7,12 +9,15 @@ import com.google.api.services.content.model.ProductsCustomBatchResponseEntry;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import shopping.v2.samples.BaseSample;
 
 /**
  * Sample that shows batching product inserts.
  */
 public class ProductsBatchInsertSample extends BaseSample {
   private static final int PRODUCT_COUNT = 10;
+
+  public ProductsBatchInsertSample() throws IOException {}
 
   @Override
   public void execute() throws IOException {

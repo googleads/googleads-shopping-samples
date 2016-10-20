@@ -1,14 +1,20 @@
+package shopping.v2.samples.productstatuses;
+
 import com.google.api.services.content.ShoppingContent.Productstatuses.List;
 import com.google.api.services.content.model.ProductStatus;
 import com.google.api.services.content.model.ProductstatusesListResponse;
 
 import java.io.IOException;
 
+import shopping.v2.samples.BaseSample;
+
 /**
  * Sample that gets the status of each of the products for the merchant. If there is more than one
  * page of results, we fetch each page in turn.
  */
 public class ProductstatusesListSample extends BaseSample {
+  public ProductstatusesListSample() throws IOException {}
+
   @Override
   public void execute() throws IOException {
     List productStatusesList = content.productstatuses().list(merchantId);

@@ -1,3 +1,5 @@
+package shopping.v2.samples;
+
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonString;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -10,28 +12,22 @@ import java.io.InputStream;
 import java.math.BigInteger;
 
 /**
- * Wrapper for the JSON configuration file used to keep user specific details like authentication
- * information and Merchant Center account ID.
+ * Wrapper for the JSON configuration file used to keep user specific details like the Merchant
+ * Center account ID.
  */
 public class Config extends GenericJson {
-  private static final String FILE_NAME = ".shopping-content-samples.json";
-  private static final File CONFIG_FILE = new File(System.getProperty("user.home"), FILE_NAME);
+  protected static final File CONFIG_DIR =
+      new File(System.getProperty("user.home"), ".shopping-content-samples/");
 
-  @Key
-  private String clientId = "";
-
-  @Key
-  private String clientSecret = "";
+  private static final String FILE_NAME = "merchant-info.json";
+  private static final File CONFIG_FILE = new File(CONFIG_DIR, FILE_NAME);
 
   @Key
   @JsonString
   private BigInteger merchantId;
 
   @Key
-  private String applicationName = "";
-
-  @Key
-  private String refreshToken = "";
+  private String applicationName;
 
   public static Config load() throws IOException {
     return Config.load(CONFIG_FILE);
@@ -44,29 +40,13 @@ public class Config extends GenericJson {
       return new JacksonFactory().fromInputStream(inputStream, Config.class);
     } catch (IOException e) {
       throw new IOException("Could not find or read the config file at "
-          + configFile.getCanonicalPath() + ". You can use the config.json file in the samples "
-          + "root as a template.");
+          + configFile.getCanonicalPath() + ". You can use the merchant-info.json file in the "
+          + "samples root as a template.");
     } finally {
       if (inputStream != null) {
         inputStream.close();
       }
     }
-  }
-
-  public String getClientId() {
-    return clientId;
-  }
-
-  public void setClientId(String clientId) {
-    this.clientId = clientId;
-  }
-
-  public String getClientSecret() {
-    return clientSecret;
-  }
-
-  public void setClientSecret(String clientSecret) {
-    this.clientSecret = clientSecret;
   }
 
   public BigInteger getMerchantId() {
@@ -83,13 +63,5 @@ public class Config extends GenericJson {
 
   public void setApplicationName(String applicationName) {
     this.applicationName = applicationName;
-  }
-
-  public String getRefreshToken() {
-    return refreshToken;
-  }
-
-  public void setRefreshToken(String refreshToken) {
-    this.refreshToken = refreshToken;
   }
 }

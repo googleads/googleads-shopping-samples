@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.google.shopping-devrel.samples</groupId>
+  <artifactId>shopping-content-samples</artifactId>
+
+  <name>Content API for Shopping Sample Code</name>
+  <description>
+    This project contains examples of using the Content API for Shopping
+    Java client library. Please see the README file for more information
+    about how to use the library.
+  </description>
+
+  <packaging>jar</packaging>
+  <version>v2-rev77-1.21.0</version>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-content</artifactId>
+      <version>v2-rev77-1.21.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.oauth-client</groupId>
+      <artifactId>google-oauth-client-jetty</artifactId>
+      <version>1.20.0</version>
+    </dependency>
+  </dependencies>
+</project>
