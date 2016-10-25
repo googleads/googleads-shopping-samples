@@ -1,0 +1,8 @@
+{
+  "merchantId": "<MERCHANT ID>",
+  "applicationName": "<APPLICATION NAME>",
+  "emailAddress": "<EMAIL ADDRESS>",
+  "accountSampleUser": null,
+  "accountSampleAdWordsCID": null,
+  "isMCA": false
+}
