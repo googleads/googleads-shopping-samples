@@ -1,45 +1,51 @@
+/**
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 <?php
 
 require_once 'BaseSample.php';
 
+// Class for running through some example interactions with the
+// Accounts service, specifically those interactions that require
+// a Multi-Client Account.
 class MultiClientAccountsSample extends BaseSample {
   // This constant defines how many example accounts to create in a batch
   const BATCH_SIZE = 10;
-  const NOT_AN_MCA = "%d is not a multi-client account";
 
   public function run() {
     // Detect if this account is a multi-client account
-    try {
-      // Trying to list subaccounts for a non-MCA will cause an exception
-      $this->service->accounts->listAccounts($this->merchant_id);
-    } catch (Google_Service_Exception $exception) {
-      $errors = $exception->getErrors();
-      if (!empty($errors)
-          && $errors[0]["message"] === sprintf(NOT_AN_MCA, $this->merchant_id))
-          {
-        print "This example requires a multi-client account.\n";
-        return;
-      } else {
-        // Some other exception, we should rethrow so as not to hide it.
-        throw $exception;
-      }
+    if(!$this->config->isMCA) {
+      print "This example requires a multi-client account.\n";
+      return;
     }
 
-    $example_account_name = 'account123';
-    $example_account_batch_names = array();
+    $exampleAccountName = 'account123';
+    $exampleAccountBatchNames = [];
 
     for ($i = 0; $i < self::BATCH_SIZE; $i++) {
-      $example_account_batch_names[] = 'account' . $i;
+      $exampleAccountBatchNames[] = 'account' . $i;
     }
 
-    $example_account = $this->createExampleAccount($example_account_name);
-    $example_account = $this->insertAccount($example_account);
-    $example_account_id = $example_account->getId();
+    $exampleAccount = $this->createExampleAccount($exampleAccountName);
+    $exampleAccount = $this->insertAccount($exampleAccount);
+    $exampleAccountId = $exampleAccount->getId();
 
-    $example_account_batch =
-        $this->createExampleAccounts($example_account_batch_names);
-    $example_account_batch_ids =
-        $this->insertAccountBatch($example_account_batch);
+    $exampleAccountBatch =
+        $this->createExampleAccounts($exampleAccountBatchNames);
+    $exampleAccountBatchIds =
+        $this->insertAccountBatch($exampleAccountBatch);
 
     $this->listAccounts();
 
@@ -51,16 +57,16 @@ class MultiClientAccountsSample extends BaseSample {
     //
     // To achieve this we retry each method up to 5 times with an exponential
     // back-off.
-    $this->retry("getAccount", $example_account_id);
-    $this->retry("updateAccount", $example_account);
-    $this->retry("deleteAccount", $example_account_id);
+    $this->retry("getAccount", $exampleAccountId);
+    $this->retry("updateAccount", $exampleAccount);
+    $this->retry("deleteAccount", $exampleAccountId);
 
-    $this->deleteAccountBatch($example_account_batch_ids);
+    $this->deleteAccountBatch($exampleAccountBatchIds);
   }
 
   public function insertAccount(
       Google_Service_ShoppingContent_Account $account) {
-    $response = $this->service->accounts->insert($this->merchant_id, $account);
+    $response = $this->service->accounts->insert($this->merchantId, $account);
 
     printf("Created a new account, '%s', with ID %d\n", $response->getName(),
         $response->getId());
@@ -69,7 +75,7 @@ class MultiClientAccountsSample extends BaseSample {
   }
 
   public function getAccount($account_id) {
-    $account = $this->service->accounts->get($this->merchant_id, $account_id);
+    $account = $this->service->accounts->get($this->merchantId, $account_id);
     printf("Retrieved account %s: '%s'\n", $account->getId(),
         $account->getName());
   }
@@ -80,7 +86,7 @@ class MultiClientAccountsSample extends BaseSample {
 
     $account->setName('updated example account');
 
-    $response = $this->service->accounts->update($this->merchant_id,
+    $response = $this->service->accounts->update($this->merchantId,
         $account->getId(), $account);
 
     printf("Account name changed from '%s' to '%s'\n", $original,
@@ -89,12 +95,12 @@ class MultiClientAccountsSample extends BaseSample {
 
   public function deleteAccount($account_id) {
     // The response for a successful delete is empty
-    $this->service->accounts->delete($this->merchant_id, $account_id);
+    $this->service->accounts->delete($this->merchantId, $account_id);
     print "Test account deleted\n";
   }
 
   public function insertAccountBatch($accounts) {
-    $entries = array();
+    $entries = [];
 
     foreach ($accounts as $key => $account) {
       $entry =
@@ -102,22 +108,22 @@ class MultiClientAccountsSample extends BaseSample {
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setAccount($account);
-      $entry->setMerchantId($this->merchant_id);
+      $entry->setMerchantId($this->merchantId);
 
       $entries[] = $entry;
     }
 
-    $batch_request =
+    $batchRequest =
         new Google_Service_ShoppingContent_AccountsCustomBatchRequest();
-    $batch_request->setEntries($entries);
+    $batchRequest->setEntries($entries);
 
-    $batch_response = $this->service->accounts->custombatch($batch_request);
+    $batchResponse = $this->service->accounts->custombatch($batchRequest);
 
-    printf("Inserted %d accounts.\n", count($batch_response->entries));
+    printf("Inserted %d accounts.\n", count($batchResponse->entries));
 
-    $ids = array();
+    $ids = [];
 
-    foreach ($batch_response->entries as $entry) {
+    foreach ($batchResponse->entries as $entry) {
       if (!empty($entry->getErrors())) {
         printf("There was an error inserting an account: %s\n",
             $entry->getErrors()[0]->getMessage());
@@ -135,11 +141,11 @@ class MultiClientAccountsSample extends BaseSample {
     // We set the maximum number of results to be lower than the number of
     // accounts that we inserted, to demonstrate paging
     $parameters = array('maxResults' => self::BATCH_SIZE - 1);
-    $accounts = $this->service->accounts->listAccounts($this->merchant_id,
+    $accounts = $this->service->accounts->listAccounts($this->merchantId,
         $parameters);
     // You can fetch all accounts in a loop
-    while (true) {
-      $accounts = $this->service->accounts->listAccounts($this->merchant_id,
+    do {
+      $accounts = $this->service->accounts->listAccounts($this->merchantId,
           $parameters);
 
       foreach ($accounts->getResources() as $account) {
@@ -148,18 +154,18 @@ class MultiClientAccountsSample extends BaseSample {
 
       // If the result has a nextPageToken property then there are more pages
       // available to fetch
-      if (isset($accounts->nextPageToken)) {
+      if ($accounts->nextPageToken != null) {
         // You can fetch the next page of results by setting the pageToken
         // parameter with the value of nextPageToken from the previous result.
         $parameters["pageToken"] = $accounts->nextPageToken;
       } else {
         break;
       }
-    }
+    } while(true);
   }
 
   public function deleteAccountBatch($ids) {
-    $entries = array();
+    $entries = [];
 
     foreach ($ids as $key => $id) {
       $entry =
@@ -167,19 +173,19 @@ class MultiClientAccountsSample extends BaseSample {
       $entry->setMethod('delete');
       $entry->setBatchId($key);
       $entry->setAccountId($id);
-      $entry->setMerchantId($this->merchant_id);
+      $entry->setMerchantId($this->merchantId);
 
       $entries[] = $entry;
     }
 
-    $batch_request =
+    $batchRequest =
         new Google_Service_ShoppingContent_AccountsCustomBatchRequest();
-    $batch_request->setEntries($entries);
+    $batchRequest->setEntries($entries);
 
-    $batch_responses = $this->service->accounts->custombatch($batch_request);
+    $batchResponses = $this->service->accounts->custombatch($batchRequest);
 
     $errors = 0;
-    foreach ($batch_responses->entries as $entry) {
+    foreach ($batchResponses->entries as $entry) {
       if (!empty($entry->getErrors())) {
         $errors++;
       }
@@ -189,7 +195,7 @@ class MultiClientAccountsSample extends BaseSample {
   }
 
   private function createExampleAccounts($names) {
-    $accounts = array();
+    $accounts = [];
 
     foreach ($names as $name) {
       $accounts[] = $this->createExampleAccount($name);

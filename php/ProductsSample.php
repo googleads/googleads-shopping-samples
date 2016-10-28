@@ -1,7 +1,24 @@
+/**
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 <?php
 
 require_once 'BaseSample.php';
 
+// Class for running through some example interactions with the
+// Products service.
 class ProductsSample extends BaseSample {
   // These constants define the identifiers for all of our example products
   // The products will be sold online
@@ -15,31 +32,31 @@ class ProductsSample extends BaseSample {
   const BATCH_SIZE = 10;
 
   public function run() {
-    $example_product_id = 'book123';
-    $example_product = $this->createExampleProduct($example_product_id);
+    $exampleProductId = 'book123';
+    $exampleProduct = $this->createExampleProduct($exampleProductId);
 
-    $this->insertProduct($example_product);
-    $this->getProduct($example_product_id);
-    $this->updateProduct($example_product);
-    $this->deleteProduct($example_product_id);
+    $this->insertProduct($exampleProduct);
+    $this->getProduct($exampleProductId);
+    $this->updateProduct($exampleProduct);
+    $this->deleteProduct($exampleProductId);
 
-    $example_product_batch_ids = array();
+    $exampleProductBatchIDs = [];
 
     for ($i = 0; $i < self::BATCH_SIZE; $i++) {
-      $example_product_batch_ids[] = 'book' . $i;
+      $exampleProductBatchIDs[] = 'book' . $i;
     }
 
-    $example_product_batch =
-        $this->createExampleProducts($example_product_batch_ids);
+    $exampleProductBatch =
+        $this->createExampleProducts($exampleProductBatchIDs);
 
-    $this->insertProductBatch($example_product_batch);
+    $this->insertProductBatch($exampleProductBatch);
     $this->listProducts();
-    $this->deleteProductBatch($example_product_batch_ids);
+    $this->deleteProductBatch($exampleProductBatchIDs);
   }
 
   public function insertProduct(
       Google_Service_ShoppingContent_Product $product) {
-    $response = $this->service->products->insert($this->merchant_id, $product);
+    $response = $this->service->products->insert($this->merchantId, $product);
 
     // Our example product generator does not set a product_type, so we should
     // get at least one warning.
@@ -50,9 +67,9 @@ class ProductsSample extends BaseSample {
     }
   }
 
-  public function getProduct($offer_id) {
-    $product_id = $this->buildProductId($offer_id);
-    $product = $this->service->products->get($this->merchant_id, $product_id);
+  public function getProduct($offerId) {
+    $productId = $this->buildProductId($offerId);
+    $product = $this->service->products->get($this->merchantId, $productId);
     printf("Retrieved product %s: '%s'\n", $product->getId(),
         $product->getTitle());
   }
@@ -64,9 +81,9 @@ class ProductsSample extends BaseSample {
     // Notice that we use insert. The products service does not have an update
     // method. Inserting a product with an ID that already exists means the same
     // as doing an update anyway.
-    $response = $this->service->products->insert($this->merchant_id, $product);
+    $response = $this->service->products->insert($this->merchantId, $product);
 
-    // We should get one fewer warning now
+    // We should no longer get the product_type warning.
     $warnings = $response->getWarnings();
     printf("Product updated, there are now %d warnings\n", count($warnings));
     foreach($warnings as $warning) {
@@ -74,14 +91,14 @@ class ProductsSample extends BaseSample {
     }
   }
 
-  public function deleteProduct($offer_id) {
-    $product_id = $this->buildProductId($offer_id);
+  public function deleteProduct($offerId) {
+    $productId = $this->buildProductId($offerId);
     // The response for a successful delete is empty
-    $this->service->products->delete($this->merchant_id, $product_id);
+    $this->service->products->delete($this->merchantId, $productId);
   }
 
   public function insertProductBatch($products) {
-    $entries = array();
+    $entries = [];
 
     foreach ($products as $key => $product) {
       $entry =
@@ -89,20 +106,20 @@ class ProductsSample extends BaseSample {
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setProduct($product);
-      $entry->setMerchantId($this->merchant_id);
+      $entry->setMerchantId($this->merchantId);
 
       $entries[] = $entry;
     }
 
-    $batch_request =
+    $batchRequest =
         new Google_Service_ShoppingContent_ProductsCustomBatchRequest();
-    $batch_request->setEntries($entries);
+    $batchRequest->setEntries($entries);
 
-    $batch_response = $this->service->products->custombatch($batch_request);
+    $batchResponse = $this->service->products->custombatch($batchRequest);
 
-    printf("Inserted %d products.\n", count($batch_response->entries));
+    printf("Inserted %d products.\n", count($batchResponse->entries));
 
-    foreach ($batch_response->entries as $entry) {
+    foreach ($batchResponse->entries as $entry) {
       if (empty($entry->getErrors())) {
         $product = $entry->getProduct();
         printf("Inserted product %s with %d warnings\n", $product->getOfferId(),
@@ -121,7 +138,7 @@ class ProductsSample extends BaseSample {
     // products that we inserted, to demonstrate paging.
     $parameters = array('maxResults' => self::BATCH_SIZE - 1);
     $products =
-        $this->service->products->listProducts($this->merchant_id, $parameters);
+        $this->service->products->listProducts($this->merchantId, $parameters);
     $count = 0;
     // You can fetch all items in a loop. We limit to looping just 3
     // times for this example as it may take a long time to finish if you
@@ -138,32 +155,32 @@ class ProductsSample extends BaseSample {
       // You can fetch the next page of results by setting the pageToken
       // parameter with the value of nextPageToken from the previous result.
       $parameters['pageToken'] = $products->nextPageToken;
-      $products = $this->service->products->listProducts($this->merchant_id,
+      $products = $this->service->products->listProducts($this->merchantId,
           $parameters);
     }
   }
 
-  public function deleteProductBatch($offer_ids) {
-    $entries = array();
+  public function deleteProductBatch($offerIds) {
+    $entries = [];
 
-    foreach ($offer_ids as $key => $offer_id) {
+    foreach ($offerIds as $key => $offerId) {
       $entry =
           new Google_Service_ShoppingContent_ProductsCustomBatchRequestEntry();
       $entry->setMethod('delete');
       $entry->setBatchId($key);
-      $entry->setProductId($this->buildProductId($offer_id));
-      $entry->setMerchantId($this->merchant_id);
+      $entry->setProductId($this->buildProductId($offerId));
+      $entry->setMerchantId($this->merchantId);
 
       $entries[] = $entry;
     }
 
-    $batch_request =
+    $batchRequest =
         new Google_Service_ShoppingContent_ProductsCustomBatchRequest();
-    $batch_request->setEntries($entries);
+    $batchRequest->setEntries($entries);
 
-    $batch_responses = $this->service->products->custombatch($batch_request);
+    $batchResponses = $this->service->products->custombatch($batchRequest);
     $errors = 0;
-    foreach ($batch_responses->entries as $entry) {
+    foreach ($batchResponses->entries as $entry) {
       if (!empty($entry->getErrors())) {
         $errors++;
       }
@@ -172,29 +189,29 @@ class ProductsSample extends BaseSample {
     printf("There were %d errors\n", $errors);
   }
 
-  private function buildProductId($offer_id) {
+  private function buildProductId($offerId) {
     return sprintf('%s:%s:%s:%s', self::CHANNEL, self::CONTENT_LANGUAGE,
-      self::TARGET_COUNTRY, $offer_id);
+      self::TARGET_COUNTRY, $offerId);
   }
 
-  private function createExampleProducts($offer_ids) {
-    $products = array();
+  private function createExampleProducts($offerIds) {
+    $products = [];
 
-    foreach ($offer_ids as $offer_id) {
-      $products[] = $this->createExampleProduct($offer_id);
+    foreach ($offerIds as $offerId) {
+      $products[] = $this->createExampleProduct($offerId);
     }
 
     return $products;
   }
 
-  private function createExampleProduct($offer_id) {
+  private function createExampleProduct($offerId) {
     $product = new Google_Service_ShoppingContent_Product();
 
-    $product->setOfferId($offer_id);
+    $product->setOfferId($offerId);
     $product->setTitle('A Tale of Two Cities');
     $product->setDescription('A classic novel about the French Revolution');
-    $product->setLink('http://my-book-shop.com/tale-of-two-cities.html');
-    $product->setImageLink('http://my-book-shop.com/tale-of-two-cities.jpg');
+    $product->setLink($this->websiteUrl . '/tale-of-two-cities.html');
+    $product->setImageLink($this->websiteUrl . '/tale-of-two-cities.jpg');
     $product->setContentLanguage(self::CONTENT_LANGUAGE);
     $product->setTargetCountry(self::TARGET_COUNTRY);
     $product->setChannel(self::CHANNEL);
@@ -209,23 +226,23 @@ class ProductsSample extends BaseSample {
 
     $product->setPrice($price);
 
-    $shipping_price = new Google_Service_ShoppingContent_Price();
-    $shipping_price->setValue('0.99');
-    $shipping_price->setCurrency('USD');
+    $shippingPrice = new Google_Service_ShoppingContent_Price();
+    $shippingPrice->setValue('0.99');
+    $shippingPrice->setCurrency('USD');
 
     $shipping = new Google_Service_ShoppingContent_ProductShipping();
-    $shipping->setPrice($shipping_price);
+    $shipping->setPrice($shippingPrice);
     $shipping->setCountry('US');
     $shipping->setService('Standard shipping');
 
     $product->setShipping(array($shipping));
 
-    $shipping_weight =
+    $shippingWeight =
         new Google_Service_ShoppingContent_ProductShippingWeight();
-    $shipping_weight->setValue(200);
-    $shipping_weight->setUnit('grams');
+    $shippingWeight->setValue(200);
+    $shippingWeight->setUnit('grams');
 
-    $product->setShippingWeight($shipping_weight);
+    $product->setShippingWeight($shippingWeight);
 
     return $product;
   }

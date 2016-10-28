@@ -1,48 +1,65 @@
+/**
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 <?php
 
 require_once 'BaseSample.php';
 
+// Class for running through some example interactions with the
+// Datafeeds service.
 class DatafeedsSample extends BaseSample {
   // This constant defines how many example datafeeds to create in a batch
   const BATCH_SIZE = 10;
 
   public function run() {
-    $example_datafeed =
+    $exampleDatafeed =
         $this->insertDatafeed($this->createExampleDatafeed('feed123'));
-    $example_datafeed_id = $example_datafeed->getId();
-    $this->getDatafeed($example_datafeed_id);
-    $this->updateDatafeed($example_datafeed);
+    $exampleDatafeedId = $exampleDatafeed->getId();
+    $this->getDatafeed($exampleDatafeedId);
+    $this->updateDatafeed($exampleDatafeed);
 
-    $example_datafeed_batch_names = array();
+    $exampleDatafeedBatchNames = [];
 
     for ($i = 0; $i < self::BATCH_SIZE; $i++) {
-      $example_datafeed_batch_names[] = 'feed' . $i;
+      $exampleDatafeedBatchNames[] = 'feed' . $i;
     }
 
-    $example_datafeed_batch =
-        $this->createExampleDatafeeds($example_datafeed_batch_names);
-    $example_datafeed_batch_ids =
-        $this->insertDatafeedBatch($example_datafeed_batch);
+    $exampleDatafeedBatch =
+        $this->createExampleDatafeeds($exampleDatafeedBatchNames);
+    $exampleDatafeedBatchIDs =
+        $this->insertDatafeedBatch($exampleDatafeedBatch);
     $this->listDatafeeds();
 
     // There is a short period after creating a datafeed during which it may not
     // be deleted. In general use it would be unusual to do so anyway, but for
     // the purposes of this example we retry with back off.
-    $this->retry("deleteDatafeed", $example_datafeed_id);
-    $this->deleteDatafeedBatch($example_datafeed_batch_ids);
+    $this->retry("deleteDatafeed", $exampleDatafeedId);
+    $this->deleteDatafeedBatch($exampleDatafeedBatchIDs);
   }
 
   public function insertDatafeed(
       Google_Service_ShoppingContent_Datafeed $datafeed) {
     $response =
-        $this->service->datafeeds->insert($this->merchant_id, $datafeed);
+        $this->service->datafeeds->insert($this->merchantId, $datafeed);
     printf("Datafeed created with ID %d\n", $response->getId());
     return $response;
   }
 
   public function getDatafeed($datafeed_id) {
     $datafeed =
-        $this->service->datafeeds->get($this->merchant_id, $datafeed_id);
+        $this->service->datafeeds->get($this->merchantId, $datafeed_id);
     printf("Retrieved datafeed %s: '%s'\n", $datafeed->getId(),
         $datafeed->getName());
   }
@@ -53,7 +70,7 @@ class DatafeedsSample extends BaseSample {
     $original = $datafeed->getFetchSchedule()->getHour();
     $datafeed->getFetchSchedule()->setHour(7);
 
-    $response = $this->service->datafeeds->update($this->merchant_id,
+    $response = $this->service->datafeeds->update($this->merchantId,
         $datafeed->getId(), $datafeed);
 
     printf("Scheduled fetch time changed from %d:00 to %d:00\n", $original,
@@ -62,12 +79,12 @@ class DatafeedsSample extends BaseSample {
 
   public function deleteDatafeed($datafeed_id) {
     // The response for a successful delete is empty
-    $this->service->datafeeds->delete($this->merchant_id, $datafeed_id);
+    $this->service->datafeeds->delete($this->merchantId, $datafeed_id);
     print ("Deleted test data feed\n");
   }
 
   public function insertDatafeedBatch($datafeeds) {
-    $entries = array();
+    $entries = [];
 
     foreach ($datafeeds as $key => $datafeed) {
       $entry =
@@ -75,22 +92,22 @@ class DatafeedsSample extends BaseSample {
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setDatafeed($datafeed);
-      $entry->setMerchantId($this->merchant_id);
+      $entry->setMerchantId($this->merchantId);
 
       $entries[] = $entry;
     }
 
-    $batch_request =
+    $batchRequest =
         new Google_Service_ShoppingContent_DatafeedsCustomBatchRequest();
-    $batch_request->setEntries($entries);
+    $batchRequest->setEntries($entries);
 
-    $batch_response = $this->service->datafeeds->custombatch($batch_request);
+    $batchResponse = $this->service->datafeeds->custombatch($batchRequest);
 
-    printf("Inserted %d datafeeds.\n", count($batch_response->entries));
+    printf("Inserted %d datafeeds.\n", count($batchResponse->entries));
 
-    $ids = array();
+    $ids = [];
 
-    foreach ($batch_response->entries as $entry) {
+    foreach ($batchResponse->entries as $entry) {
       if (!empty($entry->getErrors())) {
         printf("There was an error inserting a datafeed: %s\n",
             $entry->getErrors()[0]->getMessage());
@@ -108,7 +125,7 @@ class DatafeedsSample extends BaseSample {
   public function listDatafeeds() {
     // There is a low limit on the number of datafeeds per account, so the list
     // method always returns all datafeeds.
-    $datafeeds = $this->service->datafeeds->listDatafeeds($this->merchant_id);
+    $datafeeds = $this->service->datafeeds->listDatafeeds($this->merchantId);
 
     foreach ($datafeeds->getResources() as $datafeed) {
       printf("%s %s\n", $datafeed->getId(), $datafeed->getName());
@@ -116,7 +133,7 @@ class DatafeedsSample extends BaseSample {
   }
 
   public function deleteDatafeedBatch($ids) {
-    $entries = array();
+    $entries = [];
 
     foreach ($ids as $key => $id) {
       $entry =
@@ -124,19 +141,19 @@ class DatafeedsSample extends BaseSample {
       $entry->setMethod('delete');
       $entry->setBatchId($key);
       $entry->setDatafeedId($id);
-      $entry->setMerchantId($this->merchant_id);
+      $entry->setMerchantId($this->merchantId);
 
       $entries[] = $entry;
     }
 
-    $batch_request =
+    $batchRequest =
         new Google_Service_ShoppingContent_DatafeedsCustomBatchRequest();
-    $batch_request->setEntries($entries);
+    $batchRequest->setEntries($entries);
 
-    $batch_responses = $this->service->datafeeds->custombatch($batch_request);
+    $batchResponses = $this->service->datafeeds->custombatch($batchRequest);
 
     $errors = 0;
-    foreach ($batch_responses->entries as $entry) {
+    foreach ($batchResponses->entries as $entry) {
       if (!empty($entry->getErrors())) {
         $errors++;
       }
@@ -146,7 +163,7 @@ class DatafeedsSample extends BaseSample {
   }
 
   private function createExampleDatafeeds($names) {
-    $datafeeds = array();
+    $datafeeds = [];
 
     foreach ($names as $name) {
       $datafeeds[] = $this->createExampleDatafeed($name);
