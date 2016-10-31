@@ -60,12 +60,7 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 1
-    puts "Usage: #{$0} MERCHANT_ID"
-    exit
-  end
-  merchant_id = ARGV[0]
-
-  content_api = service_setup()
-  insert_datafeed_batch(content_api, merchant_id)
+  config = Config.load()
+  content_api = service_setup(config)
+  insert_datafeed_batch(content_api, config.merchant_id)
 end

@@ -33,13 +33,23 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 2
-    puts "Usage: #{$0} MERCHANT_ID ACCOUNT_ID"
+  unless ARGV.size == 1
+    puts "Usage: #{$0} ACCOUNT_ID"
     exit
   end
-  merchant_id = ARGV[0]
-  account_id = ARGV[1]
+  account_id = ARGV[0]
 
-  content_api = service_setup()
-  get_account(content_api, merchant_id, account_id)
+  config = Config.load()
+  # Account.get can be used in one of two cases:
+  # - The requested MCID is the same as the MCID we're using for the call.
+  # - The merchant center account is an MCA.
+  # The Merchant ID from JSON could be a number instead of a string, but here
+  # we check against the string from the command line, so convert
+  # the config version to a string for the equality check.
+  unless account_id == config.merchant_id.to_s or config.is_mca
+    puts "Merchant in configuration is not described as an MCA."
+    exit
+  end
+  content_api = service_setup(config)
+  get_account(content_api, config.merchant_id, account_id)
 end

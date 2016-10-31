@@ -57,12 +57,12 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 2
-    puts "Usage: #{$0} MERCHANT_ID EMAIL_ADDRESS"
+  config = Config.load()
+  email_address = config.account_sample_user
+  if email_address.nil? or email_address.empty?
+    puts "No account sample user address in the configuration."
     exit
   end
-  merchant_id, email_address = ARGV
-
-  content_api = service_setup()
-  add_user(content_api, merchant_id, email_address)
+  content_api = service_setup(config)
+  add_user(content_api, config.merchant_id, email_address)
 end

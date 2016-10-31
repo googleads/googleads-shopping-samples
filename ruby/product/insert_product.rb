@@ -20,11 +20,11 @@
 
 require_relative 'product_common'
 
-def insert_product(content_api, merchant_id)
+def insert_product(content_api, config)
   example_id = 'book#%s' % unique_id()
-  product = create_example_product(example_id)
+  product = create_example_product(config, example_id)
 
-  content_api.insert_product(merchant_id, product) do |result, err|
+  content_api.insert_product(config.merchant_id, product) do |result, err|
     if err
       handle_errors(err)
       exit
@@ -40,12 +40,7 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 1
-    puts "Usage: #{$0} MERCHANT_ID"
-    exit
-  end
-  merchant_id = ARGV[0]
-
-  content_api = service_setup()
-  insert_product(content_api, merchant_id)
+  config = Config.load()
+  content_api = service_setup(config)
+  insert_product(content_api, config)
 end

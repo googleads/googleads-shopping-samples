@@ -44,6 +44,7 @@ def list_products(content_api, merchant_id, next_page = nil, count = 0)
     # products.  We'll use the optional count parameter for this.
     res.resources.each do |product|
       puts "#{product.id} #{product.title}"
+      handle_warnings(product)
     end
 
     return if !res.next_page_token || count >= 3
@@ -53,12 +54,7 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 1
-    puts "Usage: #{$0} MERCHANT_ID"
-    exit
-  end
-  merchant_id = ARGV[0]
-
-  content_api = service_setup()
-  list_products(content_api, merchant_id)
+  config = Config.load()
+  content_api = service_setup(config)
+  list_products(content_api, config.merchant_id)
 end

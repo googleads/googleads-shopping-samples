@@ -21,13 +21,18 @@
 require_relative '../shopping_common'
 
 # Creates an example product with the provided offer ID.
-def create_example_product(offer_id)
+def create_example_product(config, offer_id)
+  website_url = config.website_url
+  if website_url.empty?
+    puts "Please set the website URL in the sample configuration file."
+    exit
+  end
   return Google::Apis::ContentV2::Product.new({
     :offer_id => offer_id,
     :title => 'A Tale of Two Cities',
     :description => 'A classic novel about the French Revolution',
-    :link => 'http://my-book-shop.com/tale-of-two-cities.html',
-    :image_link => 'http://my-book-shop.com/tale-of-two-cities.jpg',
+    :link => '%s/tale-of-two-cities.html' % website_url,
+    :image_link => '%s/tale-of-two-cities.jpg' % website_url,
     :content_language => CONTENT_LANGUAGE,
     :target_country => TARGET_COUNTRY,
     :channel => CHANNEL,

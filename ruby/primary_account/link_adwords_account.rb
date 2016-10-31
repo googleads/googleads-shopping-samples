@@ -59,12 +59,12 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 2
-    puts "Usage: #{$0} MERCHANT_ID ADWORDS_ID"
+  config = Config.load()
+  adwords_id = config.account_sample_adwords_cid
+  if adwords_id.nil? or adwords_id != 0
+    puts "No account sample AdWords CID in the configuration."
     exit
   end
-  merchant_id, adwords_id = ARGV
-
-  content_api = service_setup()
-  link_adwords_account(content_api, merchant_id, adwords_id)
+  content_api = service_setup(config)
+  link_adwords_account(content_api, config.merchant_id, adwords_id)
 end

@@ -48,12 +48,11 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 1
-    puts "Usage: #{$0} MERCHANT_ID"
+  config = Config.load()
+  unless config.is_mca
+    puts "Merchant in configuration is not described as an MCA."
     exit
   end
-  merchant_id = ARGV[0]
-
-  content_api = service_setup()
-  list_accounts(content_api, merchant_id)
+  content_api = service_setup(config)
+  list_accounts(content_api, config.merchant_id)
 end

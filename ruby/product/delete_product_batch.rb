@@ -57,13 +57,13 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size >= 2
-    puts "Usage: #{$0} MERCHANT_ID PRODUCT_ID_1 [PRODUCT_ID_2 ...]"
+  unless ARGV.size >= 1
+    puts "Usage: #{$0} PRODUCT_ID_1 [PRODUCT_ID_2 ...]"
     exit
   end
-  merchant_id = ARGV[0]
-  product_ids = ARGV[1..-1]
+  product_ids = ARGV
 
-  content_api = service_setup()
-  delete_product_batch(content_api, merchant_id, product_ids)
+  config = Config.Load()
+  content_api = service_setup(config)
+  delete_product_batch(content_api, config.merchant_id, product_ids)
 end

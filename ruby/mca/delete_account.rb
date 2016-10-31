@@ -33,12 +33,17 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 2
-    puts "Usage: #{$0} MERCHANT_ID ACCOUNT_ID"
+  unless ARGV.size == 1
+    puts "Usage: #{$0} ACCOUNT_ID"
     exit
   end
-  merchant_id, account_id = ARGV
+  account_id = ARGV[0]
 
-  content_api = service_setup()
-  delete_account(content_api, merchant_id, account_id)
+  config = Config.load()
+  unless config.is_mca
+    puts "Merchant in configuration is not described as an MCA."
+    exit
+  end
+  content_api = service_setup(config)
+  delete_account(content_api, config.merchant_id, account_id)
 end

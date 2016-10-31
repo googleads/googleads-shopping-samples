@@ -58,13 +58,17 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size >= 2
-    puts "Usage: #{$0} MERCHANT_ID ACCOUNT_ID_1 [ACCOUNT_ID_2 ...]"
+  unless ARGV.size >= 1
+    puts "Usage: #{$0} ACCOUNT_ID_1 [ACCOUNT_ID_2 ...]"
     exit
   end
-  merchant_id = ARGV[0]
-  account_ids = ARGV[1..-1]
+  account_ids = ARGV
 
-  content_api = service_setup()
-  delete_account_batch(content_api, merchant_id, account_ids)
+  config = Config.load()
+  unless config.is_mca
+    puts "Merchant in configuration is not described as an MCA."
+    exit
+  end
+  content_api = service_setup(config)
+  delete_account_batch(content_api, config.merchant_id, account_ids)
 end

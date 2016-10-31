@@ -57,13 +57,13 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size >= 2
-    puts "Usage: #{$0} MERCHANT_ID DATAFEED_ID_1 [DATAFEED_ID_2 ...]"
+  unless ARGV.size >= 1
+    puts "Usage: #{$0} DATAFEED_ID_1 [DATAFEED_ID_2 ...]"
     exit
   end
-  merchant_id = ARGV[0]
-  datafeed_ids = ARGV[1..-1]
+  datafeed_ids = ARGV
 
-  content_api = service_setup()
-  delete_datafeed_batch(content_api, merchant_id, datafeed_ids)
+  config = Config.load()
+  content_api = service_setup(config)
+  delete_datafeed_batch(content_api, config.merchant_id, datafeed_ids)
 end

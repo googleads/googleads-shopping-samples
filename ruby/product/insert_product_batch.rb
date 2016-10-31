@@ -22,13 +22,13 @@ require_relative 'product_common'
 
 BATCH_SIZE = 5
 
-def insert_product_batch(content_api, merchant_id)
+def insert_product_batch(content_api, config)
   requests = (1..BATCH_SIZE).map do |n|
     example_id = 'book#%s' % unique_id()
-    product = create_example_product(example_id)
+    product = create_example_product(config, example_id)
     Google::Apis::ContentV2::ProductsBatchRequestEntry.new({
       :batch_id => n,
-      :merchant_id => merchant_id,
+      :merchant_id => config.merchant_id,
       :product => product,
       :request_method => 'insert'})
   end
@@ -63,12 +63,7 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 1
-    puts "Usage: #{$0} MERCHANT_ID"
-    exit
-  end
-  merchant_id = ARGV[0]
-
-  content_api = service_setup()
-  insert_product_batch(content_api, merchant_id)
+  config = Config.load()
+  content_api = service_setup(config)
+  insert_product_batch(content_api, config)
 end

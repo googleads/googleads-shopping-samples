@@ -34,19 +34,18 @@ def update_datafeed(content_api, merchant_id, datafeed_id)
     end
 
     puts 'Datafeed successfully updated.'
-
-    handle_warnings(res)
   end
 end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 2
-    puts "Usage: #{$0} MERCHANT_ID DATAFEED_ID"
+  unless ARGV.size == 1
+    puts "Usage: #{$0} DATAFEED_ID"
     exit
   end
-  merchant_id, datafeed_id = ARGV
+  datafeed_id = ARGV[0]
 
-  content_api = service_setup()
-  update_datafeed(content_api, merchant_id, datafeed_id)
+  config = Config.load()
+  content_api = service_setup(config)
+  update_datafeed(content_api, config.merchant_id, datafeed_id)
 end

@@ -57,12 +57,13 @@ end
 
 
 if __FILE__ == $0
-  unless ARGV.size == 2
-    puts "Usage: #{$0} MERCHANT_ID PRODUCT_ID"
+  unless ARGV.size == 1
+    puts "Usage: #{$0} PRODUCT_ID"
     exit
   end
-  merchant_id, product_id = ARGV
+  product_id = ARGV[0]
 
-  content_api = service_setup()
-  update_product(content_api, merchant_id, product_id)
+  config = Config.load()
+  content_api = service_setup(config)
+  update_product(content_api, config.merchant_id, product_id)
 end

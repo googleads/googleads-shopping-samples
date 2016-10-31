@@ -22,15 +22,16 @@ require 'google/apis/content_v2'
 require 'google/api_client/client_secrets'
 require 'googleauth'
 require 'googleauth/stores/file_token_store'
-require 'json'
+require 'multi_json'
+
+require_relative 'config'
+require_relative 'token_store'
 
 API_NAME = 'content'
 API_VERSION = 'v2'
 API_SCOPE = 'https://www.googleapis.com/auth/content'
-BASE_DIR = File.expand_path(File.dirname(__FILE__))
-CLIENT_ID_FILE = File.join(BASE_DIR, "#{API_NAME}-oauth2.json")
-SERVICE_ACCOUNT_FILE = File.join(BASE_DIR, "#{API_NAME}-service.json")
-CREDENTIAL_STORE_FILE = File.join(BASE_DIR, "#{API_NAME}-tokens.yaml")
+CLIENT_ID_FILE = File.join(Config.path, "#{API_NAME}-oauth2.json")
+SERVICE_ACCOUNT_FILE = File.join(Config.path, "#{API_NAME}-service.json")
 
 # These constants define the identifiers for all of our example products/feeds.
 #
@@ -43,39 +44,53 @@ TARGET_COUNTRY = 'US';
 
 OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
-# Handles authentication and loading of the API.
-def service_setup()
-  credentials = nil
-
+def authenticate(config)
+  # First try the Application Default Credentials before continuing.
+  begin
+    credentials = Google::Auth::get_application_default(scope=API_SCOPE)
+    puts "Loaded Application Default Credentials."
+    return credentials
+  rescue
+    # Unfortunately the ADC loader raises StandardError. Thus, we'll
+    # just ignore any error here, and assume it means that the ADC
+    # couldn't be loaded.
+  end
   # Check for both kinds of authentication. Let service accounts win, as
   # they're an easier flow to authenticate.
   if File.exist?(SERVICE_ACCOUNT_FILE)
-    credentials = Google::Auth::DefaultCredentials.make_creds(
+    puts "Loading service account credentials from #{SERVICE_ACCOUNT_FILE}."
+    return Google::Auth::DefaultCredentials.make_creds(
         scope: API_SCOPE,
         json_key_io: File.open(SERVICE_ACCOUNT_FILE))
   elsif File.exist?(CLIENT_ID_FILE)
+    puts "Loading OAuth2 client from #{CLIENT_ID_FILE}."
     client_id = Google::Auth::ClientId.from_file(CLIENT_ID_FILE)
-    token_store = Google::Auth::Stores::FileTokenStore.new(
-        file: CREDENTIAL_STORE_FILE)
+    token_store = TokenStore.new(config: config)
     authorizer = Google::Auth::UserAuthorizer.new(
         client_id, API_SCOPE, token_store)
-    user_id = '{USER ID HERE}'
+    user_id = config.email_address
 
     credentials = authorizer.get_credentials(user_id)
-    if credentials.nil?
-      url = authorizer.get_authorization_url(base_url: OOB_URI)
-      puts "Open #{url} in your browser and enter the resulting code:"
-      code = STDIN.gets
-      credentials = authorizer.get_and_store_credentials_from_code(
-          user_id: user_id, code: code, base_url: OOB_URI)
+    unless credentials.nil?
+      return credentials
     end
-  else
-    puts "No OAuth2 authentication files found. Checked:"
-    puts "- #{SERVICE_ACCOUNT_FILE}"
-    puts "- #{CLIENT_ID_FILE}"
-    puts "Please read the accompanying README.md for instructions."
-    exit
+    url = authorizer.get_authorization_url(base_url: OOB_URI)
+    puts "Open #{url} in your browser and enter the resulting code:"
+    code = STDIN.gets
+    return authorizer.get_and_store_credentials_from_code(
+        user_id: user_id, code: code, base_url: OOB_URI)
   end
+  puts "No OAuth2 authentication credentials found. Checked:"
+  puts "- Google Application Default Credentials"
+  puts "- #{SERVICE_ACCOUNT_FILE}"
+  puts "- #{CLIENT_ID_FILE}"
+  puts "Please read the accompanying README.md for instructions."
+  exit
+end
+
+# Handles authentication and loading of the API.
+def service_setup(config)
+  credentials = authenticate(config)
 
   # Initialize API Service.
   service = Google::Apis::ContentV2::ShoppingContentService.new
@@ -97,7 +112,7 @@ def handle_errors(err)
     print "Unknown error: #{err}"
     exit
   end
-  body_json = JSON.parse(err.body)
+  body_json = MultiJson.load(err.body)
   if body_json['error']
     puts "Error(s) when performing request:"
     body_json['error']['errors'].each do |error|
@@ -120,13 +135,9 @@ end
 
 # Displays warnings in an API response, if any.
 def handle_warnings(response)
-  warnings = []
-  unless response && response.respond_to?(:warnings)
-    exit
-  end
   warnings = response.warnings
 
-  if warnings && warnings.size > 0
+  if warnings and warnings.size > 0
     puts "Warning(s) when performing request:"
     warnings.each do |warning|
       puts "  - [#{warning.reason}] #{warning.message}"

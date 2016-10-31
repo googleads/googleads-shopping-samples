@@ -17,28 +17,37 @@ Before getting started, check the Getting Started section of the
 [Content API for Shopping documentation](https://developers.google.com/shopping-content/v2/quickstart).
 You may want to use
 [service accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
-instead to simplify the authentication flow.
+instead to simplify the authentication flow. These samples also support using
+[Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
 
 ## Running the Samples
 
 We are assuming you've checked out the code and are reading this from a local
 directory. If not, check out the code to a local directory.
 
-1. Set up your desired authentication method.
+1. Create the directory `.shopping-content-samples` inside your home
+   directory.  The configuration and authentication credentials for the
+   samples will be stored there.
+
+   Also copy the `merchant-info.json` file to that new directory and edit
+   it to include your merchant ID (`merchantId`) and Google login
+   (`emailAddress`).  If the merchant ID belongs to a multi-client
+   account, set `isMCA` to `true`.
+
+2. Set up your desired authentication method.
 
    If you are using an OAuth2 client ID:
 
    * Download your [OAuth2 client credentials](https://console.developers.google.com/apis/credentials)
-     to `content-oauth2.json` in the root of the code directory.
-
-   * Change `'{USER ID HERE}'` in `shopping-common.rb` to the desired user ID.
+     to `content-oauth2.json` in the configuration directory described above.
 
    If you are using a service account:
 
     * Put the JSON file you downloaded when creating the service account in
-      the root of the code directory with the filename `content-service.json`.
+      with the filename `content-service.json` in the configuration directory
+      described above.
 
-2. Start up a sample:
+3. Start up a sample:
 
         $ ruby product/list_products.rb
 
@@ -46,4 +55,4 @@ directory. If not, check out the code to a local directory.
    the authorization URL printed on the terminal in your browser and paste
    the resulting refresh token into the terminal.
 
-3. Examine your shell output, be inspired and start hacking an amazing new app!
+4. Examine your shell output, be inspired and start hacking an amazing new app!
