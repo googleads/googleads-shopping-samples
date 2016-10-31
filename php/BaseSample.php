@@ -1,3 +1,4 @@
+<?php
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
  *
@@ -13,11 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-<?php
 
 // Note that these samples are written to be run as a command line application,
 // not as a webpage.
-
 
 // This file assumes you are using Composer.  If not, adjust the
 // following line appropriately.
@@ -58,14 +57,12 @@ abstract class BaseSample {
 
     $client = new Google_Client();
     $client->setApplicationName($this->config->applicationName);
-    $client->setScopes('https://www.googleapis.com/auth/content');
+    $client->setScopes(Google_Service_ShoppingContent::CONTENT);
     $this->authenticate($client);
 
     $this->merchantId = $this->config->merchantId;
+    $this->websiteUrl = $this->config->websiteUrl;
     $this->service = new Google_Service_ShoppingContent($client);
-    $this->websiteUrl =
-        $this->service->accounts->get($this->merchantId,
-                                      $this->merchantId)->getWebsiteUrl;
 }
 
   abstract public function run();
@@ -102,7 +99,7 @@ abstract class BaseSample {
     return rtrim($home, '\\/');
   }
 
-  private function getRefreshToken(Google_Client $client) {
+  private function getToken(Google_Client $client) {
     $client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
     $client->setScopes('https://www.googleapis.com/auth/content');
     $client->setAccessType('offline'); // So that we get a refresh token
@@ -113,44 +110,70 @@ abstract class BaseSample {
     $code = trim(fgets(STDIN));
     $client->authenticate($code);
 
-    $token = $client->getAccessToken();
-    return $token['refresh_token'];
+    return $client->getAccessToken();
   }
 
-  protected function cacheRefreshToken(Google_Client $client) {
+  protected function cacheToken(Google_Client $client) {
     print (str_repeat('*', 40));
-    print ("Your refresh token was missing or invalid, fetching a new one\n");
-    $refreshToken = $this->getRefreshToken($client);
-    $this->config->refreshToken = $refreshToken;
+    print ("Your token was missing or invalid, fetching a new one\n");
+    $this->config->token = $this->getToken($client);
     file_put_contents($this->configFile,
         json_encode($this->config, JSON_PRETTY_PRINT));
-    print ("Refresh token saved to your config file\n");
+    print ("Token saved to your config file\n");
     print (str_repeat('*', 40));
   }
 
+  /**
+   * This function looks for authentication in this order:
+   * - Google Application Default Credentials
+   * - Service account credentials in SERVICE_ACCOUNT_FILE_NAME in the configDir
+   * - OAuth2 credentials in OAUTH_CLIENT_FILE_NAME in the configDir
+   */
   protected function authenticate(Google_Client $client) {
-    $accountFile = $this->configDir . '/' . self::SERVICE_ACCOUNT_FILE_NAME;
-    $oauthFile = $this->configDir . '/' . self::OAUTH_CLIENT_FILE_NAME;
+    try {
+      // Try loading the credentials.
+      $credentials = Google\Auth\ApplicationDefaultCredentials::getCredentials(
+          Google_Service_ShoppingContent::CONTENT);
+      // If we got here, the credentials are there, so tell the client.
+      $client->useApplicationDefaultCredentials();
+      print "Using Google Application Default Credentials.\n";
+    } catch (DomainException $exception) {
+      // Safe to ignore this error, since we'll fall back on other creds.
+      $this->authenticateFromConfig($client);
+    }
+  }
 
+  // Handles loading authentication credentials from the config dir.
+  protected function authenticateFromConfig(Google_Client $client) {
+    $accountFile = $this->configDir . '/' . self::SERVICE_ACCOUNT_FILE_NAME;
     if (file_exists($accountFile)) {
+      print "Loading service account credentials from" . $accountFile . ".\n";
       $accountConfig = json_decode(file_get_contents($accountFile), true);
       $client->setAuthConfig($accountConfig);
-    } else if (file_exists($oauthFile)) {
+      $client->setScopes(Google_Service_ShoppingContent::CONTENT);
+      return;
+    }
+    $oauthFile = $this->configDir . '/' . self::OAUTH_CLIENT_FILE_NAME;
+    if (file_exists($oauthFile)) {
+      print "Loading OAuth2 credentials from" . $oauthFile . ".\n";
       $oauthConfig = json_decode(file_get_contents($oauthFile), true);
       $client->setAuthConfig($oauthConfig);
-      if($this->config->refreshToken == null) {
-        $this->cacheRefreshToken($client);
+      if($this->config->token == null) {
+        $this->cacheToken($client);
       } else {
         try {
-          $client->refreshToken($this->config->refreshToken);
+          $client->refreshToken($this->config->token->refresh_token);
         } catch (Google_Auth_Exception $exception) {
-          $this->cacheRefreshToken($client);
+          $this->cacheToken($client);
         }
       }
-    } else {
-      throw new Exception(sprintf('Could not find or read credentials at either'
-          . '%s or %s.', $accountFile, $oauthFile));
+      return;
     }
+    // All authentication failed.
+    $msg = sprintf('Could not find or read credentials from '
+        . 'either the Google Application Default credentials, '
+        . '%s, or %s.', $accountFile, $oauthFile);
+    throw new DomainException($msg);
   }
 
   // Retry a function with back off
