@@ -24,7 +24,8 @@ Before getting started, check the Getting Started section of the
 [Content API for Shopping documentation](https://developers.google.com/shopping-content/v2/quickstart).
 You may want to use
 [service accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
-instead to simplify the authentication flow.
+instead to simplify the authentication flow. These samples also support using
+[Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
 
 ## Running the Samples
 
@@ -42,16 +43,28 @@ as well to pull in the dependencies. (The IDEs listed above all support this.)
 
 2. Set up your desired authentication method.
 
-   If you are using an OAuth2 client ID:
+   If you are using Google Application Default Credentials:
 
-   * Download your [OAuth2 client credentials](https://console.developers.google.com/apis/credentials)
-     to `content-oauth2.json` in `$(HOME)/.shopping-content-samples`.
+   * Follow the directions on the [Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials) page.
 
    If you are using a service account:
 
     * Put the JSON file you downloaded when creating the service account in
       `$(HOME)/.shopping-content-samples` with the filename
       `content-service.json`.
+
+   If you are using an OAuth2 client ID:
+
+   * Download your [OAuth2 client credentials](https://console.developers.google.com/apis/credentials)
+     to `content-oauth2.json` in `$(HOME)/.shopping-content-samples`.
+
+   You can set up multiple authentication methods to try out different flows,
+   but note that the samples will always use the first credentials that can
+   be loaded, in the order:
+
+   1. Application Default Credentials
+   2. Service account credentials
+   3. OAuth2 client credentials
 
 3. Take the example `merchant-info.json` from the project root, copy
    it into `$(HOME)/.shopping-content-samples`, and then change its

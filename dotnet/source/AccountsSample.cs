@@ -28,13 +28,13 @@ namespace ContentShoppingSamples
         }
 
         /// <summary>Runs multiple requests against the Content API for Shopping.</summary>
-        internal void RunCalls(ulong merchantId, String emailAddress = null, ulong adWordsAccountId = 0)
+        internal void RunCalls(ulong merchantId, String emailAddress = "", ulong adWordsAccountId = 0)
         {
             // Can get information about your own account if non-MCA.
             GetAccount(merchantId);
 
             // Primary account, user management
-            if (emailAddress != null)
+            if (emailAddress != null && emailAddress != "")
             {
                 AccountUser user = AddUser(merchantId, merchantId, emailAddress);
                 RemoveUser(merchantId, merchantId, user.EmailAddress);
@@ -56,11 +56,6 @@ namespace ContentShoppingSamples
         private Account GetAccount(ulong merchantId)
         {
             return service.Accounts.Get(merchantId, merchantId).Execute();
-        }
-
-        internal string GetWebsiteUrl(ulong merchantId)
-        {
-            return GetAccount(merchantId).WebsiteUrl;
         }
 
         /// <summary>

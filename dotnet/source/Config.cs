@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Google.Apis.Auth.OAuth2.Responses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -14,34 +15,29 @@ namespace ContentShoppingSamples
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".shopping-content-samples");
         private static String CONFIG_FILE = Path.Combine(CONFIG_DIR, "merchant-info.json");
 
-        private ulong _merchantId;
-        public ulong MerchantId { get { return _merchantId; } }
+        [Newtonsoft.Json.JsonPropertyAttribute("merchantId")]
+        public ulong MerchantId { get; set; }
 
-        private string _applicationName;
-        public string ApplicationName { get { return _applicationName; } }
+        [Newtonsoft.Json.JsonPropertyAttribute("applicationName")]
+        public string ApplicationName { get; set; }
 
-        private string _emailAddress;
-        public string EmailAddress { get { return _emailAddress; } }
+        [Newtonsoft.Json.JsonPropertyAttribute("emailAddress")]
+        public string EmailAddress { get; set; }
 
-        private string _accountSampleUser;
-        public string AccountSampleUser { get { return _accountSampleUser; } }
+        [Newtonsoft.Json.JsonPropertyAttribute("websiteUrl")]
+        public string WebsiteURL { get; set; }
 
-        private ulong _accountSampleAdWordsCID;
-        public ulong AccountSampleAdWordsCID { get { return _accountSampleAdWordsCID; } }
+        [Newtonsoft.Json.JsonPropertyAttribute("accountSampleUser")]
+        public string AccountSampleUser { get; set; }
 
-        private bool _isMCA;
-        public bool IsMCA { get { return _isMCA; } }
+        [Newtonsoft.Json.JsonPropertyAttribute("accountSampleAdWordsCID")]
+        public ulong AccountSampleAdWordsCID { get; set; }
 
-        private Config(ulong merchantId, string applicationName, string emailAddress,
-                        string accountSampleUser, ulong accountSampleAdWordsCID, bool isMCA)
-        {
-            _merchantId = merchantId;
-            _applicationName = applicationName;
-            _emailAddress = emailAddress;
-            _accountSampleUser = accountSampleUser;
-            _accountSampleAdWordsCID = accountSampleAdWordsCID;
-            _isMCA = isMCA;
-        }
+        [Newtonsoft.Json.JsonPropertyAttribute("isMCA")]
+        public bool IsMCA { get; set; }
+
+        [Newtonsoft.Json.JsonPropertyAttribute("token")]
+        public TokenResponse Token { get; set; }
 
         public static Config Load()
         {
@@ -52,25 +48,21 @@ namespace ContentShoppingSamples
             }
             using (StreamReader reader = File.OpenText(CONFIG_FILE))
             {
-                JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
-                string merchantIdString = (string)o.SelectToken("merchantId");
-                ulong merchantId = 0;
-                if (merchantIdString != null)
-                {
-                    merchantId = Convert.ToUInt64(merchantIdString);
-                }
-                string applicationName = (string)o.SelectToken("applicationName");
-                string emailAddress = (string)o.SelectToken("emailAddress");
-                string accountSampleUser = (string)o.SelectToken("accountSampleUser");
-                string accountSampleAdWordsCIDString = (string)o.SelectToken("accountSampleAdWordsCID");
-                ulong accountSampleAdWordsCID = 0;
-                if (accountSampleAdWordsCIDString != null)
-                {
-                    accountSampleAdWordsCID = Convert.ToUInt64(accountSampleAdWordsCIDString);
-                }
-                bool isMCA = (bool)o.SelectToken("isMCA");
-                return new Config(merchantId, applicationName, emailAddress,
-                                   accountSampleUser, accountSampleAdWordsCID, isMCA);
+                return (Config)JToken.ReadFrom(new JsonTextReader(reader))
+                                     .ToObject(typeof(Config));
+            }
+        }
+
+        public void Save()
+        {
+            JsonSerializer serializer = new JsonSerializer();
+            using (StreamWriter sw = new StreamWriter(CONFIG_FILE))
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            {
+                writer.Formatting = Formatting.Indented;
+                writer.IndentChar = ' ';
+                writer.Indentation = 2;
+                serializer.Serialize(writer, this);
             }
         }
     }

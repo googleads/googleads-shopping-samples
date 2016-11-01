@@ -33,26 +33,24 @@ namespace ContentShoppingSamples
 
             Config config = Config.Load();
 
-            ICredential credential = Authenticator.authenticate(config);
+            var initializer = Authenticator.authenticate(config);
 
             // Create the service.
             var service = new ShoppingContentService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = credential,
+                HttpClientInitializer = initializer,
                 ApplicationName = config.ApplicationName,
             });
 
-            // Execute the calls, first getting the website from the account information..
             AccountsSample accountsSample = new AccountsSample(service);
             DatafeedsSample datafeedsSample = new DatafeedsSample(service);
             ProductsSample productsSample = new ProductsSample(service, MaxListPageSize);
             MultiClientAccountSample multiClientAccountSample = new MultiClientAccountSample(service);
+
             if (!config.IsMCA)
             {
                 // Non-MCA calls
-                // Get the website from the Merchant Center account so we can avoid errors in created products.
-                string websiteUrl = accountsSample.GetWebsiteUrl(config.MerchantId);
-                productsSample.RunCalls(config.MerchantId, websiteUrl);
+                productsSample.RunCalls(config.MerchantId, config.WebsiteURL);
                 datafeedsSample.RunCalls(config.MerchantId);
                 accountsSample.RunCalls(config.MerchantId, config.AccountSampleUser, config.AccountSampleAdWordsCID);
             }

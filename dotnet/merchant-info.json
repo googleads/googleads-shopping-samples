@@ -1,8 +1,9 @@
 {
-  "merchantId": "<MERCHANT ID>",
+  "merchantId": 0,
   "applicationName": "<APPLICATION NAME>",
   "emailAddress": "<EMAIL ADDRESS>",
-  "accountSampleUser": null,
-  "accountSampleAdWordsCID": null,
+  "websiteUrl": "<YOUR CLAIMED WEBSITE>",
+  "accountSampleUser": "",
+  "accountSampleAdWordsCID": 0,
   "isMCA": false
 }
