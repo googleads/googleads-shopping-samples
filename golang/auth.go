@@ -4,19 +4,13 @@ package main
 // The only function used in other files is authWithGoogle().
 
 import (
-	"encoding/gob"
 	"fmt"
-	"hash/fnv"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"os"
 	"path"
-	"path/filepath"
-	"runtime"
-	"strings"
 	"time"
 
 	"github.com/pkg/browser"
@@ -27,14 +21,18 @@ import (
 )
 
 func authWithGoogle(ctx context.Context) *http.Client {
-	cwd, err := os.Getwd()
-	check(err)
-	serviceAccountPath := path.Join(cwd, "content-service.json")
-	oauth2ClientPath := path.Join(cwd, "content-oauth2.json")
+	serviceAccountPath := path.Join(configPath, "content-service.json")
+	oauth2ClientPath := path.Join(configPath, "content-oauth2.json")
 
-	// First check for service account info, since it's the easier auth
+	// First, check for the Application Default Credentials.
+	if client, err := google.DefaultClient(ctx, content.ContentScope); err == nil {
+		fmt.Println("Using Application Default Credentials.")
+		return client
+	}
+	// Second, check for service account info, since it's the easier auth
 	// flow. Fall back to OAuth2 client if it's not there.
-	if _, err = os.Stat(serviceAccountPath); err == nil {
+	if _, err := os.Stat(serviceAccountPath); err == nil {
+		fmt.Printf("Loading service account from %s.\n", serviceAccountPath)
 		json, err := ioutil.ReadFile(serviceAccountPath)
 		check(err)
 		config, err := google.JWTConfigFromJSON(json, content.ContentScope)
@@ -43,6 +41,7 @@ func authWithGoogle(ctx context.Context) *http.Client {
 		return config.Client(ctx)
 	}
 	if _, err := os.Stat(oauth2ClientPath); err == nil {
+		fmt.Printf("Loading OAuth2 client from %s.\n", oauth2ClientPath)
 		json, err := ioutil.ReadFile(oauth2ClientPath)
 		check(err)
 		config, err := google.ConfigFromJSON(json, content.ContentScope)
@@ -59,58 +58,13 @@ func authWithGoogle(ctx context.Context) *http.Client {
 	return nil
 }
 
-func osUserCacheDir() string {
-	switch runtime.GOOS {
-	case "darwin":
-		return filepath.Join(os.Getenv("HOME"), "Library", "Caches")
-	case "linux", "freebsd":
-		return filepath.Join(os.Getenv("HOME"), ".cache")
-	}
-	log.Printf("TODO: osUserCacheDir on GOOS %q", runtime.GOOS)
-	return "."
-}
-
-func tokenCacheFile(config *oauth2.Config) string {
-	hash := fnv.New32a()
-	hash.Write([]byte(config.ClientID))
-	hash.Write([]byte(config.ClientSecret))
-	hash.Write([]byte(strings.Join(config.Scopes, " ")))
-	fn := fmt.Sprintf("go-api-demo-tok%v", hash.Sum32())
-	return filepath.Join(osUserCacheDir(), url.QueryEscape(fn))
-}
-
-// tokenFromFile tries to read a (cached) OAuth2 refresh token from the given
-// filename. If this fails, then it returns an error, which allows us to fall
-// back to web authentication if the refresh token isn't already cached.
-func tokenFromFile(file string) (*oauth2.Token, error) {
-	f, err := os.Open(file)
-	if err != nil {
-		return nil, err
-	}
-	t := new(oauth2.Token)
-	err = gob.NewDecoder(f).Decode(t)
-	return t, err
-}
-
-func saveToken(file string, token *oauth2.Token) {
-	f, err := os.Create(file)
-	if err != nil {
-		log.Printf("Warning: failed to cache oauth token: %v", err)
-		return
-	}
-	defer f.Close()
-	gob.NewEncoder(f).Encode(token)
-}
-
 func newOAuthClient(ctx context.Context, config *oauth2.Config) *http.Client {
-	cacheFile := tokenCacheFile(config)
-	token, err := tokenFromFile(cacheFile)
-	if err != nil {
-		token = tokenFromWeb(ctx, config)
-		saveToken(cacheFile, token)
+	if samplesConfig.Token == nil {
+		samplesConfig.Token = tokenFromWeb(ctx, config)
+		writeSamplesConfig()
 	}
 
-	return config.Client(ctx, token)
+	return config.Client(ctx, samplesConfig.Token)
 }
 
 func tokenFromWeb(ctx context.Context, config *oauth2.Config) *oauth2.Token {
@@ -153,15 +107,4 @@ func tokenFromWeb(ctx context.Context, config *oauth2.Config) *oauth2.Token {
 		log.Fatalf("Token exchange error: %v", err)
 	}
 	return token
-}
-
-func valueOrFileContents(value string, filename string) string {
-	if value != "" {
-		return value
-	}
-	slurp, err := ioutil.ReadFile(filename)
-	if err != nil {
-		log.Fatalf("Error reading %q: %v", filename, err)
-	}
-	return strings.TrimSpace(string(slurp))
 }

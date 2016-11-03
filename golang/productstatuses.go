@@ -11,16 +11,20 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
-func productstatusesDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
+func productstatusesDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
 	productstatuses := content.NewProductstatusesService(service)
 
 	fmt.Printf("Listing product statuses:\n")
-	listCall := productstatuses.List(merchantID)
-	// Uncomment this to see even invalid offers:
-	//   listCall.IncludeInvalidInsertedItems(true)
-	// Uncomment this to change the number of results listed by
+	listCall := productstatuses.List(config.MerchantID)
+	// Enable this to see even invalid offers:
+	if false {
+		listCall.IncludeInvalidInsertedItems(true)
+	}
+	// Enable this to change the number of results listed by
 	// per page:
-	//   listCall.MaxResults(100)
+	if false {
+		listCall.MaxResults(100)
+	}
 	err := listCall.Pages(ctx, printProductstatusesPage)
 	checkAPI(err, "Listing product statuses failed")
 	fmt.Printf("\n")

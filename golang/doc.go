@@ -30,21 +30,29 @@ You may want to use service accounts instead to simplify the authentication
 flow:
 https://developers.google.com/shopping-content/v2/how-tos/service-accounts
 
+These samples also support using Google Application Default Credentials:
+https://developers.google.com/identity/protocols/application-default-credentials
+
 Running the Samples
 
 We are assuming you've checked out the code and are reading this from a local
 directory. If not, check out the code to a local directory.  Also make sure the
 files are in your GOPATH.
 
+The Go samples share the location and format of configuration info with many of
+the other samples. You will need to create a directory called
+`.shopping-content-samples` in your home directory. You will also need a basic
+configuration file that includes your Merchant Center ID. The file
+`merchant-info.json` has a barebones configuration you can copy and adjust.
+
 1. Set up your desired authentication method.
 
-If you are using an OAuth2 client ID, download your OAuth2 client
-credentials from http://console.developers.google.com/apis/credentials
-to `content-oauth2.json` in the root of the code directory.
+If you are using an OAuth2 client ID, download your OAuth2 client credentials
+to `content-oauth2.json` in the configuration directory mentioned above.
 
-If you are using a service account, put the JSON file you downloaded
-when creating the service account in the root of the code directory
-with the filename `content-service.json`.
+If you are using a service account, put the JSON file you downloaded when
+creating the service account with the filename `content-service.json` in the
+configuration directory mentioned above.
 
 2. Compile all the sample code together directory:
 
@@ -52,11 +60,11 @@ with the filename `content-service.json`.
 
 3. Run the resulting binary to get an idea of its usage:
 
-        $ ./content-api-demo
+        $ ./content-api-demo -h
 
 4. Pick a demo (or demos) to run, for example:
 
-        $ ./content-api-demo <merchant ID> products inventory
+        $ ./content-api-demo products inventory
 
 If using an OAuth2 client ID for the first time, the application will
 open a browser automatically so you can agree to the OAuth2 access.

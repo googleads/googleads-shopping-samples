@@ -13,12 +13,12 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
-func productsBatchDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
+func productsBatchDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
 	productsToSend := [](*content.Product){
-		createSampleProduct(fmt.Sprintf("book#test%d", rand.Int())),
-		createSampleProduct(fmt.Sprintf("book#test%d", rand.Int())),
-		createSampleProduct(fmt.Sprintf("book#test%d", rand.Int())),
-		createSampleProduct(fmt.Sprintf("book#test%d", rand.Int())),
+		createSampleProduct(config, fmt.Sprintf("book#test%d", rand.Int())),
+		createSampleProduct(config, fmt.Sprintf("book#test%d", rand.Int())),
+		createSampleProduct(config, fmt.Sprintf("book#test%d", rand.Int())),
+		createSampleProduct(config, fmt.Sprintf("book#test%d", rand.Int())),
 	}
 
 	products := content.NewProductsService(service)
@@ -29,7 +29,7 @@ func productsBatchDemo(ctx context.Context, service *content.APIService, merchan
 	for n, prod := range productsToSend {
 		entry := content.ProductsCustomBatchRequestEntry{
 			BatchId:    int64(n + 1),
-			MerchantId: merchantID,
+			MerchantId: config.MerchantID,
 			Product:    prod,
 			Method:     "insert",
 		}
@@ -58,7 +58,7 @@ func productsBatchDemo(ctx context.Context, service *content.APIService, merchan
 	fmt.Printf("\n")
 
 	fmt.Printf("Listing products:\n")
-	listCall := products.List(merchantID)
+	listCall := products.List(config.MerchantID)
 	err = listCall.Pages(ctx, printProductsPage)
 	checkAPI(err, "Listing products failed")
 	fmt.Printf("\n")
@@ -69,7 +69,7 @@ func productsBatchDemo(ctx context.Context, service *content.APIService, merchan
 	for n, prodID := range productIDs {
 		entry := content.ProductsCustomBatchRequestEntry{
 			BatchId:    int64(n + 1),
-			MerchantId: merchantID,
+			MerchantId: config.MerchantID,
 			ProductId:  prodID,
 			Method:     "delete",
 		}

@@ -13,9 +13,9 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
-func inventoryDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
+func inventoryDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
 	offerID := fmt.Sprintf("book#test%d", rand.Int())
-	product := createSampleProduct(offerID)
+	product := createSampleProduct(config, offerID)
 
 	newPrice := content.Price{
 		Currency: "US",
@@ -30,13 +30,13 @@ func inventoryDemo(ctx context.Context, service *content.APIService, merchantID 
 	inventory := content.NewInventoryService(service)
 
 	fmt.Printf("Inserting product with offerId %s... ", offerID)
-	productInfo, err := products.Insert(merchantID, product).Do()
+	productInfo, err := products.Insert(config.MerchantID, product).Do()
 	checkAPI(err, "Insertion failed")
 	fmt.Printf("done.\n")
 	productID := productInfo.Id
 
 	fmt.Printf("Retrieving product ID %s...", productID)
-	productInfo, err = products.Get(merchantID, productID).Do()
+	productInfo, err = products.Get(config.MerchantID, productID).Do()
 	checkAPI(err, "Retrieval failed")
 	fmt.Printf("done.")
 	fmt.Printf("Retrieved product %s @ (%s, %s)\n\n",
@@ -44,12 +44,12 @@ func inventoryDemo(ctx context.Context, service *content.APIService, merchantID 
 		productInfo.Price.Currency)
 
 	fmt.Printf("Setting new price and availability...")
-	_, err = inventory.Set(merchantID, product.Channel, productID, &invReq).Do()
+	_, err = inventory.Set(config.MerchantID, product.Channel, productID, &invReq).Do()
 	checkAPI(err, "Inventory set failed")
 	fmt.Printf("done.\n\n")
 
 	fmt.Printf("Retrieving product ID %s...", productID)
-	productInfo, err = products.Get(merchantID, productID).Do()
+	productInfo, err = products.Get(config.MerchantID, productID).Do()
 	checkAPI(err, "Retrieval failed")
 	fmt.Printf("done.\n")
 	fmt.Printf("Retrieved product %s @ (%s, %s)\n\n",
@@ -57,7 +57,7 @@ func inventoryDemo(ctx context.Context, service *content.APIService, merchantID 
 		productInfo.Price.Currency)
 
 	fmt.Printf("Deleting product ID %s...", productID)
-	err = products.Delete(merchantID, productID).Do()
+	err = products.Delete(config.MerchantID, productID).Do()
 	checkAPI(err, "Deletion failed")
 	fmt.Printf("done.\n")
 }

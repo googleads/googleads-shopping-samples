@@ -12,11 +12,11 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
-func accountstatusesDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
+func accountstatusesDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
 	accountstatuses := content.NewAccountstatusesService(service)
 
 	fmt.Printf("Getting account status:\n")
-	accountStatus, err := accountstatuses.Get(merchantID, merchantID).Do()
+	accountStatus, err := accountstatuses.Get(config.MerchantID, config.MerchantID).Do()
 	checkAPI(err, "Getting account status failed")
 	printAccountStatus(accountStatus)
 }
@@ -24,11 +24,11 @@ func accountstatusesDemo(ctx context.Context, service *content.APIService, merch
 func printAccountStatus(accountStatus *content.AccountStatus) {
 	fmt.Printf(" - Account %s\n", accountStatus.AccountId)
 	for _, dataQualityIssue := range accountStatus.DataQualityIssues {
-		fmt.Printf("\t(%s) %s: %s\n",
-			dataQualityIssue.Severity, dataQualityIssue.Id,
-			dataQualityIssue.SubmittedValue)
+		fmt.Printf("  - (%s) %s\n", dataQualityIssue.Severity, dataQualityIssue.Id)
+		fmt.Printf("    Affects %d items, %d examples follow:\n",
+			dataQualityIssue.NumItems, len(dataQualityIssue.ExampleItems))
 		for _, exampleItem := range dataQualityIssue.ExampleItems {
-			fmt.Printf("\t - Item %s: %s\n",
+			fmt.Printf("    - Item %s: %s\n",
 				exampleItem.ItemId, exampleItem.Title)
 		}
 	}

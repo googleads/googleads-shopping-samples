@@ -12,39 +12,43 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
-func productDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
+func productDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
 	offerID := fmt.Sprintf("book#test%d", rand.Int())
-	product := createSampleProduct(offerID)
+	product := createSampleProduct(config, offerID)
 
 	products := content.NewProductsService(service)
 
 	fmt.Printf("Inserting product with offerId %s... ", offerID)
-	productInfo, err := products.Insert(merchantID, product).Do()
+	productInfo, err := products.Insert(config.MerchantID, product).Do()
 	checkAPI(err, "Insertion failed")
 	fmt.Printf("done.\n")
 	checkContentErrors(productInfo.Warnings, false)
 	productID := productInfo.Id
 
 	fmt.Printf("Listing products:\n")
-	listCall := products.List(merchantID)
-	// Uncomment this to see even invalid offers:
-	//   listCall.IncludeInvalidInsertedItems(true)
-	// Uncomment this to change the number of results listed by
+	listCall := products.List(config.MerchantID)
+	// Enable this to see even invalid offers:
+	if false {
+		listCall.IncludeInvalidInsertedItems(true)
+	}
+	// Enable this to change the number of results listed by
 	// per page:
-	//   listCall.MaxResults(100)
+	if false {
+		listCall.MaxResults(100)
+	}
 	err = listCall.Pages(ctx, printProductsPage)
 	checkAPI(err, "Listing products failed")
 	fmt.Printf("\n")
 
 	fmt.Printf("Retrieving product ID %s...", productID)
-	productInfo, err = products.Get(merchantID, productID).Do()
+	productInfo, err = products.Get(config.MerchantID, productID).Do()
 	checkAPI(err, "Retrieval failed")
 	fmt.Printf("done.\n")
 	fmt.Printf("Retrieved product %s with title %s\n",
 		productInfo.Id, productInfo.Title)
 
 	fmt.Printf("Deleting product ID %s...", productID)
-	err = products.Delete(merchantID, productID).Do()
+	err = products.Delete(config.MerchantID, productID).Do()
 	checkAPI(err, "Deletion failed")
 	fmt.Printf("done.\n")
 }
@@ -57,7 +61,11 @@ func printProductsPage(res *content.ProductsListResponse) error {
 	return nil
 }
 
-func createSampleProduct(offerID string) *content.Product {
+func createSampleProduct(config *merchantInfo, offerID string) *content.Product {
+	websiteURL := config.WebsiteURL
+	if websiteURL == "" {
+		websiteURL = "http://my-book-shop.com"
+	}
 	productPrice := content.Price{Currency: "USD", Value: "2.50"}
 	shippingPrice := content.Price{Currency: "USD", Value: "0.99"}
 	shippingWeight := content.ProductShippingWeight{
@@ -73,8 +81,8 @@ func createSampleProduct(offerID string) *content.Product {
 		OfferId:               offerID,
 		Title:                 "A Tale of Two Cities",
 		Description:           "A classic novel about the French Revolution",
-		Link:                  "http://my-book-shop.com/tale-of-two-cities.html",
-		ImageLink:             "http://my-book-shop.com/tale-of-two-cities.jpg",
+		Link:                  websiteURL + "/tale-of-two-cities.html",
+		ImageLink:             websiteURL + "/tale-of-two-cities.jpg",
 		ContentLanguage:       "en",
 		TargetCountry:         "US",
 		Channel:               "online",

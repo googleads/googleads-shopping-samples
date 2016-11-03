@@ -13,35 +13,37 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
-func datafeedDemo(ctx context.Context, service *content.APIService, merchantID uint64) {
+func datafeedDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
 	feedName := fmt.Sprintf("feed%d", rand.Int())
 
 	fmt.Printf("Inserting datafeed with filename %s... ", feedName)
 	datafeeds := content.NewDatafeedsService(service)
 	feed := createSampleDatafeed(feedName)
 
-	insertedFeed, err := datafeeds.Insert(merchantID, feed).Do()
+	insertedFeed, err := datafeeds.Insert(config.MerchantID, feed).Do()
 	checkAPI(err, "Insertion failed")
 	fmt.Printf("done.\n")
 	feedID := insertedFeed.Id
 	fmt.Printf("New feed ID: %d\n\n", feedID)
 
 	fmt.Printf("Listing datafeeds:\n")
-	listCall := datafeeds.List(merchantID)
-	// Uncomment this to change the number of results listed by
+	listCall := datafeeds.List(config.MerchantID)
+	// Enable this to change the number of results listed by
 	// per page:
-	//   listCall.MaxResults(100)
+	if false {
+		listCall.MaxResults(100)
+	}
 	err = listCall.Pages(ctx, printFeedsPage)
 	checkAPI(err, "Listing feeds failed")
 	fmt.Printf("\n")
 
 	fmt.Printf("Retrieving datafeed %d... ", feedID)
-	_, err = datafeeds.Get(merchantID, uint64(feedID)).Do()
+	_, err = datafeeds.Get(config.MerchantID, uint64(feedID)).Do()
 	checkAPI(err, "Retrieving feed failed")
 	fmt.Printf("done.\n")
 
 	fmt.Printf("Removing datafeed %d... ", feedID)
-	err = datafeeds.Delete(merchantID, uint64(feedID)).Do()
+	err = datafeeds.Delete(config.MerchantID, uint64(feedID)).Do()
 	checkAPI(err, "Removing feed failed")
 	fmt.Printf("done.\n\n")
 }

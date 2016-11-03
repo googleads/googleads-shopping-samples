@@ -6,20 +6,21 @@ import (
 	"io"
 	"math/rand"
 	"os"
-	"strconv"
 	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/content/v2"
 )
 
-var demos = map[string](func(context.Context, *content.APIService, uint64)){
-	"products":        productDemo,
-	"datafeeds":       datafeedDemo,
-	"inventory":       inventoryDemo,
-	"productsBatch":   productsBatchDemo,
-	"accountstatuses": accountstatusesDemo,
-	"productstatuses": productstatusesDemo,
+var demos = map[string](func(context.Context, *content.APIService, *merchantInfo)){
+	"products":           productDemo,
+	"datafeeds":          datafeedDemo,
+	"inventory":          inventoryDemo,
+	"productsBatch":      productsBatchDemo,
+	"accountstatuses":    accountstatusesDemo,
+	"productstatuses":    productstatusesDemo,
+	"primaryAccount":     primaryAccountDemo,
+	"multiClientAccount": multiClientAccountDemo,
 }
 
 func printDemos(w io.Writer) {
@@ -31,7 +32,7 @@ func printDemos(w io.Writer) {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s <merchant ID> <demo> ...\n\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s <demo> ...\n\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "All flags:\n\n")
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "\n")
@@ -42,9 +43,8 @@ func usage() {
 func main() {
 	flag.Usage = usage
 	flag.Parse()
-	if flag.NArg() == 0 {
-		usage()
-	}
+
+	readSamplesConfig()
 
 	// Set up random seed so we get different offer IDs
 	rand.Seed(time.Now().Unix())
@@ -54,13 +54,7 @@ func main() {
 	contentService, err := content.New(client)
 	check(err)
 
-	merchantID, err := strconv.ParseUint(flag.Arg(0), 10, 64)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Invalid merchant ID: %s\n", flag.Arg(0))
-		usage()
-	}
-
-	for _, d := range flag.Args()[1:] {
+	for _, d := range flag.Args() {
 		demo, ok := demos[d]
 		if !ok {
 			fmt.Fprintf(os.Stderr, "Invalid service: %s\n\n", d)
@@ -68,7 +62,7 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Printf("Running demo %s...\n", d)
-		demo(ctx, contentService, merchantID)
+		demo(ctx, contentService, &samplesConfig)
 		fmt.Printf("Finished running demo %s.\n", d)
 	}
 }

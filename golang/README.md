@@ -29,7 +29,8 @@ Before getting started, check the Getting Started section of the
 [Content API for Shopping documentation](https://developers.google.com/shopping-content/v2/quickstart).
 You may want to use
 [service accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
-instead to simplify the authentication flow.
+instead to simplify the authentication flow. These samples also support using
+[Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
 
 ## Running the Samples
 
@@ -37,17 +38,24 @@ We are assuming you've checked out the code and are reading this from a local
 directory. If not, check out the code to a local directory.  Also make sure the
 files are in your [GOPATH](https://github.com/golang/go/wiki/GOPATH).
 
+The Go samples share the location and format of configuration info with many of
+the other samples. You will need to create a directory called
+`.shopping-content-samples` in your home directory. You will also need a basic
+configuration file that includes your Merchant Center ID. The file
+`merchant-info.json` has a barebones configuration you can copy and adjust.
+
 1. Set up your desired authentication method.
 
    If you are using an OAuth2 client ID:
 
    * Download your [OAuth2 client credentials](console.developers.google.com/apis/credentials)
-     to `content-oauth2.json` in the root of the code directory.
+     to `content-oauth2.json` in the configuration directory mentioned above.
 
    If you are using a service account:
 
-    * Put the JSON file you downloaded when creating the service account in
-      the root of the code directory with the filename `content-service.json`.
+    * Put the JSON file you downloaded when creating the service account with
+      the filename `content-service.json` in the configuration directory
+      mentioned above.
 
 2. Compile all the sample code together directory:
 
@@ -55,13 +63,15 @@ files are in your [GOPATH](https://github.com/golang/go/wiki/GOPATH).
 
 3. Run the resulting binary to get an idea of its usage:
 
-        $ ./content-api-demo
+        $ ./content-api-demo -h
 
 4. Pick a demo (or demos) to run, for example:
 
-        $ ./content-api-demo <merchant ID> products inventory
+        $ ./content-api-demo products inventory
 
-   If using an OAuth2 client ID for the first time, the application will
-   open a browser automatically so you can agree to the OAuth2 access.
+   If using an OAuth2 client ID for the first time, the application will open a
+   browser automatically so you can agree to the OAuth2 access.  The access
+   token will be stored in your `merchant-info.json` configuration, so if you
+   have authentication issues, delete the `token` field and reauthenticate.
 
 5. Examine your shell output, be inspired and start hacking an amazing new app!
