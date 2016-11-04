@@ -50,9 +50,9 @@ abstract class BaseSample {
     }
 
     if (!$this->config) {
-      throw new Exception(sprintf('The config file at %s is not valid '
-          . 'JSON format. You can use the config.json file in the samples '
-          . 'root as a template.', $this->configFile));
+      throw new InvalidArgumentException(sprintf('The config file at %s is not '
+          . 'valid JSON format. You can use the config.json file in the '
+          . 'samples root as a template.', $this->configFile));
     }
 
     $client = new Google_Client();
@@ -66,6 +66,32 @@ abstract class BaseSample {
 }
 
   abstract public function run();
+
+  /**
+   * This function is used as a gate for methods that can only be run
+   * on multi-client accounts.
+   *
+   * @throws InvalidArgumentException if the config does not contain an MCA.
+   */
+  const MCA_MSG = 'This operation can only be run on multi-client accounts.';
+  public function mustBeMCA($msg = MCA_MSG) {
+    if(!$this->config->isMCA) {
+      throw new InvalidArgumentException($msg);
+    }
+  }
+
+  /**
+   * This function is used as a gate for methods that cannot be run
+   * on multi-client accounts.
+   *
+   * @throws InvalidArgumentException if the config contains an MCA.
+   */
+  const NON_MCA_MSG = 'This operation cannot be run on multi-client accounts.';
+  public function mustNotBeMCA($msg = NON_MCA_MSG) {
+    if($this->config->isMCA) {
+      throw new InvalidArgumentException($msg);
+    }
+  }
 
   /**
    * Attempts to find the home directory of the user running the PHP script.
