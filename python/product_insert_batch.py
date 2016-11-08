@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,52 +19,27 @@
 import sys
 
 from oauth2client import client
+import product_sample
 import shopping_common
 
-# These constants define the identifiers for all of our example products/feeds.
-#
-# The products will be sold online.
-CHANNEL = 'online'
-# The product details are provided in English.
-CONTENT_LANGUAGE = 'en'
-# The products are sold in the USA.
-TARGET_COUNTRY = 'US'
 # Number of products to insert.
 BATCH_SIZE = 5
-# Root URL of your site, claimed in merchant center
-ROOT_URL = 'www.example.com'
 
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = shopping_common.init(argv, __doc__, __file__)
-  merchant_id = flags.merchant_id
+  service, config, _ = shopping_common.init(argv, __doc__)
+  merchant_id = config['merchantId']
 
   batch = {'entries': []}
 
   for i in range(BATCH_SIZE):
     offer_id = 'book#%s' % shopping_common.get_unique_id()
-    product = {
-        'offerId': offer_id,
-        'title': 'This is book number %d' % (i,),
-        'description': 'Sample book',
-        'link': 'http://%s/book.html' % ROOT_URL,
-        'imageLink': 'http://my-book-shop.com/book.jpg',
-        'contentLanguage': CONTENT_LANGUAGE,
-        'targetCountry': TARGET_COUNTRY,
-        'channel': CHANNEL,
-        'availability': 'in stock',
-        'condition': 'new',
-        'googleProductCategory': 'Media > Books',
-        'gtin': '9780007350896',
-        'price': {'value': '%d.50' % (i,), 'currency': 'USD'},
-        'shipping': [{
-            'country': 'US',
-            'service': 'Standard shipping',
-            'price': {'value': '0.99', 'currency': 'USD'}
-        }],
-        'shippingWeight': {'value': '200', 'unit': 'grams'}
-    }
+    product = product_sample.create_product_sample(
+        config,
+        offer_id,
+        title='This is book number %d' % (i,),
+        price={'value': '%d.50' % (i,), 'currency': 'USD'})
     # Add product to the batch.
     batch['entries'].append({'batchId': i,
                              'merchantId': merchant_id,

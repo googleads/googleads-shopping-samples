@@ -23,7 +23,8 @@ Before getting started, check the Getting Started section of the
 [Content API for Shopping documentation](https://developers.google.com/shopping-content/v2/quickstart).
 You may want to use
 [service accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
-instead to simplify the authentication flow.
+instead to simplify the authentication flow. These samples also support using
+[Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
 
 ## Running the Samples
 
@@ -44,7 +45,7 @@ directory. If not, check out the code to a local directory.
 
 2. Start up a sample:
 
-        $ python product_list.py <merchant ID>
+        $ python product_list.py
 
    If using an OAuth2 client ID for the first time, the application will
    open a browser automatically so you can agree to the OAuth2 access.

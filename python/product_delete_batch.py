@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,19 +30,19 @@ argparser.add_argument(
     help='The IDs of the products to delete.')
 
 
-def product_deleted(unused_request_id, unused_response, exception):
+def product_deleted(request_id, unused_response, exception):
   if exception is not None:
     # Do something with the exception.
     print 'There was an error: ' + str(exception)
   else:
-    print 'Product was deleted.'
+    print 'Requested product %s was deleted.' % request_id
 
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = shopping_common.init(
-      argv, 'content', 'v2', parents=[argparser])
-  merchant_id = flags.merchant_id
+  service, config, flags = shopping_common.init(
+      argv, __doc__, parents=[argparser])
+  merchant_id = config['merchantId']
   product_ids = flags.product_ids
 
   batch = BatchHttpRequest(callback=product_deleted)

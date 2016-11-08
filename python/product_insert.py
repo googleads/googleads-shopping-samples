@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,46 +19,18 @@
 import sys
 
 from oauth2client import client
+import product_sample
 import shopping_common
-
-# These constants define the identifiers for all of our example products/feeds.
-#
-# The products will be sold online.
-CHANNEL = 'online'
-# The product details are provided in English.
-CONTENT_LANGUAGE = 'en'
-# The products are sold in the USA.
-TARGET_COUNTRY = 'US'
 
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = shopping_common.init(argv, __doc__, __file__)
-  merchant_id = flags.merchant_id
+  service, config, _ = shopping_common.init(argv, __doc__)
+  merchant_id = config['merchantId']
 
   try:
     offer_id = 'book#%s' % shopping_common.get_unique_id()
-    product = {
-        'offerId': offer_id,
-        'title': 'A Tale of Two Cities',
-        'description': 'A classic novel about the French Revolution',
-        'link': 'http://my-book-shop.com/tale-of-two-cities.html',
-        'imageLink': 'http://my-book-shop.com/tale-of-two-cities.jpg',
-        'contentLanguage': CONTENT_LANGUAGE,
-        'targetCountry': TARGET_COUNTRY,
-        'channel': CHANNEL,
-        'availability': 'in stock',
-        'condition': 'new',
-        'googleProductCategory': 'Media > Books',
-        'gtin': '9780007350896',
-        'price': {'value': '2.50', 'currency': 'USD'},
-        'shipping': [{
-            'country': 'US',
-            'service': 'Standard shipping',
-            'price': {'value': '0.99', 'currency': 'USD'}
-        }],
-        'shippingWeight': {'value': '200', 'unit': 'grams'}
-    }
+    product = product_sample.create_product_sample(config, offer_id)
 
     # Add product.
     request = service.products().insert(merchantId=merchant_id,

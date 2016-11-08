@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Gets all accounts on the specified multi-client account."""
+"""Gets the status of all products on the specified account."""
 
 import sys
 
@@ -29,23 +29,34 @@ def main(argv):
   # Authenticate and construct service.
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
-  shopping_common.check_mca(config, True)
+  shopping_common.check_mca(config, False)
 
   try:
-    request = service.accounts().list(
+    request = service.productstatuses().list(
         merchantId=merchant_id, maxResults=MAX_PAGE_SIZE)
 
     while request is not None:
       result = request.execute()
       if 'resources' in result:
-        accounts = result['resources']
-        for account in accounts:
-          print ('Account "%s" with name "%s" was found.' %
-                 (account['id'], account['name']))
+        statuses = result['resources']
+        for status in statuses:
+          print ('- Product "%s" with title "%s":' %
+                 (status['productId'], status['title']))
+          if not status['dataQualityIssues']:
+            print '  No data quality issues.'
+          else:
+            print('  Found %d data quality issues:' %
+                  len(status['dataQualityIssues']))
+            for issue in status['dataQualityIssues']:
+              if 'detail' in issue:
+                print('  - (%s) [%s] %s' %
+                      (issue['severity'], issue['id'], issue['detail']))
+              else:
+                print '  - (%s) [%s]' % (issue['severity'], issue['id'])
 
-        request = service.accounts().list_next(request, result)
+        request = service.productstatuses().list_next(request, result)
       else:
-        print 'No accounts were found.'
+        print 'No products were found.'
         break
 
   except client.AccessTokenRefreshError:

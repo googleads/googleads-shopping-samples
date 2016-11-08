@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,10 +40,11 @@ def account_deleted(unused_request_id, unused_response, exception):
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = shopping_common.init(
-      argv, __doc__, __file__, parents=[argparser])
-  merchant_id = flags.merchant_id
+  service, config, flags = shopping_common.init(
+      argv, __doc__, parents=[argparser])
+  merchant_id = config['merchantId']
   account_ids = flags.account_ids
+  shopping_common.check_mca(config, True)
 
   batch = BatchHttpRequest(callback=account_deleted)
 

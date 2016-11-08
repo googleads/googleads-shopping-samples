@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,25 +16,22 @@
 
 """Removes a user from the primary account."""
 
-import argparse
 import sys
 
 from oauth2client import client
 import shopping_common
 
-# Declare command-line flags.
-argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'email',
-    help='The email of the user to remove from the primary account.')
-
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = shopping_common.init(
-      argv, __doc__, __file__, parents=[argparser])
-  merchant_id = flags.merchant_id
-  email = flags.email
+  service, config, _ = shopping_common.init(argv, __doc__)
+  merchant_id = config['merchantId']
+  email = None
+  if 'accountSampleUser' in config and config['accountSampleUser']:
+    email = config['accountSampleUser']
+  else:
+    print 'Must specify the user email to remove in the samples configuration.'
+    sys.exit(1)
 
   try:
     # First we need to retrieve the existing set of users.

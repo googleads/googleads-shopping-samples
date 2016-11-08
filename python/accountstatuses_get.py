@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Deletes a product from the specified account."""
+"""Gets the status of the specified account."""
 
 import argparse
 import sys
@@ -25,8 +25,9 @@ import shopping_common
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
-    'product_id',
-    help='The ID of the product to delete.')
+    'account_id',
+    type=int,
+    help='The ID of the account for which to get information.')
 
 
 def main(argv):
@@ -34,13 +35,31 @@ def main(argv):
   service, config, flags = shopping_common.init(
       argv, __doc__, parents=[argparser])
   merchant_id = config['merchantId']
-  product_id = flags.product_id
+  account_id = flags.account_id
 
-  request = service.products().delete(merchantId=merchant_id,
-                                      productId=product_id)
+  if merchant_id != account_id:
+    shopping_common.check_mca(
+        config, True,
+        msg = 'Non-multi-client accounts can only get their own information.')
+
   try:
-    request.execute()
-    print 'Product was deleted.'
+    status = service.accountstatuses().get(
+        merchantId=merchant_id, accountId=merchant_id).execute()
+    print 'Account %s:' % status['accountId']
+    if 'dataQualityIssues' not in status:
+      print '- No data quality issues.'
+    else:
+      print('- Found %d data quality issues:' %
+            len(status['dataQualityIssues']))
+      for issue in status['dataQualityIssues']:
+        print '  - (%s) [%s]' % (issue['severity'], issue['id'])
+        if not issue['exampleItems']:
+          print '  - No example items.'
+        else:
+          print('  - Have %d examples from %d affected items:' %
+                (len(issue['exampleItems']), issue['numItems']))
+          for example in issue['exampleItems']:
+            print '    - %s: %s' % (example['itemId'], example['title'])
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired, please re-run the '
            'application to re-authorize')

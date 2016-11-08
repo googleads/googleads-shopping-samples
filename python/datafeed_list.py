@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2014 Google Inc. All Rights Reserved.
+# Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import shopping_common
 
 def main(argv):
   # Authenticate and construct service.
-  service, flags = shopping_common.init(argv, __doc__, __file__)
-  merchant_id = flags.merchant_id
+  service, config, _ = shopping_common.init(argv, __doc__)
+  merchant_id = config['merchantId']
 
   try:
     request = service.datafeeds().list(merchantId=merchant_id)

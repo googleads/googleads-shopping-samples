@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Gets all accounts on the specified multi-client account."""
+"""Gets the status of all subaccounts for the specified account."""
 
 import sys
 
@@ -32,18 +32,30 @@ def main(argv):
   shopping_common.check_mca(config, True)
 
   try:
-    request = service.accounts().list(
+    request = service.accountstatuses().list(
         merchantId=merchant_id, maxResults=MAX_PAGE_SIZE)
 
     while request is not None:
       result = request.execute()
       if 'resources' in result:
-        accounts = result['resources']
-        for account in accounts:
-          print ('Account "%s" with name "%s" was found.' %
-                 (account['id'], account['name']))
-
-        request = service.accounts().list_next(request, result)
+        statuses = result['resources']
+        for status in statuses:
+          print 'Account %s:' % status['accountId']
+          if 'dataQualityIssues' not in status:
+            print '- No data quality issues.'
+          else:
+            print('- Found %d data quality issues:' %
+                  len(status['dataQualityIssues']))
+            for issue in status['dataQualityIssues']:
+              print '  - (%s) [%s]' % (issue['severity'], issue['id'])
+              if not issue['exampleItems']:
+                print '  - No example items.'
+              else:
+                print('  - Have %d examples from %d affected items:' %
+                      (len(issue['exampleItems']), issue['numItems']))
+                for example in issue['exampleItems']:
+                  print '    - %s: %s' % (example['itemId'], example['title'])
+        request = service.accountstatuses().list_next(request, result)
       else:
         print 'No accounts were found.'
         break
