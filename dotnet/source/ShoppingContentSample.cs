@@ -34,6 +34,10 @@ namespace ContentShoppingSamples
             Config config = Config.Load();
 
             var initializer = Authenticator.authenticate(config);
+            if(initializer == null) {
+                Console.WriteLine("Failed to authenticate, so exiting.");
+                return;
+            }
 
             // Create the service.
             var service = new ShoppingContentService(new BaseClientService.Initializer()
@@ -43,20 +47,27 @@ namespace ContentShoppingSamples
             });
 
             AccountsSample accountsSample = new AccountsSample(service);
+            AccountstatusesSample accountstatusesSample =
+                new AccountstatusesSample(service, MaxListPageSize);
             DatafeedsSample datafeedsSample = new DatafeedsSample(service);
             ProductsSample productsSample = new ProductsSample(service, MaxListPageSize);
+            ProductstatusesSample productstatusesSample =
+                new ProductstatusesSample(service, MaxListPageSize);
             MultiClientAccountSample multiClientAccountSample = new MultiClientAccountSample(service);
 
             if (!config.IsMCA)
             {
                 // Non-MCA calls
                 productsSample.RunCalls(config.MerchantId, config.WebsiteURL);
+                productstatusesSample.RunCalls(config.MerchantId);
                 datafeedsSample.RunCalls(config.MerchantId);
+                accountstatusesSample.RunCalls(config.MerchantId);
                 accountsSample.RunCalls(config.MerchantId, config.AccountSampleUser, config.AccountSampleAdWordsCID);
             }
             else
             {
                 // MCA calls
+                accountstatusesSample.RunMultiCalls(config.MerchantId);
                 multiClientAccountSample.RunCalls(config.MerchantId);
             }
         }

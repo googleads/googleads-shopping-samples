@@ -53,6 +53,12 @@
     <Compile Include="..\source\Authenticator.cs">
       <Link>Authenticator.cs</Link>
     </Compile>
+    <Compile Include="..\source\AccountstatusesSample.cs">
+      <Link>AccountstatusesSample.cs</Link>
+    </Compile>
+    <Compile Include="..\source\ProductstatusesSample.cs">
+      <Link>ProductstatusesSample.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
