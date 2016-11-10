@@ -12,6 +12,12 @@ import java.util.Set;
 
 /**
  * Implementation of DataStoreFactory backed by the samples configuration file.
+ * 
+ * <p>Since we only plan to hand this type of {@link DataStoreFactory} over to a
+ * {@link com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow}
+ * object in the {@link Authenticator} class, we make the inner class that extends
+ * {@link DataStore} specific to the {@link StoredCredential} class, and cast it to the expected
+ * generic type in the {@link #getDataStore} method.
  */
 public class ConfigDataStoreFactory implements DataStoreFactory {
   private Config config;
@@ -25,9 +31,6 @@ public class ConfigDataStoreFactory implements DataStoreFactory {
     return (DataStore<V>)new ConfigDataStore(id, this.config);
   }
 
-  /* Despite the type annotation, this DataStore expects to only be handed StoredCredentials
-   * from the Google oauth2 library. Note the unchecked casts inside.
-   */
   private class ConfigDataStore extends AbstractDataStore<StoredCredential>
       implements DataStore<StoredCredential> {
     private final Config config;
