@@ -18,7 +18,7 @@ public class ProductstatusGetSample extends BaseSample {
   public void execute() throws IOException {
     try {
       ProductStatus productStatus = content.productstatuses()
-          .get(merchantId, "online:en:GB:book123")
+          .get(this.config.getMerchantId(), "online:en:GB:book123")
           .execute();
       System.out.printf("%s %s\n", productStatus.getProductId(), productStatus.getTitle());
       for (ProductStatusDestinationStatus status : productStatus.getDestinationStatuses()) {
@@ -30,7 +30,7 @@ public class ProductstatusGetSample extends BaseSample {
         System.out.println("The item was not found. Try running "
             + "shopping.v2.samples.products.ProductInsertSample first.");
       } else {
-        throw e;
+        checkGoogleJsonResponseException(e);
       }
     }
   }

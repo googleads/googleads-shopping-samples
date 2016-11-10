@@ -1,6 +1,6 @@
 package shopping.v2.samples.products;
 
-import com.google.api.services.content.ShoppingContent.Products.List;
+import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductsListResponse;
 
@@ -16,18 +16,22 @@ public class ProductsListSample extends BaseSample {
 
   @Override
   public void execute() throws IOException {
-    List productsList = content.products().list(merchantId);
-    ProductsListResponse page = productsList.execute();
-    while ((page.getResources() != null) && !page.getResources().isEmpty()) {
+    checkNonMCA();
+
+    ShoppingContent.Products.List productsList =
+        content.products().list(this.config.getMerchantId());
+    do {
+      ProductsListResponse page = productsList.execute();
       for (Product product : page.getResources()) {
-        System.out.printf("%s %s%n", product.getId(), product.getTitle());
+        System.out.printf("- %s %s%n", product.getId(), product.getTitle());
+
+        printWarnings(product.getWarnings(), "  ");
       }
       if (page.getNextPageToken() == null) {
         break;
       }
       productsList.setPageToken(page.getNextPageToken());
-      page = productsList.execute();
-    }
+    } while (true);
   }
 
   public static void main(String[] args) throws IOException {

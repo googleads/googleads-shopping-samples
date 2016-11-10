@@ -1,5 +1,6 @@
 package shopping.v2.samples.products;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import java.io.IOException;
 import shopping.v2.samples.BaseSample;
 
@@ -12,11 +13,16 @@ public class ProductDeleteSample extends BaseSample {
 
   @Override
   public void execute() throws IOException {
+    checkNonMCA();
     // The shopping.v2.samples.products.ProductInsertSample creates a product with ID
     // online:en:GB:book123, so that is the ID we will delete here.
-    content.products()
-        .delete(merchantId, "online:en:GB:book123")
-        .execute();
+    try {
+      content.products()
+          .delete(this.config.getMerchantId(), "online:en:GB:book123")
+          .execute();
+    } catch (GoogleJsonResponseException e) {
+      checkGoogleJsonResponseException(e);
+    }
   }
 
   public static void main(String[] args) throws IOException {

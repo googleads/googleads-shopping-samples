@@ -21,15 +21,17 @@ public class ProductsBatchInsertSample extends BaseSample {
 
   @Override
   public void execute() throws IOException {
+    checkNonMCA();
+
     List<ProductsCustomBatchRequestEntry> productsBatchRequestEntries =
         new ArrayList<ProductsCustomBatchRequestEntry>();
     ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
     for (int i = 0; i < PRODUCT_COUNT; i++) {
       // Create a product with ID 'online:en:GB:book{i}'
-      Product product = ExampleProductFactory.create("online", "en", "GB", "book" + i);
+      Product product = ExampleProductFactory.create(config, "online", "en", "GB", "book" + i);
       ProductsCustomBatchRequestEntry entry = new ProductsCustomBatchRequestEntry();
       entry.setBatchId((long) i);
-      entry.setMerchantId(merchantId);
+      entry.setMerchantId(this.config.getMerchantId());
       entry.setProduct(product);
       entry.setMethod("insert");
       productsBatchRequestEntries.add(entry);
@@ -39,9 +41,15 @@ public class ProductsBatchInsertSample extends BaseSample {
         content.products().custombatch(batchRequest).execute();
 
     for (ProductsCustomBatchResponseEntry entry : batchResponse.getEntries()) {
-      Product product = entry.getProduct();
-      System.out.printf("Inserted %s with %d warnings%n", product.getOfferId(),
-          product.getWarnings().size());
+      if (entry.getErrors() != null) {
+        System.out.printf("Batch entry %d failed%n", entry.getBatchId());
+        printErrors(entry.getErrors().getErrors());
+      } else {
+        Product product = entry.getProduct();
+        System.out.printf("Batch entry %d succesfully inserted %s%n", entry.getBatchId(),
+            product.getOfferId());
+        printWarnings(product.getWarnings());
+      }
     }
   }
 

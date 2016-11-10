@@ -2,34 +2,36 @@ package shopping.v2.samples;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.json.GoogleJsonError;
+import com.google.api.client.googleapis.json.GoogleJsonError.ErrorInfo;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.content.ShoppingContent;
 
+import com.google.api.services.content.model.Error;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.util.List;
 
 /**
  * Base class for the API samples.
  */
 public abstract class BaseSample {
-  protected BigInteger merchantId;
   protected ShoppingContent content;
 
   private final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
   private final Credential credential;
   private final HttpTransport httpTransport;
-  private final Config config;
+  protected final Config config;
   private final Authenticator authenticator;
 
   public BaseSample() throws IOException {
     httpTransport = createHttpTransport();
+    config = loadConfig();
     authenticator = loadAuthentication();
     credential = createCredential();
-    config = loadConfig();
-    merchantId = config.getMerchantId();
     content = createContentService();
   }
 
@@ -58,7 +60,66 @@ public abstract class BaseSample {
   }
 
   protected Authenticator loadAuthentication() throws IOException {
-    return new Authenticator(httpTransport, jsonFactory);
+    return new Authenticator(httpTransport, jsonFactory, config);
+  }
+
+  protected void checkGoogleJsonResponseException(GoogleJsonResponseException e)
+      throws GoogleJsonResponseException {
+    GoogleJsonError err = e.getDetails();
+    // err can be null if response is not JSON
+    if (err != null) {
+      // For errors in the 4xx range, print out the errors and continue normally.
+     if (err.getCode() >= 400 && err.getCode() < 500) {
+       System.out.printf("There are %d error(s)%n", err.getErrors().size());
+       for (ErrorInfo info : err.getErrors()) {
+         System.out.printf("- [%s] %s%n", info.getReason(), info.getMessage());
+        }
+      } else {
+        throw e;
+      }
+    } else {
+      throw e;
+    }
+  }
+
+  protected void checkMCA() {
+    if (!config.getIsMCA()) {
+      throw new IllegalStateException(
+          "Sample requires the authenticating account to be a multi-client account");
+    }
+  }
+
+  protected void checkNonMCA() {
+    if (config.getIsMCA()) {
+      throw new IllegalStateException(
+          "Sample requires the authenticating account to be a non-multi-client account");
+    }
+  }
+
+  protected void printWarnings(List<Error> warnings) {
+    printWarnings(warnings, "");
+  }
+
+  protected void printWarnings(List<Error> warnings, String prefix) {
+    printErrors(warnings, prefix, "warning");
+  }
+
+  protected void printErrors(List<Error> errors) {
+    printErrors(errors, "");
+  }
+
+  protected void printErrors(List<Error> errors, String prefix) {
+    printErrors(errors, prefix, "error");
+  }
+
+  protected void printErrors(List<Error> errors, String prefix, String type) {
+    if (errors == null) {
+      return;
+    }
+    System.out.printf(prefix + "There are %d %s(s):%n", errors.size(), type);
+    for (Error err : errors) {
+      System.out.printf(prefix + "- [%s] %s%n", err.getReason(), err.getMessage());
+    }
   }
 
   public abstract void execute() throws IOException;

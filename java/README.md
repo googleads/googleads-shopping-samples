@@ -19,7 +19,8 @@ Before getting started, check the Getting Started section of the
 [Content API for Shopping documentation](https://developers.google.com/shopping-content/v2/quickstart).
 You may want to use
 [service accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
-instead to simplify the authentication flow.
+instead to simplify the authentication flow. These samples also support using
+[Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
 
 ## Running the Samples
 
@@ -45,12 +46,11 @@ project appropriately for access to the Google APIs Client Library for Java.
 
 3. Take the example `merchant-info.json` from the project root, copy
    it into `$(HOME)/.shopping-content-samples`, and then change its
-   contents to include your merchant ID and an application name.
+   contents to match your Merchant Center account information.
 
 4. Build and run any of the included samples.
 
-   You will need to enter your Google login in the terminal.
-   If using an OAuth2 client ID for the first time, the application will then
+   If using an OAuth2 client ID for the first time, the application will
    open a browser so you can authorize it to access your Merchant Center
    account.
 

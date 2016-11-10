@@ -5,21 +5,27 @@ import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductShipping;
 
 import java.util.ArrayList;
+import shopping.v2.samples.Config;
 
 /**
  * Factory for creating Products to be inserted by the ProductInsert and ProductBatchInsert
  * samples.
  */
 public class ExampleProductFactory {
-  public static Product create(String channel, String contentLanguage, String targetCountry,
-      String offerId) {
+  public static Product create(Config config, String channel, String contentLanguage,
+      String targetCountry, String offerId) {
     Product product = new Product();
+    String websiteUrl = config.getWebsiteUrl();
+
+    if (config.getWebsiteUrl() == null) {
+      websiteUrl = "http://my-book-shop.com";
+    }
 
     product.setOfferId(offerId);
     product.setTitle("A Tale of Two Cities");
     product.setDescription("A classic novel about the French Revolution");
-    product.setLink("http://my-book-shop.com/tale-of-two-cities.html");
-    product.setImageLink("http://my-book-shop.com/tale-of-two-cities.jpg");
+    product.setLink(websiteUrl + "/tale-of-two-cities.html");
+    product.setImageLink(websiteUrl + "/tale-of-two-cities.jpg");
     product.setChannel(channel);
     product.setContentLanguage(contentLanguage);
     product.setTargetCountry(targetCountry);
