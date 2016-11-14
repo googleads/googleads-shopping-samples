@@ -1,9 +1,0 @@
-{
-  "merchantId": 0,
-  "applicationName": "<YOUR APPLICATION NAME HERE>",
-  "emailAddress": "<YOUR GOOGLE LOGIN HERE>",
-  "websiteUrl": "<YOUR CLAIMED WEBSITE HERE>",
-  "isMCA": false,
-  "accountSampleUser": "",
-  "accountSampleAdWordsCID": 0
-}

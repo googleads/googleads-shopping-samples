@@ -11,48 +11,26 @@ the Google Content API for Shopping.
 Please make sure that you're running Ruby 2.0+ and you've installed the [Google
 APIs Client Library for Ruby](https://developers.google.com/api-client-library/ruby/start/installation).
 
-## Setup Authentication
+## Setup Authentication and Sample Configuration
 
-Before getting started, check the Getting Started section of the
-[Content API for Shopping documentation](https://developers.google.com/shopping-content/v2/quickstart).
-You may want to use
-[service accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
-instead to simplify the authentication flow. These samples also support using
-[Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
+If you have not already done so, please read the top-level `README` to discover
+how to set up both authentication and the common sample configuration.  The rest
+of this document assumes you have performed both tasks.
 
 ## Running the Samples
 
 We are assuming you've checked out the code and are reading this from a local
 directory. If not, check out the code to a local directory.
 
-1. Create the directory `.shopping-content-samples` inside your home
-   directory.  The configuration and authentication credentials for the
-   samples will be stored there.
-
-   Also copy the `merchant-info.json` file to that new directory and edit
-   it to include your merchant ID (`merchantId`) and Google login
-   (`emailAddress`).  If the merchant ID belongs to a multi-client
-   account, set `isMCA` to `true`.
-
-2. Set up your desired authentication method.
-
-   If you are using an OAuth2 client ID:
-
-   * Download your [OAuth2 client credentials](https://console.developers.google.com/apis/credentials)
-     to `content-oauth2.json` in the configuration directory described above.
-
-   If you are using a service account:
-
-    * Put the JSON file you downloaded when creating the service account in
-      with the filename `content-service.json` in the configuration directory
-      described above.
-
-3. Start up a sample:
+1. Start up a sample:
 
         $ ruby product/list_products.rb
 
    If using an OAuth2 client ID for the first time, you will need to access
-   the authorization URL printed on the terminal in your browser and paste
-   the resulting refresh token into the terminal.
+   the authorization URL printed on the terminal in your browser, authorize
+   the access, and then paste the resulting code back into the terminal.
+   The resulting access token will be stored in your `merchant-info.json`
+   configuration, so if you have authentication issues, delete the `token`
+   field and reauthenticate.
 
-4. Examine your shell output, be inspired and start hacking an amazing new app!
+2. Examine your shell output, be inspired and start hacking an amazing new app!
