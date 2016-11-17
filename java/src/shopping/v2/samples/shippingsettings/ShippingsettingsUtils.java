@@ -9,7 +9,7 @@ public class ShippingsettingsUtils {
   // Currently, this only prints a partial view of the resource, but it's enough to verify
   // the results of get()ing/update()ing.
   public static void printShippingSettings(ShippingSettings settings) {
-    System.out.printf("Tax information for account %d:\n", settings.getAccountId());
+    System.out.printf("Shipping information for account %d:\n", settings.getAccountId());
     if (settings.getPostalCodeGroups() == null || settings.getPostalCodeGroups().isEmpty()) {
       System.out.println("- No postal code groups.");
     } else {

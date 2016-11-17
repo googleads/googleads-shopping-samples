@@ -20,16 +20,8 @@ public class AccountInsertSample extends BaseSample {
     checkMCA();
 
     try {
-      AccountUser user = new AccountUser();
-      user.setAdmin(true);
-      user.setEmailAddress(config.getEmailAddress());
-
-      List<AccountUser> users = new ArrayList<AccountUser>();
-      users.add(user);
-
       Account account = new Account();
       account.setName(AccountUtils.SAMPLE_ACCOUNT_NAME);
-      account.setUsers(users);
 
       System.out.println("Inserting new account.");
 
