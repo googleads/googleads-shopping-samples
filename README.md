@@ -68,7 +68,7 @@ instead to simplify the authentication flow. These samples also support using
     |---------------------------|--------|------------------------------------------------|
     | `merchantId`              | number | The Merchant Center ID to run samples against. |
     | `applicationName`         | string | The name of the application.                   |
-    | `emailAddress`            | string | What email address should be used for authentication with an OAuth2 client. |
+    | `emailAddress`            | string | What email address should be used for authentication. Setting this is required only if using OAuth2 client credentials. |
     | `websiteUrl`              | string | The URL (without trailing slash) associated with the Merchant Center account. |
     | `accountSampleUser`       | string | If non-empty, the email address for the user to add/remove in samples for the `Accounts` service. |
     | `accountSampleAdWordsCID` | number | If non-zero, the AdWords Customer ID to link/unlink in samples for the `Accounts` service. |
