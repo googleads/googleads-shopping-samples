@@ -86,3 +86,9 @@ your authentication credentials, it's time to build and run any of the included
 samples.  As mentioned before, there are language-specific instructions in
 the `README`s located in each language subdirectory.
 
+## Possible Issues
+
+* If you haven't set up tax settings on your account, you may get an error
+  when running certain samples. If you receive a "missing tax settings" error,
+  set your tax settings in the Merchant Center before trying these samples.
+  Selecting the "Don't charge taxes in the United States" setting is sufficient.
