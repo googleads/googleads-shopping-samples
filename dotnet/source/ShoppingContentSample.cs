@@ -34,25 +34,28 @@ namespace ContentShoppingSamples
             Config config = Config.Load();
 
             var initializer = Authenticator.authenticate(config);
-            if(initializer == null) {
+            if (initializer == null)
+            {
                 Console.WriteLine("Failed to authenticate, so exiting.");
                 return;
             }
 
             // Create the service.
             var service = new ShoppingContentService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = initializer,
-                ApplicationName = config.ApplicationName,
-            });
+                {
+                    HttpClientInitializer = initializer,
+                    ApplicationName = config.ApplicationName,
+                });
 
             AccountsSample accountsSample = new AccountsSample(service);
             AccountstatusesSample accountstatusesSample =
                 new AccountstatusesSample(service, MaxListPageSize);
+            AccounttaxSample accounttaxSample = new AccounttaxSample(service);
             DatafeedsSample datafeedsSample = new DatafeedsSample(service);
             ProductsSample productsSample = new ProductsSample(service, MaxListPageSize);
             ProductstatusesSample productstatusesSample =
                 new ProductstatusesSample(service, MaxListPageSize);
+            ShippingsettingsSample shippingsettingsSample = new ShippingsettingsSample(service);
             MultiClientAccountSample multiClientAccountSample = new MultiClientAccountSample(service);
 
             if (!config.IsMCA)
@@ -63,6 +66,8 @@ namespace ContentShoppingSamples
                 datafeedsSample.RunCalls(config.MerchantId);
                 accountstatusesSample.RunCalls(config.MerchantId);
                 accountsSample.RunCalls(config.MerchantId, config.AccountSampleUser, config.AccountSampleAdWordsCID);
+                accounttaxSample.RunCalls(config.MerchantId);
+                shippingsettingsSample.RunCalls(config.MerchantId);
             }
             else
             {

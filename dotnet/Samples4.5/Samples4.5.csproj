@@ -56,6 +56,12 @@
     <Compile Include="..\source\ProductstatusesSample.cs">
       <Link>ProductstatusesSample.cs</Link>
     </Compile>
+    <Compile Include="..\source\AccounttaxSample.cs">
+      <Link>AccounttaxSample.cs</Link>
+    </Compile>
+    <Compile Include="..\source\ShippingsettingsSample.cs">
+      <Link>ShippingsettingsSample.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
