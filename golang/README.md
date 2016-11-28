@@ -19,9 +19,11 @@ interfacing with Google APIs:
         $ go get google.golang.org/api/content/v2
 
 This code also uses the [browser](https://github.com/pkg/browser) package
-to open the authentication URL in your browser automatically:
+to open the authentication URL in your browser automatically and the
+support package for Google's protocol buffers:
 
         $ go get github.com/pkg/browser
+        $ go get github.com/golang/protobuf
 
 ## Setup Authentication and Sample Configuration
 

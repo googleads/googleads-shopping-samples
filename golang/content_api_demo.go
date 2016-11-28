@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"os"
 	"time"
@@ -21,6 +22,8 @@ var demos = map[string](func(context.Context, *content.APIService, *merchantInfo
 	"productstatuses":    productstatusesDemo,
 	"primaryAccount":     primaryAccountDemo,
 	"multiClientAccount": multiClientAccountDemo,
+	"shippingSettings":   shippingSettingsDemo,
+	"accountTax":         accountTaxDemo,
 }
 
 func printDemos(w io.Writer) {
@@ -52,7 +55,9 @@ func main() {
 	ctx := context.Background()
 	client := authWithGoogle(ctx)
 	contentService, err := content.New(client)
-	check(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	for _, d := range flag.Args() {
 		demo, ok := demos[d]

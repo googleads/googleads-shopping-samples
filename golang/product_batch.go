@@ -40,7 +40,9 @@ func productsBatchDemo(ctx context.Context, service *content.APIService, config 
 	}
 	insertCall := products.Custombatch(&insertBatch)
 	responses, err := insertCall.Do()
-	checkAPI(err, "Batch call for insertion failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Batch call for insertion failed")
+	}
 	fmt.Printf("done.\n")
 	var productIDs = make([]string, len(productsToSend))
 	for n, resp := range responses.Entries {
@@ -59,8 +61,9 @@ func productsBatchDemo(ctx context.Context, service *content.APIService, config 
 
 	fmt.Printf("Listing products:\n")
 	listCall := products.List(config.MerchantID)
-	err = listCall.Pages(ctx, printProductsPage)
-	checkAPI(err, "Listing products failed")
+	if err := listCall.Pages(ctx, printProductsPage); err != nil {
+		dumpAPIErrorAndStop(err, "Listing products failed")
+	}
 	fmt.Printf("\n")
 
 	fmt.Printf("Deleting %d products... ", len(productsToSend))
@@ -80,7 +83,9 @@ func productsBatchDemo(ctx context.Context, service *content.APIService, config 
 	}
 	deleteCall := products.Custombatch(&deleteBatch)
 	responses, err = deleteCall.Do()
-	checkAPI(err, "Batch call for deletion failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Batch call for deletion failed")
+	}
 	fmt.Printf("done.\n")
 	for _, resp := range responses.Entries {
 		if resp.Errors != nil {

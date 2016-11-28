@@ -20,7 +20,9 @@ import (
 // user's home directory.
 var configPath = func() string {
 	usr, err := user.Current()
-	check(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return path.Join(usr.HomeDir, ".shopping-content-samples")
 }()
 
@@ -43,39 +45,35 @@ var samplesConfigFile = path.Join(configPath, "merchant-info.json")
 func readSamplesConfig() {
 	jsonBlob, err := ioutil.ReadFile(samplesConfigFile)
 	if err != nil {
-		check(fmt.Errorf("failed to decode JSON file %s: %v", samplesConfigFile, err))
+		log.Fatalf("failed to decode JSON file %s: %v", samplesConfigFile, err)
 	}
-	err = json.Unmarshal(jsonBlob, &samplesConfig)
-	check(err)
+	if err := json.Unmarshal(jsonBlob, &samplesConfig); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Write the config to merchant-info.json. (Mostly used to store refresh token.)
 func writeSamplesConfig() {
 	jsonBlob, err := json.MarshalIndent(samplesConfig, "", "  ")
-	check(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 	err = ioutil.WriteFile(samplesConfigFile, jsonBlob, 0660)
-	check(err)
-}
-
-// Simplify error handling for most non-API error cases.
-func check(e error) {
-	if e != nil {
-		log.Fatal(e)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
 // For handling errors from the API:
-func checkAPI(e error, prefix string) {
-	if e != nil {
-		gError, ok := e.(*googleapi.Error)
-		if ok {
-			fmt.Fprintf(os.Stderr, "\n\n%s:\nError %d: %s\n\n",
-				prefix, gError.Code, gError.Message)
-			log.Fatalln("Error from API, halting demos")
-		} else {
-			fmt.Fprintf(os.Stderr, "Non-API error (type %T) occurred.\n", e)
-			log.Fatal(e)
-		}
+func dumpAPIErrorAndStop(e error, prefix string) {
+	gError, ok := e.(*googleapi.Error)
+	if ok {
+		fmt.Fprintf(os.Stderr, "\n\n%s:\nError %d: %s\n\n",
+			prefix, gError.Code, gError.Message)
+		log.Fatalln("Error from API, halting demos")
+	} else {
+		fmt.Fprintf(os.Stderr, "Non-API error (type %T) occurred.\n", e)
+		log.Fatal(e)
 	}
 }
 

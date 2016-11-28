@@ -25,8 +25,9 @@ func productstatusesDemo(ctx context.Context, service *content.APIService, confi
 	if false {
 		listCall.MaxResults(100)
 	}
-	err := listCall.Pages(ctx, printProductstatusesPage)
-	checkAPI(err, "Listing product statuses failed")
+	if err := listCall.Pages(ctx, printProductstatusesPage); err != nil {
+		dumpAPIErrorAndStop(err, "Listing product statuses failed")
+	}
 	fmt.Printf("\n")
 }
 

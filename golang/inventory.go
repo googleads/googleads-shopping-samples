@@ -31,33 +31,42 @@ func inventoryDemo(ctx context.Context, service *content.APIService, config *mer
 
 	fmt.Printf("Inserting product with offerId %s... ", offerID)
 	productInfo, err := products.Insert(config.MerchantID, product).Do()
-	checkAPI(err, "Insertion failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Insertion failed")
+	}
 	fmt.Printf("done.\n")
 	productID := productInfo.Id
 
 	fmt.Printf("Retrieving product ID %s...", productID)
 	productInfo, err = products.Get(config.MerchantID, productID).Do()
-	checkAPI(err, "Retrieval failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Retrieval failed")
+	}
 	fmt.Printf("done.")
 	fmt.Printf("Retrieved product %s @ (%s, %s)\n\n",
 		productInfo.Id, productInfo.Availability,
 		productInfo.Price.Currency)
 
 	fmt.Printf("Setting new price and availability...")
-	_, err = inventory.Set(config.MerchantID, product.Channel, productID, &invReq).Do()
-	checkAPI(err, "Inventory set failed")
+	if _, err := inventory.Set(config.MerchantID, product.Channel, productID, &invReq).Do(); err != nil {
+
+		dumpAPIErrorAndStop(err, "Inventory set failed")
+	}
 	fmt.Printf("done.\n\n")
 
 	fmt.Printf("Retrieving product ID %s...", productID)
 	productInfo, err = products.Get(config.MerchantID, productID).Do()
-	checkAPI(err, "Retrieval failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Retrieval failed")
+	}
 	fmt.Printf("done.\n")
 	fmt.Printf("Retrieved product %s @ (%s, %s)\n\n",
 		productInfo.Id, productInfo.Availability,
 		productInfo.Price.Currency)
 
 	fmt.Printf("Deleting product ID %s...", productID)
-	err = products.Delete(config.MerchantID, productID).Do()
-	checkAPI(err, "Deletion failed")
+	if err := products.Delete(config.MerchantID, productID).Do(); err != nil {
+		dumpAPIErrorAndStop(err, "Deletion failed")
+	}
 	fmt.Printf("done.\n")
 }

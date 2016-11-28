@@ -26,7 +26,9 @@ func primaryAccountDemo(ctx context.Context, service *content.APIService, config
 
 	fmt.Println("Getting account information.")
 	account, err := accounts.Get(config.MerchantID, config.MerchantID).Do()
-	checkAPI(err, "Getting account information failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Getting account information failed")
+	}
 	printAccount(account)
 
 	if config.AccountSampleUser != "" {
@@ -54,7 +56,9 @@ func primaryAccountDemo(ctx context.Context, service *content.APIService, config
 
 	fmt.Println("Patching account information.")
 	account, err = accounts.Patch(config.MerchantID, config.MerchantID, account).Do()
-	checkAPI(err, "Patching account information failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Patching account information failed")
+	}
 	printAccount(account)
 
 	fmt.Println("Rolling back changes.")
@@ -83,9 +87,11 @@ func primaryAccountDemo(ctx context.Context, service *content.APIService, config
 		accountPatch.AdwordsLinks = links
 	}
 
-	fmt.Println("Patching account information.")
+	fmt.Println("Reverting account information.")
 	account, err = accounts.Patch(config.MerchantID, config.MerchantID, &accountPatch).Do()
-	checkAPI(err, "Patching account information failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Reverting account information failed")
+	}
 	printAccount(account)
 }
 
@@ -108,7 +114,9 @@ func multiClientAccountDemo(ctx context.Context, service *content.APIService, co
 		listCall.MaxResults(100)
 	}
 	err := listCall.Pages(ctx, printAccountsPage)
-	checkAPI(err, "Listing subaccounts failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Listing subaccounts failed")
+	}
 	fmt.Println("")
 
 	accountName := fmt.Sprintf("sampleAccount#%d", rand.Int())
@@ -117,22 +125,27 @@ func multiClientAccountDemo(ctx context.Context, service *content.APIService, co
 	}
 	fmt.Printf("Adding subaccount with name %s.\n", accountName)
 	account, err = accounts.Insert(config.MerchantID, account).Do()
-	checkAPI(err, "Adding subaccount failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Adding subaccount failed")
+	}
 	fmt.Printf("Subaccount added with ID %d.\n", account.Id)
 
 	fmt.Printf("Printing subaccounts of %d:\n", config.MerchantID)
-	err = accounts.List(config.MerchantID).Pages(ctx, printAccountsPage)
-	checkAPI(err, "Listing subaccounts failed")
+	if err := accounts.List(config.MerchantID).Pages(ctx, printAccountsPage); err != nil {
+		dumpAPIErrorAndStop(err, "Listing subaccounts failed")
+	}
 	fmt.Println("")
 
 	fmt.Printf("Removing subaccount with ID %d.\n", account.Id)
-	err = accounts.Delete(config.MerchantID, account.Id).Do()
-	checkAPI(err, "Removing subaccount failed")
+	if err := accounts.Delete(config.MerchantID, account.Id).Do(); err != nil {
+		dumpAPIErrorAndStop(err, "Removing subaccount failed")
+	}
 	fmt.Println("Subaccount removed.")
 
 	fmt.Printf("Printing subaccounts of %d:\n", config.MerchantID)
-	err = accounts.List(config.MerchantID).Pages(ctx, printAccountsPage)
-	checkAPI(err, "Listing subaccounts failed")
+	if err := accounts.List(config.MerchantID).Pages(ctx, printAccountsPage); err != nil {
+		dumpAPIErrorAndStop(err, "Listing subaccounts failed")
+	}
 	fmt.Println("")
 }
 

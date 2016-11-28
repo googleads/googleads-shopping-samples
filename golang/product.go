@@ -20,7 +20,9 @@ func productDemo(ctx context.Context, service *content.APIService, config *merch
 
 	fmt.Printf("Inserting product with offerId %s... ", offerID)
 	productInfo, err := products.Insert(config.MerchantID, product).Do()
-	checkAPI(err, "Insertion failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Insertion failed")
+	}
 	fmt.Printf("done.\n")
 	checkContentErrors(productInfo.Warnings, false)
 	productID := productInfo.Id
@@ -36,20 +38,24 @@ func productDemo(ctx context.Context, service *content.APIService, config *merch
 	if false {
 		listCall.MaxResults(100)
 	}
-	err = listCall.Pages(ctx, printProductsPage)
-	checkAPI(err, "Listing products failed")
+	if err := listCall.Pages(ctx, printProductsPage); err != nil {
+		dumpAPIErrorAndStop(err, "Listing products failed")
+	}
 	fmt.Printf("\n")
 
 	fmt.Printf("Retrieving product ID %s...", productID)
 	productInfo, err = products.Get(config.MerchantID, productID).Do()
-	checkAPI(err, "Retrieval failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Retrieval failed")
+	}
 	fmt.Printf("done.\n")
 	fmt.Printf("Retrieved product %s with title %s\n",
 		productInfo.Id, productInfo.Title)
 
 	fmt.Printf("Deleting product ID %s...", productID)
-	err = products.Delete(config.MerchantID, productID).Do()
-	checkAPI(err, "Deletion failed")
+	if err := products.Delete(config.MerchantID, productID).Do(); err != nil {
+		dumpAPIErrorAndStop(err, "Deletion failed")
+	}
 	fmt.Printf("done.\n")
 }
 

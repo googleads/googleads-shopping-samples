@@ -17,7 +17,9 @@ func accountstatusesDemo(ctx context.Context, service *content.APIService, confi
 
 	fmt.Printf("Getting account status:\n")
 	accountStatus, err := accountstatuses.Get(config.MerchantID, config.MerchantID).Do()
-	checkAPI(err, "Getting account status failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Getting account status failed")
+	}
 	printAccountStatus(accountStatus)
 }
 

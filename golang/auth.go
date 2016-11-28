@@ -34,18 +34,26 @@ func authWithGoogle(ctx context.Context) *http.Client {
 	if _, err := os.Stat(serviceAccountPath); err == nil {
 		fmt.Printf("Loading service account from %s.\n", serviceAccountPath)
 		json, err := ioutil.ReadFile(serviceAccountPath)
-		check(err)
+		if err != nil {
+			log.Fatal(err)
+		}
 		config, err := google.JWTConfigFromJSON(json, content.ContentScope)
-		check(err)
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Printf("Service account credentials for user %s found.\n", config.Email)
 		return config.Client(ctx)
 	}
 	if _, err := os.Stat(oauth2ClientPath); err == nil {
 		fmt.Printf("Loading OAuth2 client from %s.\n", oauth2ClientPath)
 		json, err := ioutil.ReadFile(oauth2ClientPath)
-		check(err)
+		if err != nil {
+			log.Fatal(err)
+		}
 		config, err := google.ConfigFromJSON(json, content.ContentScope)
-		check(err)
+		if err != nil {
+			log.Fatal(err)
+		}
 		fmt.Printf("OAuth2 client credentials for application %s found.\n", config.ClientID)
 		return newOAuthClient(ctx, config)
 	}

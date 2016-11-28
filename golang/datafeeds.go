@@ -21,7 +21,9 @@ func datafeedDemo(ctx context.Context, service *content.APIService, config *merc
 	feed := createSampleDatafeed(feedName)
 
 	insertedFeed, err := datafeeds.Insert(config.MerchantID, feed).Do()
-	checkAPI(err, "Insertion failed")
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Insertion failed")
+	}
 	fmt.Printf("done.\n")
 	feedID := insertedFeed.Id
 	fmt.Printf("New feed ID: %d\n\n", feedID)
@@ -33,18 +35,21 @@ func datafeedDemo(ctx context.Context, service *content.APIService, config *merc
 	if false {
 		listCall.MaxResults(100)
 	}
-	err = listCall.Pages(ctx, printFeedsPage)
-	checkAPI(err, "Listing feeds failed")
+	if err := listCall.Pages(ctx, printFeedsPage); err != nil {
+		dumpAPIErrorAndStop(err, "Listing feeds failed")
+	}
 	fmt.Printf("\n")
 
 	fmt.Printf("Retrieving datafeed %d... ", feedID)
-	_, err = datafeeds.Get(config.MerchantID, uint64(feedID)).Do()
-	checkAPI(err, "Retrieving feed failed")
+	if _, err := datafeeds.Get(config.MerchantID, uint64(feedID)).Do(); err != nil {
+		dumpAPIErrorAndStop(err, "Retrieving feed failed")
+	}
 	fmt.Printf("done.\n")
 
 	fmt.Printf("Removing datafeed %d... ", feedID)
-	err = datafeeds.Delete(config.MerchantID, uint64(feedID)).Do()
-	checkAPI(err, "Removing feed failed")
+	if err := datafeeds.Delete(config.MerchantID, uint64(feedID)).Do(); err != nil {
+		dumpAPIErrorAndStop(err, "Removing feed failed")
+	}
 	fmt.Printf("done.\n\n")
 }
 
