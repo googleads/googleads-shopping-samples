@@ -36,15 +36,15 @@ def main(argv):
 
     while request is not None:
       result = request.execute()
-      if 'resources' in result:
+      if shopping_common.json_absent_or_false(result, 'resources'):
+        print 'No products were found.'
+      else:
         products = result['resources']
         for product in products:
           print ('Product "%s" with title "%s" was found.' %
                  (product['id'], product['title']))
 
         request = service.products().list_next(request, result)
-      else:
-        print 'No products were found.'
         break
 
   except client.AccessTokenRefreshError:

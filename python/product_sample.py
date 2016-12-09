@@ -30,7 +30,7 @@ def create_product_sample(config, offer_id, **overwrites):
       A new product in dictionary form.
   """
   website_url = 'http://my-book-shop.com'
-  if 'websiteUrl' in config:
+  if not shopping_common.json_absent_or_false(config, 'websiteUrl'):
     website_url = config['websiteUrl']
 
   product = {

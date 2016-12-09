@@ -37,15 +37,15 @@ def main(argv):
 
     while request is not None:
       result = request.execute()
-      if 'resources' in result:
+      if shopping_common.json_absent_or_false(result, 'resources'):
+        print 'No accounts were found.'
+      else:
         accounts = result['resources']
         for account in accounts:
           print ('Account "%s" with name "%s" was found.' %
                  (account['id'], account['name']))
 
         request = service.accounts().list_next(request, result)
-      else:
-        print 'No accounts were found.'
         break
 
   except client.AccessTokenRefreshError:

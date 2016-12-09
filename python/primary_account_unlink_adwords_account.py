@@ -27,28 +27,29 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
   adwords_id = None
-  if 'accountSampleAdWordsCID' in config and config['accountSampleAdWordsCID']:
-    adwords_id = config['accountSampleAdWordsCID']
-  else:
+  if shopping_common.json_absent_or_false(config, 'accountSampleAdWordsCID'):
     print 'Must specify the AdWords CID to unlink in the samples configuration.'
     sys.exit(1)
+  adwords_id = config['accountSampleAdWordsCID']
 
   try:
     # First we need to retrieve the existing set of users.
-    response = service.accounts().get(merchantId=merchant_id,
+    account = service.accounts().get(merchantId=merchant_id,
                                       accountId=merchant_id,
                                       fields='adwordsLinks').execute()
 
-    account = response
+    if shopping_common.json_absent_or_false(account, 'adwordsLinks'):
+      print 'No AdWords accounts linked to account %d.' % (merchant_id,)
+      sys.exit(1)
 
-    # Add new user to existing user list.
-    adwords_link = {'adwordsId': adwords_id, 'status': 'active'}
+    matched = [l for l in account['adwordsLinks']
+               if l['adwordsId'] == adwords_id]
+    if not matched:
+      print 'AdWords account %s was not linked.' % (email,)
+      sys.exit(1)
 
-    if 'adwordsLinks' in account and adwords_link in account['adwordsLinks']:
-      account['adwordsLinks'].remove(adwords_link)
-    else:
-      print 'Warning, adwords account %s was not found.' % (adwords_id,)
-      return
+    for u in matched:
+      account['adwordsLinks'].remove(u)
 
     # Patch account with new user list.
     response = service.accounts().patch(merchantId=merchant_id,

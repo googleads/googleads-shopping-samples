@@ -27,11 +27,10 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
   email = None
-  if 'accountSampleUser' in config and config['accountSampleUser']:
-    email = config['accountSampleUser']
-  else:
+  if shopping_common.json_absent_or_false(config, 'accountSampleUser'):
     print 'Must specify the user email to add in the samples configuration.'
     sys.exit(1)
+  email = config['accountSampleUser']
 
   try:
     # First we need to retrieve the existing set of users.

@@ -101,3 +101,10 @@ def check_mca(config, should_be_mca, msg = None):
       print('For this sample, you must%s use a multi-client account.' %
             (' not' if is_mca else ''))
     sys.exit(1)
+
+def json_absent_or_false(json, key):
+  """Checks if the key does not appear or maps to false in the JSON object.
+
+  Our measure of false here is the same as Python.
+  """
+  return key not in json or not json[key]

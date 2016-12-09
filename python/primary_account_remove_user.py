@@ -27,28 +27,28 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
   email = None
-  if 'accountSampleUser' in config and config['accountSampleUser']:
-    email = config['accountSampleUser']
-  else:
+  if shopping_common.json_absent_or_false(config, 'accountSampleUser'):
     print 'Must specify the user email to remove in the samples configuration.'
     sys.exit(1)
+  email = config['accountSampleUser']
 
   try:
     # First we need to retrieve the existing set of users.
-    response = service.accounts().get(merchantId=merchant_id,
+    account = service.accounts().get(merchantId=merchant_id,
                                       accountId=merchant_id,
                                       fields='users').execute()
 
-    account = response
+    if shopping_common.json_absent_or_false(account, 'users'):
+      print 'No users in account %d.' % (merchant_id,)
+      sys.exit(1)
 
-    # Add new user to existing user list.
-    user_to_remove = {'emailAddress': email, 'admin': False}
+    matched = [u for u in account['users'] if u['emailAddress'] == email]
+    if not matched:
+      print 'User %s was not found.' % (email,)
+      sys.exit(1)
 
-    if user_to_remove in account['users']:
-      account['users'].remove(user_to_remove)
-    else:
-      print 'Warning, user %s was not found.' % (email,)
-      return
+    for u in matched:
+      account['users'].remove(u)
 
     # Patch account with new user list.
     response = service.accounts().patch(merchantId=merchant_id,

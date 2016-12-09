@@ -48,19 +48,18 @@ def main(argv):
     status = service.accounttax().update(
         merchantId=merchant_id, accountId=merchant_id,body=settings).execute()
     print 'Account %s:' % status['accountId']
-    if 'rules' not in status:
+    if shopping_common.json_absent_or_false(status, 'rules'):
       print '- No tax settings, so no tax is charged.'
     else:
-      print('- Found %d tax rules:' %
-            len(status['rules']))
+      print('- Found %d tax rules:' % len(status['rules']))
       for issue in status['rules']:
-        if 'ratePercent' in issue and issue['ratePercent']:
+        if not shopping_common.json_absent_or_false(issue, 'ratePercent'):
           print('  - For %s in %s: %s%%' %
                 (issue['locationId'], issue['country'], issue['ratePercent']))
-        if 'useGlobalRate' in issue and issue['useGlobalRate']:
+        if not shopping_common.json_absent_or_false(issue, 'useGlobalRate'):
           print('  - For %s in %s: using the global tax table rate.' %
                 (issue['locationId'], issue['country']))
-        if 'shippingTaxed' in issue and issue['shippingTaxed']:
+        if not shopping_common.json_absent_or_false(issue, 'shippingTaxed'):
           print '   NOTE: Shipping charges are also taxed.'
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired, please re-run the '

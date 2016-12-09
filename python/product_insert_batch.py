@@ -53,11 +53,11 @@ def main(argv):
     if result['kind'] == 'content#productsCustomBatchResponse':
       entries = result['entries']
       for entry in entries:
-        if 'product' in entry:
+        if not shopping_common.json_absent_or_false(entry, 'product'):
           product = entry['product']
           print ('Product with offerId "%s" and title "%s" was created.' %
                  (product['offerId'], product['title']))
-        elif 'errors' in entry:
+        elif not shopping_common.json_absent_or_false(entry, 'errors'):
           print entry['errors']
     else:
       print 'There was an error. Response: %s' % (result)

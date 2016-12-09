@@ -50,11 +50,13 @@ def main(argv):
     status = service.shippingsettings().get(
         merchantId=merchant_id, accountId=merchant_id).execute()
     print 'Account %s:' % status['accountId']
-    if 'postalGroups' in status and status['postalCodeGroups']:
-      print '- %d postal code group(s):' % len(status['postalCodeGroups'])
-    else:
+    if shopping_common.json_absent_or_false(status, 'postalCodeGroups'):
       print '- No postal code groups.'
-    if 'services' in status and status['services']:
+    else:
+      print '- %d postal code group(s):' % len(status['postalCodeGroups'])
+    if shopping_common.json_absent_or_false(status, 'services'):
+      print '- No services.'
+    else:
       print '- %d service(s):' % len(status['services'])
       for service in status['services']:
         print '  Service "%s":' % service['name']
@@ -64,12 +66,10 @@ def main(argv):
         print('  - Delivery time: %d - %d days' %
               (service['deliveryTime']['minTransitTimeInDays'],
                service['deliveryTime']['maxTransitTimeInDays']))
-        if service['rateGroups']:
+        if shopping_common.json_absent_or_false(service, 'rateGroups'):
           print '  - No rate groups.'
         else:
           print '  - %d rate groups.' % len(service['rateGroups'])
-    else:
-      print '- No services.'
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired, please re-run the '
            'application to re-authorize')

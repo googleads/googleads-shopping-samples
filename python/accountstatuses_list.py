@@ -37,18 +37,20 @@ def main(argv):
 
     while request is not None:
       result = request.execute()
-      if 'resources' in result:
+      if shopping_common.json_absent_or_false(result, 'resources'):
+        print 'No accounts were found.'
+      else:
         statuses = result['resources']
         for status in statuses:
           print 'Account %s:' % status['accountId']
-          if 'dataQualityIssues' not in status:
+          if shopping_common.json_absent_or_false(status, 'dataQualityIssues'):
             print '- No data quality issues.'
           else:
             print('- Found %d data quality issues:' %
                   len(status['dataQualityIssues']))
             for issue in status['dataQualityIssues']:
               print '  - (%s) [%s]' % (issue['severity'], issue['id'])
-              if not issue['exampleItems']:
+              if shopping_common.json_absent_or_false(issue, 'exampleItems'):
                 print '  - No example items.'
               else:
                 print('  - Have %d examples from %d affected items:' %
@@ -56,8 +58,6 @@ def main(argv):
                 for example in issue['exampleItems']:
                   print '    - %s: %s' % (example['itemId'], example['title'])
         request = service.accountstatuses().list_next(request, result)
-      else:
-        print 'No accounts were found.'
         break
 
   except client.AccessTokenRefreshError:

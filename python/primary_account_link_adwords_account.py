@@ -28,11 +28,10 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
   adwords_id = None
-  if 'accountSampleAdWordsCID' in config and config['accountSampleAdWordsCID']:
-    adwords_id = config['accountSampleAdWordsCID']
-  else:
+  if shopping_common.json_absent_or_false(config, 'accountSampleAdWordsCID'):
     print 'Must specify the AdWords CID to link in the samples configuration.'
     sys.exit(1)
+  adwords_id = config['accountSampleAdWordsCID']
 
   try:
     # First we need to retrieve the existing set of users.
