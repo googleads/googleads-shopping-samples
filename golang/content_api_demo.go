@@ -24,6 +24,7 @@ var demos = map[string](func(context.Context, *content.APIService, *merchantInfo
 	"multiClientAccount": multiClientAccountDemo,
 	"shippingSettings":   shippingSettingsDemo,
 	"accountTax":         accountTaxDemo,
+	"orders":             ordersDemo,
 }
 
 func printDemos(w io.Writer) {
