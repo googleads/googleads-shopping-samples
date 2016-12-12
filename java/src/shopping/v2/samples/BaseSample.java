@@ -11,6 +11,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.content.ShoppingContent;
 
 import com.google.api.services.content.model.Error;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -20,6 +23,7 @@ import java.util.List;
  */
 public abstract class BaseSample {
   protected ShoppingContent content;
+  protected ShoppingContent sandbox;
 
   private final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
   private final Credential credential;
@@ -33,6 +37,7 @@ public abstract class BaseSample {
     authenticator = loadAuthentication();
     credential = createCredential();
     content = createContentService();
+    sandbox = createSandboxContentService();
   }
 
   protected Config loadConfig() throws IOException {
@@ -52,6 +57,14 @@ public abstract class BaseSample {
   protected ShoppingContent createContentService() {
     return new ShoppingContent.Builder(httpTransport, jsonFactory, credential)
         .setApplicationName(config.getApplicationName())
+        .build();
+  }
+
+  protected ShoppingContent createSandboxContentService() {
+    ShoppingContent.Builder builder =
+        new ShoppingContent.Builder(httpTransport, jsonFactory, credential);
+    return builder.setApplicationName(config.getApplicationName())
+        .setServicePath("content/v2sandbox/")
         .build();
   }
 
