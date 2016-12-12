@@ -89,12 +89,16 @@ def authenticate(config)
 end
 
 # Handles authentication and loading of the API.
-def service_setup(config)
+def service_setup(config, use_sandbox = false)
   credentials = authenticate(config)
 
   # Initialize API Service.
   service = Google::Apis::ContentV2::ShoppingContentService.new
   service.authorization = credentials
+  if use_sandbox
+    # Use the sandbox API endpoint instead.
+    service.base_path = Addressable::URI.parse("content/v2sandbox/")
+  end
 
   return service
 end
