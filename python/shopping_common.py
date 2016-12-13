@@ -32,13 +32,14 @@ from oauth2client import tools
 
 # Authenticate and return the Content API service along with any command-line
 # flags/arguments.
-def init(argv, doc, parents=None):
+def init(argv, doc, parents=None, sandbox=False):
   """A common initialization routine for the Content API samples.
 
   Args:
     argv: list of string, the command-line parameters of the application.
     doc: string, description of the application. Usually set to __doc__.
     parents: list of argparse.ArgumentParser, additional command-line flags.
+    sandbox: boolean, whether to use the sandbox API endpoint or not.
 
   Returns:
     A tuple of (service, config, flags), where service is the service object,
@@ -67,7 +68,10 @@ def init(argv, doc, parents=None):
   credentials = auth.authorize(config, flags)
   http = credentials.authorize(http=httplib2.Http())
   service = discovery.build(
-      _constants.SERVICE_NAME, _constants.SERVICE_VERSION, http=http)
+      _constants.SERVICE_NAME,
+      (_constants.SANDBOX_SERVICE_VERSION if sandbox
+       else _constants.SERVICE_VERSION),
+      http=http)
   return (service, config, flags)
 
 unique_id_increment = 0

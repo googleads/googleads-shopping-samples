@@ -28,6 +28,7 @@ SERVICE_ACCOUNT_FILE = os.path.join(CONFIG_DIR, 'content-service.json')
 # Constants needed for the Content API
 SERVICE_NAME = 'content'
 SERVICE_VERSION = 'v2'
+SANDBOX_SERVICE_VERSION = 'v2sandbox'
 API_SCOPE = 'https://www.googleapis.com/auth/' + SERVICE_NAME
 
 # These constants define the identifiers for all of our example products/feeds.
