@@ -32,7 +32,12 @@ solution. You will need to
 [Restore NuGet Packages](https://docs.nuget.org/ndocs/consume-packages/package-restore)
 as well to pull in the dependencies. (The IDEs listed above all support this.)
 
-1. Build and run any of the included samples.
+1. Build and run any of the included projects.  There are four:
+
+   * Samples4.0 - .NET Framework 4.0 compatible project for main samples
+   * Samples4.5 - .NET Framework 4.5 compatible project for main samples
+   * Orders4.0 - .NET Framework 4.0 compatible project for order workflow sample
+   * Orders4.5 - .NET Framework 4.5 compatible project for order workflow sample
 
    If using an OAuth2 client ID for the first time, the application will then
    open a browser so you can authorize it to access your Merchant Center
