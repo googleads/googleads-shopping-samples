@@ -27,6 +27,7 @@ abstract class BaseSample {
   protected $config;
   protected $configDir;
   protected $service;
+  protected $sandboxService;
   protected $websiteUrl;
   protected $configFile;
 
@@ -63,7 +64,28 @@ abstract class BaseSample {
     $this->merchantId = $this->config->merchantId;
     $this->websiteUrl = $this->config->websiteUrl;
     $this->service = new Google_Service_ShoppingContent($client);
-}
+    $this->sandboxService = $this->createSandbox($client);
+  }
+
+  /**
+   * Instead of requiring the v2sandbox library, we'll instead just
+   * make a version of the service that calls the sandbox API endpoint.
+   * Changing $sandboxService->servicePath is not enough, since that
+   * value is cached during construction of the objects that correspond
+   * to the API services, so we use reflection to access the caching (private)
+   * field of the $sandboxService->orders object and change it there instead.
+   */
+  private function createSandbox($client) {
+    $class = new ReflectionClass("Google_Service_Resource");
+    $property = $class->getProperty("servicePath");
+    $property->setAccessible(true);
+
+    $sandboxService = new Google_Service_ShoppingContent($client);
+    $orders = $sandboxService->orders;
+    $property->setValue($orders, 'content/v2sandbox/');
+
+    return $sandboxService;
+   }
 
   abstract public function run();
 
