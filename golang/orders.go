@@ -64,8 +64,12 @@ func ordersDemo(ctx context.Context, service *content.APIService, config *mercha
 	printOrder(testOrder)
 	fmt.Println()
 
-	fmt.Println("Listing existing orders.")
-	if err := orders.List(config.MerchantID).Pages(ctx, printOrdersPage); err != nil {
+	// Only list unacknowledged orders.  The idea here is that as a
+	// merchant, we should already have imported the information about
+	// any orders we've already acknowledged, so these will be the ones
+	// we've not seen yet.
+	fmt.Println("Listing unacknowledged orders.")
+	if err := orders.List(config.MerchantID).Acknowledged(false).Pages(ctx, printOrdersPage); err != nil {
 		dumpAPIErrorAndStop(err, "Listing orders failed")
 	}
 	fmt.Println()
