@@ -1,17 +1,19 @@
-# Google Content API for Shopping Java Samples
+# Google Content API for Shopping and Manufacturer Center API Java Samples
 
 This is a set of simple samples written in Java, which provide a minimal
 example of Google Shopping integration within a command line application.
 
 This starter project provides a great place to start your experimentation into
-the Google Content API for Shopping.
+the Google Content API for Shopping and/or the Manufacturer Center API.
 
 ## Prerequisites
 
 Please make sure that you're running Java 5+. If you use Maven, you can use
 the included `pom.xml` to install the required dependencies.  Otherwise,
 install the
-[Content API for Shopping Client Library for Java](https://developers.google.com/api-client-library/java/apis/content/v2).
+[Content API for Shopping Client Library for Java](https://developers.google.com/api-client-library/java/apis/content/v2)
+and/or the
+[Manufacturer Center API Client Library for Java](https://developers.google.com/api-client-library/java/apis/manufacturers/v1).
 
 ## Setup Authentication and Sample Configuration
 

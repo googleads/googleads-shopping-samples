@@ -4,11 +4,13 @@
   <groupId>com.google.shopping-devrel.samples</groupId>
   <artifactId>shopping-content-samples</artifactId>
 
-  <name>Content API for Shopping Sample Code</name>
+  <name>
+    Content API for Shopping and Manufacturer Center API Sample Code
+  </name>
   <description>
     This project contains examples of using the Content API for Shopping
-    Java client library. Please see the README file for more information
-    about how to use the library.
+    and Manufacturer Center API Java client libraries. Please see the
+    README file for more information about how to run these samples.
   </description>
 
   <packaging>jar</packaging>
@@ -24,6 +26,11 @@
       <groupId>com.google.oauth-client</groupId>
       <artifactId>google-oauth-client-jetty</artifactId>
       <version>1.20.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-manufacturers</artifactId>
+      <version>v1-rev19-1.22.0</version>
     </dependency>
   </dependencies>
 </project>

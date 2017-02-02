@@ -1,12 +1,14 @@
-# Samples for the Content API for Shopping
+# Samples for the Content API for Shopping and Manufacturer Center API
 
 These code samples are organized by platform or language. Each language
 directory contains a `README` with more information about how to run the
 samples for that particular language.  Here, we cover setting up
 authentication and the common configuration file used by all the samples.
 
-For more information on the API, please refer to
-[the documentation](https://developers.google.com/shopping-content/).
+For more information on the APIs, please refer to the documentation for the
+[Content API for Shopping](https://developers.google.com/shopping-content/)
+and the
+[Manufacturer Center API](https://developers.google.com/manufacturers/).
 
 ## Choose Your Method of Authentication
 
@@ -17,15 +19,28 @@ You may want to use
 instead to simplify the authentication flow. These samples also support using
 [Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
 
+Setting up authentication for the Manufacturer Center API is similar to the
+Content API. Just make sure to select the Manufacturer Center API in the API
+Console. Both APIs can be selected if you wish to try samples for both APIs.
+
 ## Setting up Authentication and Sample Configuration
 
-1.  Create the directory `$(HOME)/.shopping-content-samples` to store the
+1.  Create the directory `$(HOME)/shopping-samples` to store the
     configuration.
 
     If you are unsure where this will be located in your particular setup, then
     run the samples (following the language-specific `README`). Errors
     from the samples related to either this directory or necessary files not
     existing will provide the full path to the expected directory/files.
+
+    Within this directory, also create the following subdirectories, depending
+    on which API you would like to try:
+
+    * `content` for the Content API for Shopping
+    * `manufacturers` for the Manufacturer Center API
+
+    Place the files described below in the appropriate subdirectory for the API
+    you want to try.
 
 2.  Set up your desired authentication method.
 
@@ -37,15 +52,16 @@ instead to simplify the authentication flow. These samples also support using
 
     If you are using a service account:
 
-    *   Put the JSON file you downloaded when creating the service account in
-        `$(HOME)/.shopping-content-samples` with the filename
-        `content-service.json`.
+    *   Put the JSON file you downloaded when creating the service account to
+        the file `service-account.json` in the appropriate API configuration
+        subdirectories.
 
     If you are using an OAuth2 client ID:
 
     *   Download your [OAuth2 client
         credentials](https://console.developers.google.com/apis/credentials) to
-        the file `content-oauth2.json` in `$(HOME)/.shopping-content-samples`.
+        the file `client-secrets.json` in the appropriate API configuration
+        subdirectories.
 
     You can set up multiple authentication methods to try out different flows,
     but note that the samples will always use the first credentials that can be
@@ -60,9 +76,10 @@ instead to simplify the authentication flow. These samples also support using
         client](https://developers.google.com/shopping-content/v2/how-tos/authorizing)
         credentials
 
-3.  Take the example `merchant-info.json` from the repository root, copy it into
-    `$(HOME)/.shopping-content-samples`, and then change its contents
-    appropriately. It contains a JSON object with the following fields:
+3.  Each set of samples uses a different configuration file.  For the Content
+    API for Shopping, take the example `merchant-info.json` from the repository
+    root and copy it into `$(HOME)/shopping-samples/content`.  Next, change its
+    contents appropriately. It contains a JSON object with the following fields:
 
     | Field                     | Type   | Description                                    |
     |---------------------------|--------|------------------------------------------------|
@@ -74,10 +91,22 @@ instead to simplify the authentication flow. These samples also support using
     | `accountSampleAdWordsCID` | number | If non-zero, the AdWords Customer ID to link/unlink in samples for the `Accounts` service. |
     | `isMCA`                   | bool   | Whether or not the Merchant Center account associated with `merchantId` is a multi-client account. |
 
+    For the Manufacturer Center API, take the example `manufacturer-info.json`
+    from the repository root and copy it into
+    `$(HOME)/shopping-samples/manufacturers`.  Next, change its contents
+    appropriately. It contains a JSON object with the following fields:
+
+    | Field                     | Type   | Description                                    |
+    |---------------------------|--------|------------------------------------------------|
+    | `manufacturerId`          | number | The Manufacturer Center ID to run samples against. |
+    | `applicationName`         | string | The name of the application.                   |
+    | `emailAddress`            | string | What email address should be used for authentication. Setting this is required only if using OAuth2 client credentials. |
+    | `websiteUrl`              | string | The URL (without trailing slash) associated with the Manufacturer Center account. |
+
     If using OAuth2 client credentials, once you have authorized access your
-    token details will be stored in the `token` field. If you have any issues
-    authenticating, remove this field and you will be asked to re-authorize
-    access.
+    token details will be stored in the `token` field of the appropriate API
+    configuration. If you have any issues authenticating, remove this field
+    and you will be asked to re-authorize access.
 
 ## Try Out the Samples
 
@@ -88,7 +117,8 @@ the `README`s located in each language subdirectory.
 
 ## Possible Issues
 
-* If you haven't set up tax settings on your account, you may get an error
-  when running certain samples. If you receive a "missing tax settings" error,
-  set your tax settings in the Merchant Center before trying these samples.
-  Selecting the "Don't charge taxes in the United States" setting is sufficient.
+* When using the Content API for Shopping, if you haven't set up tax settings on
+  your account, you may get an error when running certain samples. If you
+  receive a "missing tax settings" error, set your tax settings in the Merchant
+  Center before trying these samples.  Selecting the "Don't charge taxes in the
+  United States" setting is sufficient.
