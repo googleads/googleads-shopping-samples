@@ -11,8 +11,8 @@ namespace ContentShoppingSamples
 {
     internal class Authenticator
     {
-        private static String OAUTH_FILE_PATH = Path.Combine(Config.CONFIG_DIR, "content-oauth2.json");
-        private static String SERVICE_ACCOUNT_PATH = Path.Combine(Config.CONFIG_DIR, "content-service.json");
+        private static String OAUTH_FILE_PATH = Path.Combine(Config.CONFIG_DIR, "client-secrets.json");
+        private static String SERVICE_ACCOUNT_PATH = Path.Combine(Config.CONFIG_DIR, "service-account.json");
 
         private Authenticator() { }
 

@@ -12,7 +12,7 @@ namespace ContentShoppingSamples
     internal class Config
     {
         public static String CONFIG_DIR =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".shopping-content-samples");
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "shopping-samples", "content");
         private static String CONFIG_FILE = Path.Combine(CONFIG_DIR, "merchant-info.json");
 
         [Newtonsoft.Json.JsonPropertyAttribute("merchantId")]
