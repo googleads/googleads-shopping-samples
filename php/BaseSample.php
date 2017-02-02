@@ -31,10 +31,10 @@ abstract class BaseSample {
   protected $websiteUrl;
   protected $configFile;
 
-  const CONFIG_DIR_NAME = '.shopping-content-samples';
+  const CONFIG_DIR_NAME = 'shopping-samples/content';
   const CONFIGFILE_NAME = 'merchant-info.json';
-  const SERVICE_ACCOUNT_FILE_NAME = 'content-service.json';
-  const OAUTH_CLIENT_FILE_NAME = 'content-oauth2.json';
+  const SERVICE_ACCOUNT_FILE_NAME = 'service-account.json';
+  const OAUTH_CLIENT_FILE_NAME = 'client-secrets.json';
 
   // Constructor that sets up configuration and authentication for all
   // the samples.
@@ -46,13 +46,13 @@ abstract class BaseSample {
       $this->config = json_decode(file_get_contents($this->configFile));
     } else {
       throw new InvalidArgumentException(sprintf('Could not find or read the '
-          . 'config file at %s. You can use the config.json file in the '
+          . 'config file at %s. You can use the merchant-info.json file in the '
           . 'samples root as a template.', $this->configFile));
     }
 
     if (!$this->config) {
       throw new InvalidArgumentException(sprintf('The config file at %s is not '
-          . 'valid JSON format. You can use the config.json file in the '
+          . 'valid JSON format. You can use the merchant-info.json file in the '
           . 'samples root as a template.', $this->configFile));
     }
 
