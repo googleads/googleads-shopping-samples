@@ -69,5 +69,5 @@ class Config
   end
 end
 
-Config.path = File.join(Dir.home(), '.shopping-content-samples')
+Config.path = File.join(Dir.home(), 'shopping-samples', 'content')
 Config.file = File.join(Config.path, 'merchant-info.json')

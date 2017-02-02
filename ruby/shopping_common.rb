@@ -30,8 +30,8 @@ require_relative 'token_store'
 API_NAME = 'content'
 API_VERSION = 'v2'
 API_SCOPE = 'https://www.googleapis.com/auth/content'
-CLIENT_ID_FILE = File.join(Config.path, "#{API_NAME}-oauth2.json")
-SERVICE_ACCOUNT_FILE = File.join(Config.path, "#{API_NAME}-service.json")
+CLIENT_ID_FILE = File.join(Config.path, "client-secrets.json")
+SERVICE_ACCOUNT_FILE = File.join(Config.path, "service-account.json")
 
 # These constants define the identifiers for all of our example products/feeds.
 #
