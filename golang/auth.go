@@ -21,8 +21,8 @@ import (
 )
 
 func authWithGoogle(ctx context.Context) *http.Client {
-	serviceAccountPath := path.Join(configPath, "content-service.json")
-	oauth2ClientPath := path.Join(configPath, "content-oauth2.json")
+	serviceAccountPath := path.Join(configPath, "service-account.json")
+	oauth2ClientPath := path.Join(configPath, "client-secrets.json")
 
 	// First, check for the Application Default Credentials.
 	if client, err := google.DefaultClient(ctx, content.ContentScope); err == nil {

@@ -16,14 +16,14 @@ import (
 
 // This file just contains common functions used by the others.
 
-// Configuration should be stored in .shopping-content-samples in the
+// Configuration should be stored in shopping-samples/content in the
 // user's home directory.
 var configPath = func() string {
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return path.Join(usr.HomeDir, ".shopping-content-samples")
+	return path.Join(usr.HomeDir, "shopping-samples", "content")
 }()
 
 // Information stored in the 'merchant-info.json' file in the config directory.
