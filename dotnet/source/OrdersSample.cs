@@ -4,7 +4,7 @@ using Google.Apis.Services;
 using Google.Apis.ShoppingContent.v2.Data;
 using System.Collections.Generic;
 
-namespace ContentShoppingSamples
+namespace ShoppingSamples.Content
 {
     /// <summary>
     /// A sample consumer that runs an example workflow for a single test order using the Orders
@@ -492,9 +492,10 @@ namespace ContentShoppingSamples
             Console.WriteLine("Content API for Shopping Orders Sample");
             Console.WriteLine("============================================");
 
-            Config config = Config.Load();
+            MerchantConfig config = MerchantConfig.Load();
+            String[] scopes = new[] { ShoppingContentService.Scope.Content };
 
-            var initializer = Authenticator.authenticate(config);
+            var initializer = Authenticator.authenticate(config, scopes);
             if (initializer == null)
             {
                 Console.WriteLine("Failed to authenticate, so exiting.");

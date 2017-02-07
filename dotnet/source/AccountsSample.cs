@@ -4,7 +4,7 @@ using System.Linq;
 using Google.Apis.ShoppingContent.v2;
 using Google.Apis.ShoppingContent.v2.Data;
 
-namespace ContentShoppingSamples
+namespace ShoppingSamples.Content
 {
     /// <summary>
     /// A sample consumer that runs multiple requests against the Accounts

@@ -37,8 +37,11 @@
     <Compile Include="..\source\Authenticator.cs">
       <Link>Authenticator.cs</Link>
     </Compile>
-    <Compile Include="..\source\Config.cs">
-      <Link>Config.cs</Link>
+    <Compile Include="..\source\MerchantConfig.cs">
+      <Link>MerchantConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\source\BaseConfig.cs">
+      <Link>BaseConfig.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

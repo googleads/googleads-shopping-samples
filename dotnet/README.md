@@ -1,10 +1,10 @@
-# Google Content API for Shopping C#/.NET Samples
+# Google Content API for Shopping and Manufacturer Center API C#/.NET Samples
 
 This is a set of simple samples written in C#/.NET, which provide a minimal
 example of Google Shopping integration within a command line application.
 
 This starter project provides a great place to start your experimentation into
-the Google Content API for Shopping.
+the Google Content API for Shopping and/or the Manufacturer Center API.
 
 ## Prerequisites
 
@@ -32,17 +32,17 @@ solution. You will need to
 [Restore NuGet Packages](https://docs.nuget.org/ndocs/consume-packages/package-restore)
 as well to pull in the dependencies. (The IDEs listed above all support this.)
 
-1. Build and run any of the included projects.  There are four:
+1. Build and run any of the included projects.  There are five:
 
-   * Samples4.0 - .NET Framework 4.0 compatible project for main samples
-   * Samples4.5 - .NET Framework 4.5 compatible project for main samples
-   * Orders4.0 - .NET Framework 4.0 compatible project for order workflow sample
-   * Orders4.5 - .NET Framework 4.5 compatible project for order workflow sample
+   * Samples4.0 - .NET Framework 4.0 compatible project for main Content API samples
+   * Samples4.5 - .NET Framework 4.5 compatible project for main Content API samples
+   * Orders4.0 - .NET Framework 4.0 compatible project for Content API Orders service workflow sample
+   * Orders4.5 - .NET Framework 4.5 compatible project for Content API Orders service workflow sample
+   * Manufacturers - .NET Framework 4.5 compatible project for the Manufacturer CenteR API
 
-   If using an OAuth2 client ID for the first time, the application will then
-   open a browser so you can authorize it to access your Merchant Center
-   account. The access token will be stored in your `merchant-info.json`
-   configuration, so if you have authentication issues, delete the `token`
-   field and reauthenticate.
+   If using an OAuth2 client ID for the first time, the application will open a
+   browser so you can authorize it to access your account. The access token
+   will be stored in the sample configuration file, so if you have
+   authentication issues, delete the `token` field and reauthenticate.
 
 2. Examine your shell output, be inspired and start hacking an amazing new app!

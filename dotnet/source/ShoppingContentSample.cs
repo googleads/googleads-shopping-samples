@@ -5,7 +5,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.ShoppingContent.v2;
 
-namespace ContentShoppingSamples
+namespace ShoppingSamples.Content
 {
     /// <summary>
     /// A sample application that runs multiple requests against the Content API for Shopping.
@@ -31,9 +31,9 @@ namespace ContentShoppingSamples
             Console.WriteLine("Content API for Shopping Command Line Sample");
             Console.WriteLine("============================================");
 
-            Config config = Config.Load();
+            MerchantConfig config = MerchantConfig.Load();
 
-            var initializer = Authenticator.authenticate(config);
+            var initializer = Authenticator.authenticate(config, ShoppingContentService.Scope.Content);
             if (initializer == null)
             {
                 Console.WriteLine("Failed to authenticate, so exiting.");

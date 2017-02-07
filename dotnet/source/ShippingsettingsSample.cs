@@ -3,7 +3,7 @@ using Google.Apis.ShoppingContent.v2;
 using Google.Apis.ShoppingContent.v2.Data;
 using System.Collections.Generic;
 
-namespace ContentShoppingSamples
+namespace ShoppingSamples.Content
 {
     /// <summary>
     /// A sample consumer that runs multiple requests against the Shippingsettings

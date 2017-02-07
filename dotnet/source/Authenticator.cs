@@ -5,20 +5,18 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Http;
-using Google.Apis.ShoppingContent.v2;
 
-namespace ContentShoppingSamples
+namespace ShoppingSamples
 {
     internal class Authenticator
     {
-        private static String OAUTH_FILE_PATH = Path.Combine(Config.CONFIG_DIR, "client-secrets.json");
-        private static String SERVICE_ACCOUNT_PATH = Path.Combine(Config.CONFIG_DIR, "service-account.json");
-
         private Authenticator() { }
 
-        public static IConfigurableHttpClientInitializer authenticate(Config config)
+        public static IConfigurableHttpClientInitializer authenticate(BaseConfig config, string scope)
         {
-            string[] scopes = new[] { ShoppingContentService.Scope.Content };
+            String oauthFilePath = Path.Combine(config.ConfigDir, "client-secrets.json");
+            String serviceAccountPath = Path.Combine(config.ConfigDir, "service-account.json");
+            String[] scopes = new[] { scope };
 
             try
             {
@@ -30,25 +28,25 @@ namespace ContentShoppingSamples
             {
                 // Do nothing, we'll just let it slide and check the others.
             }
-            if (File.Exists(SERVICE_ACCOUNT_PATH))
+            if (File.Exists(serviceAccountPath))
             {
-                Console.WriteLine("Loading service account credentials from " + SERVICE_ACCOUNT_PATH);
-                using (FileStream stream = new FileStream(SERVICE_ACCOUNT_PATH, FileMode.Open, FileAccess.Read))
+                Console.WriteLine("Loading service account credentials from " + serviceAccountPath);
+                using (FileStream stream = new FileStream(serviceAccountPath, FileMode.Open, FileAccess.Read))
                 {
                     GoogleCredential credential = GoogleCredential.FromStream(stream);
                     return credential.CreateScoped(scopes);
                 }
             }
-            else if (File.Exists(OAUTH_FILE_PATH))
+            else if (File.Exists(oauthFilePath))
             {
-                Console.WriteLine("Loading OAuth2 credentials from " + OAUTH_FILE_PATH);
-                using (FileStream oauthFile = File.Open(OAUTH_FILE_PATH, FileMode.Open, FileAccess.Read))
+                Console.WriteLine("Loading OAuth2 credentials from " + oauthFilePath);
+                using (FileStream oauthFile = File.Open(oauthFilePath, FileMode.Open, FileAccess.Read))
                 {
                     var clientSecrets = GoogleClientSecrets.Load(oauthFile).Secrets;
                     if (config.Token != null)
                     {
                         Console.WriteLine("Loading old access token.");
-                        config.Token.Scope = ShoppingContentService.Scope.Content;
+                        config.Token.Scope = scope;
                         try
                         {
                             var init = new GoogleAuthorizationCodeFlow.Initializer()
@@ -79,15 +77,15 @@ namespace ContentShoppingSamples
                         config.EmailAddress,
                         CancellationToken.None).Result;
                     config.Token = credential.Token;
-                    config.Token.Scope = ShoppingContentService.Scope.Content;
+                    config.Token.Scope = scope;
                     config.Save();
                     return credential;
                 }
             }
             Console.WriteLine("Could not find authentication credentials. Checked:");
             Console.WriteLine(" - Google Application Default Credentials");
-            Console.WriteLine(" - " + SERVICE_ACCOUNT_PATH);
-            Console.WriteLine(" - " + OAUTH_FILE_PATH);
+            Console.WriteLine(" - " + serviceAccountPath);
+            Console.WriteLine(" - " + oauthFilePath);
             Console.WriteLine("Please read the included README for instructions.");
             return null;
         }

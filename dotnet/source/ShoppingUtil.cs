@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Google.Apis.Requests;
 using Google.Apis.ShoppingContent.v2.Data;
 
-namespace ContentShoppingSamples
+namespace ShoppingSamples.Content
 {
     internal class ShoppingUtil
     {
