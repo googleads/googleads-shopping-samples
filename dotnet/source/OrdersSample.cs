@@ -493,9 +493,8 @@ namespace ShoppingSamples.Content
             Console.WriteLine("============================================");
 
             MerchantConfig config = MerchantConfig.Load();
-            String[] scopes = new[] { ShoppingContentService.Scope.Content };
 
-            var initializer = Authenticator.authenticate(config, scopes);
+            var initializer = Authenticator.authenticate(config, ShoppingContentService.Scope.Content);
             if (initializer == null)
             {
                 Console.WriteLine("Failed to authenticate, so exiting.");
