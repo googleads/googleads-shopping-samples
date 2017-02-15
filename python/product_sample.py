@@ -16,6 +16,7 @@
 
 """Creates a sample product object for the product samples."""
 import _constants
+import shopping_common
 
 
 def create_product_sample(config, offer_id, **overwrites):

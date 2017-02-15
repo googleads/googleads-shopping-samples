@@ -16,6 +16,7 @@
 
 """Creates a sample datafeed object for the datafeed samples."""
 import _constants
+import shopping_common
 
 
 def create_datafeed_sample(config, name, **overwrites):
