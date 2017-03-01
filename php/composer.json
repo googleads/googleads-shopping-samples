@@ -4,8 +4,22 @@
   "type": "project",
   "homepage": "https://developers.google.com/shopping-content/",
   "license": "Apache-2.0",
+  "config": {
+    "vendor-dir": "php/vendor"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/googleads/googleads-shopping-samples"
+    }
+  ],
   "require": {
     "google/apiclient": "^2.0",
     "php": ">=5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoogleAds\\Shopping\\Samples\\": "php/"
+    }
   }
 }

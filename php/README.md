@@ -26,12 +26,19 @@ of this document assumes you have performed both tasks.
 ## Running the Samples
 
 We are assuming you've checked out the code and are reading this from a local
-directory. If not, check out the code to a local directory.
+directory. If not, check out the code to a local directory.  The instructions
+below assume that you are using Composer.
+
+1. Run Composer in the root directory to install the necessary dependencies.
+
+   ```
+   $ composer install
+   ```
 
 1. Run any of the included samples on the command line.
 
     ```
-    $ php ProductsSample.php
+    $ php php/ProductsSample.php
     ```
 
    If using an OAuth2 client ID for the first time, the application will
@@ -41,4 +48,4 @@ directory. If not, check out the code to a local directory.
    configuration, so if you have authentication issues, delete the `token`
    field and reauthenticate.
 
-2. Examine your shell output, be inspired and start hacking an amazing new app!
+1. Examine your shell output, be inspired and start hacking an amazing new app!
