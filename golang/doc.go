@@ -20,7 +20,7 @@ your browser automatically and the support package for Google's protocol
 buffers:
 
         $ go get github.com/pkg/browser
-        $ go get github.com/golang/protobuf
+        $ go get github.com/golang/protobuf/proto
 
 Setup Authentication and Sample Configuration
 
@@ -35,10 +35,9 @@ https://github.com/googleads/googleads-shopping-samples
 Running the Samples
 
 We are assuming you've checked out the code and are reading this from a local
-directory. If not, check out the code to a local directory.  Also make sure the
-files are in your GOPATH.
+directory. If not, check out the code to a local directory.
 
-1. Compile all the sample code together directory:
+1. Compile all the sample code in the directory together:
 
         $ go build -o content-api-demo *.go
 

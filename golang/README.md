@@ -23,7 +23,7 @@ to open the authentication URL in your browser automatically and the
 support package for Google's protocol buffers:
 
         $ go get github.com/pkg/browser
-        $ go get github.com/golang/protobuf
+        $ go get github.com/golang/protobuf/proto
 
 ## Setup Authentication and Sample Configuration
 
@@ -34,10 +34,9 @@ of this document assumes you have performed both tasks.
 ## Running the Samples
 
 We are assuming you've checked out the code and are reading this from a local
-directory. If not, check out the code to a local directory.  Also make sure the
-files are in your [GOPATH](https://github.com/golang/go/wiki/GOPATH).
+directory. If not, check out the code to a local directory.
 
-1. Compile all the sample code together directory:
+1. Compile all the sample code in the directory together:
 
         $ go build -o content-api-demo *.go
 
