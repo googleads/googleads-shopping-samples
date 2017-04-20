@@ -1,0 +1,5 @@
+*.userprefs
+[Bb]in/
+[Oo]bj/
+**/packages/*
+!**/packages/build/
