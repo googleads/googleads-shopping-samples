@@ -57,13 +57,15 @@ end
 
 
 if __FILE__ == $0
+  options = ArgParser.parse(ARGV)
+
   unless ARGV.size >= 1
     puts "Usage: #{$0} DATAFEED_ID_1 [DATAFEED_ID_2 ...]"
     exit
   end
   datafeed_ids = ARGV
 
-  config = Config.load()
+  config = Config.load(options.path)
   content_api = service_setup(config)
   delete_datafeed_batch(content_api, config.merchant_id, datafeed_ids)
 end

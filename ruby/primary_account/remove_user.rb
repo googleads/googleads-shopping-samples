@@ -54,7 +54,8 @@ end
 
 
 if __FILE__ == $0
-  config = Config.load()
+  options = ArgParser.parse(ARGV)
+  config = Config.load(options.path)
   email_address = config.account_sample_user
   if email_address.nil? or email_address.empty?
     puts "No account sample user address in the configuration."

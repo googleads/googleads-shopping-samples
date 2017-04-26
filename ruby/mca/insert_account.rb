@@ -36,7 +36,8 @@ end
 
 
 if __FILE__ == $0
-  config = Config.load()
+  options = ArgParser.parse(ARGV)
+  config = Config.load(options.path)
   unless config.is_mca
     puts "Merchant in configuration is not described as an MCA."
     exit

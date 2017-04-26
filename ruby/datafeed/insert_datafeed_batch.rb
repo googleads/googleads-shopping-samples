@@ -60,7 +60,8 @@ end
 
 
 if __FILE__ == $0
-  config = Config.load()
+  options = ArgParser.parse(ARGV)
+  config = Config.load(options.path)
   content_api = service_setup(config)
   insert_datafeed_batch(content_api, config.merchant_id)
 end

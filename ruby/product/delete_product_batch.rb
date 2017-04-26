@@ -57,13 +57,15 @@ end
 
 
 if __FILE__ == $0
+  options = ArgParser.parse(ARGV)
+
   unless ARGV.size >= 1
     puts "Usage: #{$0} PRODUCT_ID_1 [PRODUCT_ID_2 ...]"
     exit
   end
   product_ids = ARGV
 
-  config = Config.Load()
+  config = Config.load(options.path)
   content_api = service_setup(config)
   delete_product_batch(content_api, config.merchant_id, product_ids)
 end

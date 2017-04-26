@@ -33,13 +33,15 @@ end
 
 
 if __FILE__ == $0
+  options = ArgParser.parse(ARGV)
+
   unless ARGV.size == 1
     puts "Usage: #{$0} ACCOUNT_ID"
     exit
   end
   account_id = ARGV[0]
 
-  config = Config.load()
+  config = Config.load(options.path)
   # Account.get can be used in one of two cases:
   # - The requested MCID is the same as the MCID we're using for the call.
   # - The merchant center account is an MCA.

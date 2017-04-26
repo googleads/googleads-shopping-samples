@@ -31,13 +31,15 @@ def get_product_status(content_api, merchant_id, product_id)
 end
 
 if __FILE__ == $0
+  options = ArgParser.parse(ARGV)
+
   unless ARGV.size == 1
     puts "Usage: #{$0} PRODUCT_ID"
     exit
   end
   product_id = ARGV[0]
 
-  config = Config.load()
+  config = Config.load(options.path)
   if config.is_mca
     puts "Merchant center account must not be a multi-client account."
     exit

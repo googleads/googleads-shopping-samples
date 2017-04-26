@@ -223,7 +223,8 @@ def list_all_orders(content_api, merchant_id, **args)
 end
 
 if __FILE__ == $0
-  config = Config.load()
+  options = ArgParser.parse(ARGV)
+  config = Config.load(options.path)
   content_api = service_setup(config, use_sandbox = true)
   order_workflow(content_api, config.merchant_id)
 end

@@ -37,13 +37,15 @@ end
 
 
 if __FILE__ == $0
+  options = ArgParser.parse(ARGV)
+
   unless ARGV.size == 1
     puts "Usage: #{$0} ACCOUNT_ID"
     exit
   end
   account_id = ARGV[0]
 
-  config = Config.load()
+  config = Config.load(options.path)
   unless config.is_mca
     puts "Merchant in configuration is not described as an MCA."
     exit

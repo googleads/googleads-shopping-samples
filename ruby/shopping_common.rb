@@ -24,14 +24,13 @@ require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'multi_json'
 
+require_relative 'arg_parser'
 require_relative 'config'
 require_relative 'token_store'
 
 API_NAME = 'content'
 API_VERSION = 'v2'
 API_SCOPE = 'https://www.googleapis.com/auth/content'
-CLIENT_ID_FILE = File.join(Config.path, "client-secrets.json")
-SERVICE_ACCOUNT_FILE = File.join(Config.path, "service-account.json")
 
 # These constants define the identifiers for all of our example products/feeds.
 #
@@ -57,14 +56,16 @@ def authenticate(config)
   end
   # Check for both kinds of authentication. Let service accounts win, as
   # they're an easier flow to authenticate.
-  if File.exist?(SERVICE_ACCOUNT_FILE)
-    puts "Loading service account credentials from #{SERVICE_ACCOUNT_FILE}."
+  service_account_file = File.join(config.path, "service-account.json")
+  client_id_file = File.join(config.path, "client-secrets.json")
+  if File.exist?(service_account_file)
+    puts "Loading service account credentials from #{service_account_file}."
     return Google::Auth::DefaultCredentials.make_creds(
         scope: API_SCOPE,
-        json_key_io: File.open(SERVICE_ACCOUNT_FILE))
-  elsif File.exist?(CLIENT_ID_FILE)
-    puts "Loading OAuth2 client from #{CLIENT_ID_FILE}."
-    client_id = Google::Auth::ClientId.from_file(CLIENT_ID_FILE)
+        json_key_io: File.open(service_account_file))
+  elsif File.exist?(client_id_file)
+    puts "Loading OAuth2 client from #{client_id_file}."
+    client_id = Google::Auth::ClientId.from_file(client_id_file)
     token_store = TokenStore.new(config: config)
     authorizer = Google::Auth::UserAuthorizer.new(
         client_id, API_SCOPE, token_store)
@@ -82,8 +83,8 @@ def authenticate(config)
   end
   puts "No OAuth2 authentication credentials found. Checked:"
   puts "- Google Application Default Credentials"
-  puts "- #{SERVICE_ACCOUNT_FILE}"
-  puts "- #{CLIENT_ID_FILE}"
+  puts "- #{service_account_file}"
+  puts "- #{client_id_file}"
   puts "Please read the accompanying README.md for instructions."
   exit
 end

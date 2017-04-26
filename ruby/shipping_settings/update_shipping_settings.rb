@@ -34,13 +34,15 @@ def update_shipping_settings(content_api, merchant_id, account_id)
 end
 
 if __FILE__ == $0
+  options = ArgParser.parse(ARGV)
+
   unless ARGV.size == 1
     puts "Usage: #{$0} ACCOUNT_ID"
     exit
   end
   account_id = ARGV[0]
 
-  config = Config.load()
+  config = Config.load(options.path)
   unless account_id == config.merchant_id.to_s or config.is_mca
     puts "Non-MCA merchant center accounts can only set their own information."
     exit

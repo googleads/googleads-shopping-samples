@@ -70,13 +70,15 @@ end
 
 
 if __FILE__ == $0
+  options = ArgParser.parse(ARGV)
+
   unless ARGV.size >= 1
     puts "Usage: #{$0} PRODUCT_ID_1 [PRODUCT_ID_2 ...]"
     exit
   end
   product_ids = ARGV
 
-  config = Config.load()
+  config = Config.load(options.path)
   content_api = service_setup(config)
   update_product_batch(content_api, config.merchant_id, product_ids)
 end

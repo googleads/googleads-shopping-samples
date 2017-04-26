@@ -61,7 +61,8 @@ end
 
 
 if __FILE__ == $0
-  config = Config.load()
+  options = ArgParser.parse(ARGV)
+  config = Config.load(options.path)
   adwords_id = config.account_sample_adwords_cid
   if adwords_id.nil? or adwords_id != 0
     puts "No account sample AdWords CID in the configuration."

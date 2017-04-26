@@ -42,7 +42,8 @@ def list_account_statuses(content_api, merchant_id, next_page = nil)
 end
 
 if __FILE__ == $0
-  config = Config.load()
+  options = ArgParser.parse(ARGV)
+  config = Config.load(options.path)
   unless config.is_mca
     puts "Configured merchant center account must be a multi-client account."
     exit

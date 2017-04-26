@@ -41,7 +41,8 @@ end
 
 
 if __FILE__ == $0
-  config = Config.load()
+  options = ArgParser.parse(ARGV)
+  config = Config.load(options.path)
   content_api = service_setup(config)
   list_datafeeds(content_api, config.merchant_id)
 end

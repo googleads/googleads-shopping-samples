@@ -24,15 +24,13 @@ require 'multi_json'
 MultiJson.dump_options = { pretty: true }
 
 class Config
-  class << self
-    attr_accessor :path
-    attr_accessor :file
-
-    def load()
-      new(MultiJson.load(IO.read(@file)))
-    end
+  def self.load(base_path)
+    path = File.join(base_path, 'content')
+    file = File.join(path, 'merchant-info.json')
+    new(path, file, MultiJson.load(IO.read(file)))
   end
 
+  attr_accessor :path
   attr_accessor :merchant_id
   attr_accessor :application_name
   attr_accessor :email_address
@@ -42,7 +40,9 @@ class Config
   attr_accessor :account_sample_adwords_cid
   attr_accessor :token
 
-  def initialize(options)
+  def initialize(path, file, options)
+    @path = path
+    @file = file
     @merchant_id = options["merchantId"]
     @application_name = options["applicationName"]
     @email_address = options["emailAddress"]
@@ -54,7 +54,7 @@ class Config
   end
 
   def write()
-    output = File.open(Config.file, "w")
+    output = File.open(@file, "w")
     output << MultiJson.dump(
       merchantId: @merchant_id,
       applicationName: @application_name,
@@ -68,6 +68,3 @@ class Config
     output.close
   end
 end
-
-Config.path = File.join(Dir.home(), 'shopping-samples', 'content')
-Config.file = File.join(Config.path, 'merchant-info.json')
