@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/user"
 	"path"
 
 	"golang.org/x/oauth2"
@@ -16,17 +15,9 @@ import (
 
 // This file just contains common functions used by the others.
 
-// Configuration should be stored in shopping-samples/content in the
-// user's home directory.
-var configPath = func() string {
-	usr, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return path.Join(usr.HomeDir, "shopping-samples", "content")
-}()
+const merchantInfoFilename = "merchant-info.json"
 
-// Information stored in the 'merchant-info.json' file in the config directory.
+// Information stored for merchants for use by the Shopping samples
 type merchantInfo struct {
 	MerchantID             uint64        `json:"merchantId,omitempty"`
 	ApplicationName        string        `json:"applicationName,omitempty"`
@@ -36,13 +27,13 @@ type merchantInfo struct {
 	AccountSampleAdwordsID uint64        `json:"accountSampleAdWordsCID,omitempty"`
 	IsMCA                  bool          `json:"isMCA,omitempty"`
 	Token                  *oauth2.Token `json:"token,omitempty"`
+	Path                   string        `json:"-"`
 }
 
-var samplesConfig merchantInfo
-var samplesConfigFile = path.Join(configPath, "merchant-info.json")
-
-// Read the contents of merchant-info.json.
-func readSamplesConfig() {
+// Reads the contents of merchant-info.json and replaces the current values of JSON-exported fields.
+// This function assumes that the Path value has been appropriately set before calling.
+func (samplesConfig *merchantInfo) read() {
+	samplesConfigFile := path.Join(samplesConfig.Path, merchantInfoFilename)
 	jsonBlob, err := ioutil.ReadFile(samplesConfigFile)
 	if err != nil {
 		log.Fatalf("failed to decode JSON file %s: %v", samplesConfigFile, err)
@@ -53,13 +44,13 @@ func readSamplesConfig() {
 }
 
 // Write the config to merchant-info.json. (Mostly used to store refresh token.)
-func writeSamplesConfig() {
+// This function assumes that the Path value has been appropriately set before calling.
+func (samplesConfig *merchantInfo) write() {
 	jsonBlob, err := json.MarshalIndent(samplesConfig, "", "  ")
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = ioutil.WriteFile(samplesConfigFile, jsonBlob, 0660)
-	if err != nil {
+	if err := ioutil.WriteFile(path.Join(samplesConfig.Path, merchantInfoFilename), jsonBlob, 0660); err != nil {
 		log.Fatal(err)
 	}
 }
