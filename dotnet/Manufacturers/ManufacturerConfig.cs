@@ -11,11 +11,8 @@ namespace ShoppingSamples.Manufacturers
     /// </summary>
     internal class ManufacturerConfig : BaseConfig
     {
-        public new static String CONFIG_DIR = Path.Combine(BaseConfig.CONFIG_DIR, "manufacturers");
-        private static String CONFIG_FILE = Path.Combine(CONFIG_DIR, "manufacturer-info.json");
-
-        public override String ConfigDir { get { return CONFIG_DIR; } }
-        internal override String ConfigFile { get { return CONFIG_FILE; } }
+        public override String ConfigDir { get; set; }
+        internal override String ConfigFile { get; set; }
 
         [Newtonsoft.Json.JsonPropertyAttribute("manufacturerId")]
         public ulong ManufacturerId { get; set; }
@@ -26,18 +23,35 @@ namespace ShoppingSamples.Manufacturers
         [Newtonsoft.Json.JsonPropertyAttribute("websiteUrl")]
         public string WebsiteURL { get; set; }
 
-        public static ManufacturerConfig Load()
+        public static ManufacturerConfig Load(string configPath)
         {
-            if (!File.Exists(CONFIG_FILE))
+            ManufacturerConfig config;
+
+            var manufacturersPath = Path.Combine(configPath, "manufacturers");
+            if (!Directory.Exists(manufacturersPath))
             {
-                Console.WriteLine("Could not find config file at " + CONFIG_FILE);
+                Console.WriteLine("Could not find configuration directory at " + manufacturersPath);
                 Console.WriteLine("Please read the included README for instructions.");
+                throw new FileNotFoundException("Missing configuration directory");
             }
-            using (StreamReader reader = File.OpenText(CONFIG_FILE))
+
+            var manufacturersFile = Path.Combine(manufacturersPath, "manufacturer-info.json");
+            if (!File.Exists(manufacturersFile))
             {
-                return (ManufacturerConfig)JToken.ReadFrom(new JsonTextReader(reader))
-                    .ToObject(typeof(ManufacturerConfig));
+                Console.WriteLine("Could not find configuration file at " + manufacturersFile);
+                Console.WriteLine("Please read the included README for instructions.");
+                throw new FileNotFoundException("Missing configuration file");
             }
+
+            using (StreamReader reader = File.OpenText(manufacturersFile))
+            {
+                config = (ManufacturerConfig)JToken.ReadFrom(new JsonTextReader(reader))
+                    .ToObject(typeof(ManufacturerConfig));
+                config.ConfigDir = manufacturersPath;
+                config.ConfigFile = manufacturersFile;
+            }
+
+            return config;
         }
 
     }

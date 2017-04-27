@@ -4,6 +4,7 @@ using System.Threading;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.ManufacturerCenter.v1;
+using CommandLine;
 
 namespace ShoppingSamples.Manufacturers
 {
@@ -24,6 +25,15 @@ namespace ShoppingSamples.Manufacturers
     internal class ShoppingManufacturerSample
     {
         private static readonly int MaxListPageSize = 50;
+        private static readonly string defaultPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+            "shopping-samples");
+
+        internal class Options {
+            [Option('p', "config_path",
+                HelpText = "Configuration directory for Shopping samples.")]
+            public string ConfigPath { get; set; }
+        }
 
         [STAThread]
         internal static void Main(string[] args)
@@ -31,7 +41,15 @@ namespace ShoppingSamples.Manufacturers
             Console.WriteLine("Content API for Shopping Command Line Sample");
             Console.WriteLine("============================================");
 
-            ManufacturerConfig config = ManufacturerConfig.Load();
+            var options = new Options();
+            CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
+
+            if (options.ConfigPath == null)
+            {
+                options.ConfigPath = defaultPath;
+            }
+
+            ManufacturerConfig config = ManufacturerConfig.Load(options.ConfigPath);
 
             var initializer = Authenticator.authenticate(config, ManufacturerCenterService.Scope.Manufacturercenter);
             if (initializer == null)

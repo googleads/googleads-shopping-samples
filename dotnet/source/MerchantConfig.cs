@@ -11,11 +11,8 @@ namespace ShoppingSamples.Content
     /// </summary>
     internal class MerchantConfig : BaseConfig
     {
-        public new static String CONFIG_DIR = Path.Combine(BaseConfig.CONFIG_DIR, "content");
-        private static String CONFIG_FILE = Path.Combine(CONFIG_DIR, "merchant-info.json");
-
-        public override String ConfigDir { get { return CONFIG_DIR; } }
-        internal override String ConfigFile { get { return CONFIG_FILE; } }
+        public override String ConfigDir { get; set; }
+        internal override String ConfigFile { get; set; }
 
         [Newtonsoft.Json.JsonPropertyAttribute("merchantId")]
         public ulong MerchantId { get; set; }
@@ -35,18 +32,33 @@ namespace ShoppingSamples.Content
         [Newtonsoft.Json.JsonPropertyAttribute("isMCA")]
         public bool IsMCA { get; set; }
 
-        public static MerchantConfig Load()
+        public static MerchantConfig Load(String configPath)
         {
-            if (!File.Exists(CONFIG_FILE))
+            MerchantConfig config;
+            var contentPath = Path.Combine(configPath, "content");
+            if (!Directory.Exists(contentPath))
             {
-                Console.WriteLine("Could not find config file at " + MerchantConfig.CONFIG_FILE);
+                Console.WriteLine("Could not find configuration directory at " + contentPath);
                 Console.WriteLine("Please read the included README for instructions.");
+                throw new FileNotFoundException("Missing configuration directory");
             }
-            using (StreamReader reader = File.OpenText(CONFIG_FILE))
+
+            var contentFile = Path.Combine(contentPath, "merchant-info.json");
+            if (!File.Exists(contentFile))
             {
-                return (MerchantConfig)JToken.ReadFrom(new JsonTextReader(reader))
-                    .ToObject(typeof(MerchantConfig));
+                Console.WriteLine("Could not find configuration file at " + contentFile);
+                Console.WriteLine("Please read the included README for instructions.");
+                throw new FileNotFoundException("Missing configuration file");
             }
+            using (StreamReader reader = File.OpenText(contentFile))
+            {
+                config = (MerchantConfig)JToken.ReadFrom(new JsonTextReader(reader))
+                    .ToObject(typeof(MerchantConfig));
+                config.ConfigDir = contentPath;
+                config.ConfigFile = contentFile;
+            }
+
+            return config;
         }
 
     }

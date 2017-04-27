@@ -3,6 +3,8 @@ using Google.Apis.ShoppingContent.v2;
 using Google.Apis.Services;
 using Google.Apis.ShoppingContent.v2.Data;
 using System.Collections.Generic;
+using CommandLine;
+using System.IO;
 
 namespace ShoppingSamples.Content
 {
@@ -486,13 +488,31 @@ namespace ShoppingSamples.Content
             }
         }
 
+        private static readonly string defaultPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+            "shopping-samples");
+
+        internal class Options {
+            [Option('p', "config_path",
+                HelpText = "Configuration directory for Shopping samples.")]
+            public string ConfigPath { get; set; }
+        }
+
         [STAThread]
         internal static void Main(string[] args)
         {
             Console.WriteLine("Content API for Shopping Orders Sample");
             Console.WriteLine("============================================");
 
-            MerchantConfig config = MerchantConfig.Load();
+            var options = new Options();
+            CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
+
+            if (options.ConfigPath == null)
+            {
+                options.ConfigPath = defaultPath;
+            }
+
+            MerchantConfig config = MerchantConfig.Load(options.ConfigPath);
 
             var initializer = Authenticator.authenticate(config, ShoppingContentService.Scope.Content);
             if (initializer == null)

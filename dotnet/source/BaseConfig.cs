@@ -10,11 +10,8 @@ namespace ShoppingSamples
     /// </summary>
     abstract class BaseConfig
     {
-        public static String CONFIG_DIR =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "shopping-samples");
-
-        public abstract String ConfigDir { get; }
-        internal abstract String ConfigFile { get; }
+        public abstract String ConfigDir { get; set; }
+        internal abstract String ConfigFile { get; set; }
     
         [Newtonsoft.Json.JsonPropertyAttribute("emailAddress")]
         public string EmailAddress { get; set; }

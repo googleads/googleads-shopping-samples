@@ -4,6 +4,7 @@ using System.Threading;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.ShoppingContent.v2;
+using CommandLine;
 
 namespace ShoppingSamples.Content
 {
@@ -24,6 +25,17 @@ namespace ShoppingSamples.Content
     internal class ShoppingContentSample
     {
         private static readonly int MaxListPageSize = 50;
+        private static readonly string defaultPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+            "shopping-samples");
+
+        internal class Options {
+            // Would like to use the DefaultValue attribute here, but we have to calculate the
+            // default path at runtime, which means it can't be used as an attribute value.
+            [Option('p', "config_path",
+                HelpText = "Configuration directory for Shopping samples.")]
+            public string ConfigPath { get; set; }
+        }
 
         [STAThread]
         internal static void Main(string[] args)
@@ -31,7 +43,15 @@ namespace ShoppingSamples.Content
             Console.WriteLine("Content API for Shopping Command Line Sample");
             Console.WriteLine("============================================");
 
-            MerchantConfig config = MerchantConfig.Load();
+            var options = new Options();
+            CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
+
+            if (options.ConfigPath == null)
+            {
+                options.ConfigPath = defaultPath;
+            }
+
+            MerchantConfig config = MerchantConfig.Load(options.ConfigPath);
 
             var initializer = Authenticator.authenticate(config, ShoppingContentService.Scope.Content);
             if (initializer == null)
