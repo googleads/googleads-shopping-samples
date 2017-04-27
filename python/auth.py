@@ -51,31 +51,32 @@ def authorize(config, flags):
     return credentials.create_scoped(_constants.API_SCOPE)
   except client.ApplicationDefaultCredentialsError:
     pass  # Can safely ignore this error, since it just means none were found.
-  if os.path.isfile(_constants.SERVICE_ACCOUNT_FILE):
-    print('Using service account credentials from %s.' %
-          _constants.SERVICE_ACCOUNT_FILE)
+  service_account_path = os.path.join(config['path'],
+                                      _constants.SERVICE_ACCOUNT_FILE)
+  client_secrets_path = os.path.join(config['path'],
+                                     _constants.CLIENT_SECRETS_FILE)
+  if os.path.isfile(service_account_path):
+    print('Using service account credentials from %s.' % service_account_path)
     return ServiceAccountCredentials.from_json_keyfile_name(
-        _constants.SERVICE_ACCOUNT_FILE,
+        service_account_path,
         scopes=_constants.API_SCOPE)
-  elif os.path.isfile(_constants.CLIENT_SECRETS_FILE):
-    print('Using OAuth2 client secrets from %s.' %
-          _constants.CLIENT_SECRETS_FILE)
-    message = tools.message_if_missing(_constants.CLIENT_SECRETS_FILE)
+  elif os.path.isfile(client_secrets_path):
+    print('Using OAuth2 client secrets from %s.' % client_secrets_path)
     storage = token_storage.Storage(config)
     credentials = storage.get()
     if credentials is not None and not credentials.invalid:
       return credentials
-    message = tools.message_if_missing(_constants.CLIENT_SECRETS_FILE)
+    message = tools.message_if_missing(client_secrets_path)
     flow = client.flow_from_clientsecrets(
-        _constants.CLIENT_SECRETS_FILE,
+        client_secrets_path,
         scope=_constants.API_SCOPE,
         message=message,
         login_hint=config['emailAddress'])
     return tools.run_flow(flow, storage, flags)
   print('No OAuth2 authentication files found. Checked:', file=sys.stderr)
   print('- Google Application Default Credentials', file=sys.stderr)
-  print('- %s' % _constants.SERVICE_ACCOUNT_FILE, file=sys.stderr)
-  print('- %s' % _constants.CLIENT_SECRETS_FILE, file=sys.stderr)
+  print('- %s' % service_account_path, file=sys.stderr)
+  print('- %s' % client_secrets_path, file=sys.stderr)
   print('Please read the accompanying documentation.', file=sys.stderr)
   sys.exit(1)
   return None

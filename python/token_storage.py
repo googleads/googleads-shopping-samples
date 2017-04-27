@@ -15,8 +15,10 @@
 # limitations under the License.
 
 """Backing store implementation for OAuth2 clients based on config data."""
+import copy
 from datetime import datetime
 import json
+import os
 import threading
 
 import _constants
@@ -35,17 +37,24 @@ class Storage(oauth2client.client.Storage):
     super(Storage, self).__init__(lock=threading.Lock())
     self._config = config
 
+  def dump_json(self):
+    output_file = os.path.join(self._config['path'], _constants.CONFIG_FILE)
+    # Copy the config so we can strip out the path key.
+    to_dump = copy.deepcopy(self._config)
+    to_dump.pop('path')
+    with open(output_file, 'w') as outfile:
+      json.dump(to_dump, outfile, sort_keys=True, indent=2,
+                separators=(',', ': '))
+
   def locked_delete(self):
     del self._config['token']
-    with open(_constants.CONFIG_FILE, 'w') as outfile:
-      json.dump(self._config, outfile, sort_keys=True, indent=2,
-                separators=(',', ': '))
+    self.dump_json()
 
   def locked_get(self):
     credentials = None
     try:
       _, client_info = oauth2client.clientsecrets.loadfile(
-          _constants.CLIENT_SECRETS_FILE)
+          os.path.join(self._config['path'], _constants.CLIENT_SECRETS_FILE))
       if client_info['client_id'] == self._config['token']['client_id']:
         credentials = oauth2client.client.OAuth2Credentials(
             self._config['token']['access_token'],
@@ -74,6 +83,4 @@ class Storage(oauth2client.client.Storage):
         'scope': [_constants.API_SCOPE],
         'expiration_time_millis': 0,
     }
-    with open(_constants.CONFIG_FILE, 'w') as outfile:
-      json.dump(self._config, outfile, sort_keys=True, indent=2,
-                separators=(',', ': '))
+    self.dump_json()

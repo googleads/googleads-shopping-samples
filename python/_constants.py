@@ -15,15 +15,13 @@
 # limitations under the License.
 
 """Various constants used in the Content API for Shopping samples."""
-import os
 
 # Constants for configuration
-CONFIG_DIR = os.path.expanduser('~/shopping-samples/content')
-CONFIG_FILE = os.path.join(CONFIG_DIR, 'merchant-info.json')
+CONFIG_FILE = 'merchant-info.json'
 
 # Constants for authentication
-CLIENT_SECRETS_FILE = os.path.join(CONFIG_DIR, 'client-secrets.json')
-SERVICE_ACCOUNT_FILE = os.path.join(CONFIG_DIR, 'service-account.json')
+CLIENT_SECRETS_FILE = 'client-secrets.json'
+SERVICE_ACCOUNT_FILE = 'service-account.json'
 
 # Constants needed for the Content API
 SERVICE_NAME = 'content'
