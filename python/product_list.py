@@ -38,6 +38,7 @@ def main(argv):
       result = request.execute()
       if shopping_common.json_absent_or_false(result, 'resources'):
         print 'No products were found.'
+        break
       else:
         products = result['resources']
         for product in products:
@@ -45,7 +46,6 @@ def main(argv):
                  (product['id'], product['title']))
 
         request = service.products().list_next(request, result)
-        break
 
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired, please re-run the '

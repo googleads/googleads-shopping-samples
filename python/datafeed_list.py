@@ -30,14 +30,17 @@ def main(argv):
   try:
     request = service.datafeeds().list(merchantId=merchant_id)
 
-    result = request.execute()
-    if shopping_common.json_absent_or_false(result, 'resources'):
-      print 'No datafeeds were found.'
-    else:
-      datafeeds = result['resources']
-      for datafeed in datafeeds:
-        print ('Datafeed "%s" with name "%s" was found.' %
-               (datafeed['id'], datafeed['name']))
+    while request is not None:
+      result = request.execute()
+      if shopping_common.json_absent_or_false(result, 'resources'):
+        print 'No datafeeds were found.'
+        break
+      else:
+        datafeeds = result['resources']
+        for datafeed in datafeeds:
+          print ('Datafeed "%s" with name "%s" was found.' %
+                 (datafeed['id'], datafeed['name']))
+        request = service.datafeeds().list_next(request, result)
 
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired, please re-run the '

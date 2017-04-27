@@ -39,6 +39,7 @@ def main(argv):
       result = request.execute()
       if shopping_common.json_absent_or_false(result, 'resources'):
         print 'No accounts were found.'
+        break
       else:
         accounts = result['resources']
         for account in accounts:
@@ -46,7 +47,6 @@ def main(argv):
                  (account['id'], account['name']))
 
         request = service.accounts().list_next(request, result)
-        break
 
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired, please re-run the '

@@ -39,6 +39,7 @@ def main(argv):
       result = request.execute()
       if shopping_common.json_absent_or_false(result, 'resources'):
         print 'No accounts were found.'
+        break
       else:
         statuses = result['resources']
         for status in statuses:
@@ -58,7 +59,6 @@ def main(argv):
                 for example in issue['exampleItems']:
                   print '    - %s: %s' % (example['itemId'], example['title'])
         request = service.accountstatuses().list_next(request, result)
-        break
 
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired, please re-run the '
