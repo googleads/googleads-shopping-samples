@@ -31,7 +31,6 @@ abstract class BaseSample {
   protected $websiteUrl;
   protected $configFile;
 
-  const CONFIG_DIR_NAME = 'shopping-samples/content';
   const CONFIGFILE_NAME = 'merchant-info.json';
   const SERVICE_ACCOUNT_FILE_NAME = 'service-account.json';
   const OAUTH_CLIENT_FILE_NAME = 'client-secrets.json';
@@ -39,9 +38,15 @@ abstract class BaseSample {
   // Constructor that sets up configuration and authentication for all
   // the samples.
   public function __construct () {
-    $this->configDir = $this->getHome() . '/' . self::CONFIG_DIR_NAME;
-    $this->configFile = $this->configDir . '/' . self::CONFIGFILE_NAME;
-
+    $options = getopt('', ['config_path:']);
+    if (!array_key_exists('config_path', $options)) {
+      $options['config_path'] = join(DIRECTORY_SEPARATOR,
+          [$this->getHome(), 'shopping-samples']);
+    }
+    $this->configDir = join(DIRECTORY_SEPARATOR,
+        [$options['config_path'], 'content']);
+    $this->configFile = join(DIRECTORY_SEPARATOR,
+        [$this->configDir, self::CONFIGFILE_NAME]);
     if (file_exists($this->configFile)) {
       $this->config = json_decode(file_get_contents($this->configFile));
     } else {
@@ -76,8 +81,8 @@ abstract class BaseSample {
    * field of the $sandboxService->orders object and change it there instead.
    */
   private function createSandbox($client) {
-    $class = new ReflectionClass("Google_Service_Resource");
-    $property = $class->getProperty("servicePath");
+    $class = new ReflectionClass('Google_Service_Resource');
+    $property = $class->getProperty('servicePath');
     $property->setAccessible(true);
 
     $sandboxService = new Google_Service_ShoppingContent($client);
@@ -85,7 +90,7 @@ abstract class BaseSample {
     $property->setValue($orders, 'content/v2sandbox/');
 
     return $sandboxService;
-   }
+  }
 
   abstract public function run();
 
@@ -193,17 +198,19 @@ abstract class BaseSample {
 
   // Handles loading authentication credentials from the config dir.
   protected function authenticateFromConfig(Google_Client $client) {
-    $accountFile = $this->configDir . '/' . self::SERVICE_ACCOUNT_FILE_NAME;
+    $accountFile = join(DIRECTORY_SEPARATOR,
+        [$this->configDir, self::SERVICE_ACCOUNT_FILE_NAME]);
     if (file_exists($accountFile)) {
-      print "Loading service account credentials from" . $accountFile . ".\n";
+      print 'Loading service account credentials from ' . $accountFile . ".\n";
       $accountConfig = json_decode(file_get_contents($accountFile), true);
       $client->setAuthConfig($accountConfig);
       $client->setScopes(Google_Service_ShoppingContent::CONTENT);
       return;
     }
-    $oauthFile = $this->configDir . '/' . self::OAUTH_CLIENT_FILE_NAME;
+    $oauthFile = join(DIRECTORY_SEPARATOR,
+        [$this->configDir, self::OAUTH_CLIENT_FILE_NAME]);
     if (file_exists($oauthFile)) {
-      print "Loading OAuth2 credentials from" . $oauthFile . ".\n";
+      print 'Loading OAuth2 credentials from ' . $oauthFile . ".\n";
       $oauthConfig = json_decode(file_get_contents($oauthFile), true);
       $client->setAuthConfig($oauthConfig);
       if($this->config->token == null) {
@@ -230,7 +237,7 @@ abstract class BaseSample {
 
     while ($attempts <= $maxAttempts) {
       try {
-        return call_user_func(array($this, $function), $parameter);
+        return call_user_func([$this, $function], $parameter);
       } catch (Google_Service_Exception $exception) {
         sleep($attempts * $attempts);
         $attempts++;
