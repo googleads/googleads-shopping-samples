@@ -20,6 +20,10 @@ public class AccountsListSample extends ContentSample {
       ShoppingContent.Accounts.List listAccounts = content.accounts().list(config.getMerchantId());
       do {
         AccountsListResponse page = listAccounts.execute();
+        if (page.getResources() == null) {
+          System.out.println("No accounts found.");
+          return;
+        }
         for (Account account : page.getResources()) {
           AccountUtils.printAccount(account);
         }

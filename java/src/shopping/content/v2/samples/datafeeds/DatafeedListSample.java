@@ -20,6 +20,10 @@ public class DatafeedListSample extends ContentSample {
     List datafeedsList = content.datafeeds().list(this.config.getMerchantId());
     do {
       DatafeedsListResponse page = datafeedsList.execute();
+      if (page.getResources() == null) {
+        System.out.println("No datafeeds found.");
+        return;
+      }
       for (Datafeed datafeed : page.getResources()) {
         System.out.printf("Datafeed with name %s and ID %d%n", datafeed.getName(),
             datafeed.getId());

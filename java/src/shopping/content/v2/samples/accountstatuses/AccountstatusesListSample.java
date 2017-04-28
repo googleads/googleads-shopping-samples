@@ -23,6 +23,10 @@ public class AccountstatusesListSample extends ContentSample {
           content.accountstatuses().list(this.config.getMerchantId());
       do {
         AccountstatusesListResponse page = accountStatusesList.execute();
+        if (page.getResources() == null) {
+          System.out.println("No accounts found.");
+          return;
+        }
         for (AccountStatus accountStatus : page.getResources()) {
           AccountstatusUtils.printAccountStatus(accountStatus);
         }

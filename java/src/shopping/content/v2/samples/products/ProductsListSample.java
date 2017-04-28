@@ -22,6 +22,10 @@ public class ProductsListSample extends ContentSample {
         content.products().list(this.config.getMerchantId());
     do {
       ProductsListResponse page = productsList.execute();
+      if (page.getResources() == null) {
+        System.out.println("No products found.");
+        return;
+      }
       for (Product product : page.getResources()) {
         System.out.printf("- %s %s%n", product.getId(), product.getTitle());
 

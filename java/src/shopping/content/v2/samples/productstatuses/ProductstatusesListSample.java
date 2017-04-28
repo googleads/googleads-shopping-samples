@@ -23,6 +23,10 @@ public class ProductstatusesListSample extends ContentSample {
         content.productstatuses().list(this.config.getMerchantId());
     do {
       ProductstatusesListResponse page = productStatusesList.execute();
+      if (page.getResources() == null) {
+        System.out.println("No products found.");
+        return;
+      }
       for (ProductStatus productStatus : page.getResources()) {
         System.out.printf("- %s %s\n", productStatus.getProductId(), productStatus.getTitle());
 
