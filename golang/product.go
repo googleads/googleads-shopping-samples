@@ -13,6 +13,10 @@ import (
 )
 
 func productDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	if config.IsMCA {
+		fmt.Println("This demo cannot be run on a multi-client account.")
+		return
+	}
 	offerID := fmt.Sprintf("book#test%d", rand.Int())
 	product := createSampleProduct(config, offerID)
 

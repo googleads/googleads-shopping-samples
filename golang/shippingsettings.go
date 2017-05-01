@@ -13,6 +13,10 @@ import (
 // replacing the old settings afterwards, printing out the current
 // settings at each step.
 func shippingSettingsDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	if config.IsMCA {
+		fmt.Println("This demo cannot be run on a multi-client account.")
+		return
+	}
 	shippingSettings := content.NewShippingsettingsService(service)
 
 	fmt.Println("Retrieving original shipping settings:")

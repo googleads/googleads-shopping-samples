@@ -14,6 +14,10 @@ import (
 )
 
 func datafeedDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	if config.IsMCA {
+		fmt.Println("This demo cannot be run on a multi-client account.")
+		return
+	}
 	feedName := fmt.Sprintf("feed%d", rand.Int())
 
 	fmt.Printf("Inserting datafeed with filename %s... ", feedName)

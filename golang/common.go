@@ -25,7 +25,7 @@ type merchantInfo struct {
 	WebsiteURL             string        `json:"websiteUrl,omitempty"`
 	AccountSampleUser      string        `json:"accountSampleUser,omitempty"`
 	AccountSampleAdwordsID uint64        `json:"accountSampleAdWordsCID,omitempty"`
-	IsMCA                  bool          `json:"isMCA,omitempty"`
+	IsMCA                  bool          `json:"-"`
 	Token                  *oauth2.Token `json:"token,omitempty"`
 	Path                   string        `json:"-"`
 }

@@ -75,6 +75,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	samplesConfig.IsMCA = checkMCAStatus(ctx, contentService, &samplesConfig)
 
 	for _, d := range flag.Args() {
 		demo, ok := demos[d]

@@ -12,6 +12,10 @@ import (
 // specific example, and then replacing the old settings afterwards, printing
 // out the current settings at each step.
 func accountTaxDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	if config.IsMCA {
+		fmt.Println("This demo cannot be run on a multi-client account.")
+		return
+	}
 	accountTax := content.NewAccounttaxService(service)
 
 	fmt.Println("Retrieving original tax settings:")

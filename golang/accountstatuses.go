@@ -13,6 +13,10 @@ import (
 )
 
 func accountstatusesDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	if !config.IsMCA {
+		fmt.Println("This demo requires a multi-client account.")
+		return
+	}
 	accountstatuses := content.NewAccountstatusesService(service)
 
 	fmt.Printf("Getting account status:\n")

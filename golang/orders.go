@@ -16,6 +16,10 @@ import (
 // uses the v2sandbox endpoint so that the test methods are available
 // and to ensure it doesn't accidentally mutate any real orders.
 func ordersDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	if config.IsMCA {
+		fmt.Println("This demo cannot be run on a multi-client account.")
+		return
+	}
 	// Local copy to avoid clobbering shared service endpoint.
 	sandboxService := *service
 	// Need to change endpoint from /v2/ to /v2sandbox/
