@@ -25,11 +25,7 @@ class MultiClientAccountsSample extends BaseSample {
   const BATCH_SIZE = 10;
 
   public function run() {
-    // Detect if this account is a multi-client account
-    if(!$this->config->isMCA) {
-      print "This example requires a multi-client account.\n";
-      return;
-    }
+    $this->mustBeMCA();
 
     $exampleAccountName = 'account123';
     $exampleAccountBatchNames = [];

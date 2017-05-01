@@ -70,6 +70,7 @@ abstract class BaseSample {
     $this->websiteUrl = $this->config->websiteUrl;
     $this->service = new Google_Service_ShoppingContent($client);
     $this->sandboxService = $this->createSandbox($client);
+    $this->mcaStatus = $this->retrieveMCAStatus();
   }
 
   /**
@@ -95,14 +96,49 @@ abstract class BaseSample {
   abstract public function run();
 
   /**
+   * Retrieves whether the configured account is an MCA using the
+   * Accounts.authinfo method.
+   */
+  public function retrieveMCAStatus() {
+    print ("Retrieving MCA status of configured account.\n");
+    $response = $this->service->accounts->authinfo();
+
+    // First check to see if the configured account is listed in
+    // authinfo explicitly.
+    foreach ($response->getAccountIdentifiers() as $accountId) {
+      if (!is_null($accountId->getAggregatorId()) &&
+          ($accountId->getAggregatorId() === $this->merchantId)) {
+        return true;
+      }
+      if (!is_null($accountId->getMerchantId()) &&
+          ($accountId->getMerchantId() === $this->merchantId)) {
+        return false;
+      }
+    }
+    // If it isn't, then either it's a subaccount of an MCA which did
+    // appear, or we don't have access to it at all. Test for access by
+    // calling Accounts.get.
+    try {
+      $account = $this->service->accounts->get(
+          $this->merchantId, $this->merchantId);
+    } catch (Google_Service_Exception $exception) {
+      throw new InvalidArgumentException(sprintf(
+          'Authenticated user cannot access account ID %d', $this->merchantId));
+    }
+    // Subaccounts cannot be MCAs.
+    return false;
+
+  }
+
+  /**
    * This function is used as a gate for methods that can only be run
    * on multi-client accounts.
    *
    * @throws InvalidArgumentException if the config does not contain an MCA.
    */
   const MCA_MSG = 'This operation can only be run on multi-client accounts.';
-  public function mustBeMCA($msg = MCA_MSG) {
-    if(!$this->config->isMCA) {
+  public function mustBeMCA($msg = self::MCA_MSG) {
+    if ($this->mcaStatus === false) {
       throw new InvalidArgumentException($msg);
     }
   }
@@ -114,8 +150,8 @@ abstract class BaseSample {
    * @throws InvalidArgumentException if the config contains an MCA.
    */
   const NON_MCA_MSG = 'This operation cannot be run on multi-client accounts.';
-  public function mustNotBeMCA($msg = NON_MCA_MSG) {
-    if($this->config->isMCA) {
+  public function mustNotBeMCA($msg = self::NON_MCA_MSG) {
+    if ($this->mcaStatus === true) {
       throw new InvalidArgumentException($msg);
     }
   }
