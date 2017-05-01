@@ -39,11 +39,10 @@ if __FILE__ == $0
   end
   account_id = ARGV[0]
 
-  config = Config.load(options.path)
+  config, content_api = service_setup(options)
   unless account_id == config.merchant_id.to_s or config.is_mca
     puts "Non-MCA merchant center accounts can only get their own information."
     exit
   end
-  content_api = service_setup(config)
   get_shipping_settings(content_api, config.merchant_id, account_id)
 end

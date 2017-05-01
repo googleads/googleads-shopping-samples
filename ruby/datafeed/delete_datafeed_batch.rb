@@ -65,7 +65,6 @@ if __FILE__ == $0
   end
   datafeed_ids = ARGV
 
-  config = Config.load(options.path)
-  content_api = service_setup(config)
+  config, content_api = service_setup(options)
   delete_datafeed_batch(content_api, config.merchant_id, datafeed_ids)
 end

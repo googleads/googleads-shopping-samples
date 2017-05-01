@@ -62,11 +62,10 @@ end
 
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
-  config = Config.load(options.path)
+  config, content_api = service_setup(options)
   unless config.is_mca
     puts "Merchant in configuration is not described as an MCA."
     exit
   end
-  content_api = service_setup(config)
   insert_account_batch(content_api, config.merchant_id)
 end

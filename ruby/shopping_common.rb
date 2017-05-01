@@ -89,8 +89,14 @@ def authenticate(config)
   exit
 end
 
-# Handles authentication and loading of the API.
-def service_setup(config, use_sandbox = false)
+# Handles configuration loading, authentication, and loading of the API.
+#
+# It takes the options parsed from the command line and optionally takes
+# a boolean that determines whether the sandbox endpoint should be used.
+#
+# It returns both the configuration and the API service object.
+def service_setup(options, use_sandbox = false)
+  config = Config.load(options.path)
   credentials = authenticate(config)
 
   # Initialize API Service.
@@ -100,8 +106,40 @@ def service_setup(config, use_sandbox = false)
     # Use the sandbox API endpoint instead.
     service.base_path = Addressable::URI.parse("content/v2sandbox/")
   end
+  puts "Retrieving info about the authenticated user."
+  config.is_mca = retrieve_mca_account(service, config)
 
-  return service
+  return config, service
+end
+
+# Check whether the configured account is an MCA via the API.
+def retrieve_mca_account(service, config)
+  service.get_account_authinfo() do |res, err|
+    if err
+      handle_errors(err)
+      exit
+    end
+
+    res.account_identifiers.each do |account_id|
+      # The configuration stores the merchant_id as a number, so
+      # make sure to compare to the numerical value of these fields.
+      return true if account_id.aggregator_id.to_i == config.merchant_id
+      return false if account_id.merchant_id.to_i == config.merchant_id
+    end
+
+    # If the configured account wasn't explicitly listed, then either it's
+    # a subaccount of an MCA we are authenticated for, or we don't have access
+    # to the given account.
+    service.get_account(config.merchant_id, config.merchant_id) do |res, err|
+      if err
+        puts "The authenticated user cannot access MC #{config.merchant_id}."
+        exit
+      end
+
+      # Subaccounts cannot be MCAs.
+      return false
+    end
+  end
 end
 
 # Generates a unique ID based on the current UNIX timestamp and a runtime

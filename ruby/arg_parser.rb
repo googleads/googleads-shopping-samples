@@ -33,7 +33,7 @@ class ArgParser
       opts.separator ''
       opts.separator 'Specific options:'
 
-      opts.on('-p', '--configpath PATH',
+      opts.on('-p', '--config_path PATH',
           'Path for Shopping samples configuration') do |path|
         if not Dir.exists? path
           STDERR.puts "ERROR: Directory '#{path}' does not exist."

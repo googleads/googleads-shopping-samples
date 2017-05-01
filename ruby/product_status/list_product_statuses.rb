@@ -43,11 +43,10 @@ end
 
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
-  config = Config.load(options.path)
+  config, content_api = service_setup(options)
   if config.is_mca
     puts "Merchant center account must not be a multi-client account."
     exit
   end
-  content_api = service_setup(config)
   list_product_statuses(content_api, config.merchant_id)
 end

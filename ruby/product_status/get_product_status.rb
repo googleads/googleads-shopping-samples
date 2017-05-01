@@ -39,11 +39,10 @@ if __FILE__ == $0
   end
   product_id = ARGV[0]
 
-  config = Config.load(options.path)
+  config, content_api = service_setup(options)
   if config.is_mca
     puts "Merchant center account must not be a multi-client account."
     exit
   end
-  content_api = service_setup(config)
   get_product_status(content_api, config.merchant_id, product_id)
 end

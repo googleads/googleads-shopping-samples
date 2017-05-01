@@ -55,12 +55,11 @@ end
 
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
-  config = Config.load(options.path)
+  config, content_api = service_setup(options)
   email_address = config.account_sample_user
   if email_address.nil? or email_address.empty?
     puts "No account sample user address in the configuration."
     exit
   end
-  content_api = service_setup(config)
   remove_user(content_api, config.merchant_id, email_address)
 end

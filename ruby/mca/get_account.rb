@@ -41,7 +41,7 @@ if __FILE__ == $0
   end
   account_id = ARGV[0]
 
-  config = Config.load(options.path)
+  config, content_api = service_setup(options)
   # Account.get can be used in one of two cases:
   # - The requested MCID is the same as the MCID we're using for the call.
   # - The merchant center account is an MCA.
@@ -52,6 +52,5 @@ if __FILE__ == $0
     puts "Merchant in configuration is not described as an MCA."
     exit
   end
-  content_api = service_setup(config)
   get_account(content_api, config.merchant_id, account_id)
 end

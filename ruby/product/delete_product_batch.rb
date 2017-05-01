@@ -65,7 +65,6 @@ if __FILE__ == $0
   end
   product_ids = ARGV
 
-  config = Config.load(options.path)
-  content_api = service_setup(config)
+  config, content_api = service_setup(options)
   delete_product_batch(content_api, config.merchant_id, product_ids)
 end

@@ -34,11 +34,24 @@ class Config
   attr_accessor :merchant_id
   attr_accessor :application_name
   attr_accessor :email_address
-  attr_accessor :is_mca
   attr_accessor :website_url
   attr_accessor :account_sample_user
   attr_accessor :account_sample_adwords_cid
   attr_accessor :token
+
+  # is_mca is no longer read from the config file, but via API calls,
+  # so it cannot be reliably used until after service initialization.
+  # Write our own accessor to check for an uninitialized is_mca field
+  # and fail if it is accessed before service_setup() is run.
+  attr_writer :is_mca
+  def is_mca()
+    if @is_mca.nil?
+      puts "Attempted to use is_mca field of config before initialization."
+      puts "Please see config.rb for more information."
+      exit
+    end
+    return @is_mca
+  end
 
   def initialize(path, file, options)
     @path = path
@@ -46,7 +59,6 @@ class Config
     @merchant_id = options["merchantId"]
     @application_name = options["applicationName"]
     @email_address = options["emailAddress"]
-    @is_mca = options["isMCA"]
     @website_url = options["websiteUrl"]
     @account_sample_user = options["accountSampleUser"]
     @account_sample_adwords_cid = options["accountSampleAdWordsCID"]
@@ -59,7 +71,6 @@ class Config
       merchantId: @merchant_id,
       applicationName: @application_name,
       emailAddress: @email_address,
-      isMCA: @is_mca,
       websiteUrl: @website_url,
       accountSampleUser: @account_sample_user,
       accountSampleAdWordsCID: @account_sample_adwords_cid,

@@ -62,12 +62,11 @@ end
 
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
-  config = Config.load(options.path)
+  config, content_api = service_setup(options)
   adwords_id = config.account_sample_adwords_cid
   if adwords_id.nil? or adwords_id != 0
     puts "No account sample AdWords CID in the configuration."
     exit
   end
-  content_api = service_setup(config)
   unlink_adwords_account(content_api, config.merchant_id, adwords_id)
 end
