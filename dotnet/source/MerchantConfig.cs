@@ -29,7 +29,8 @@ namespace ShoppingSamples.Content
         [Newtonsoft.Json.JsonPropertyAttribute("accountSampleAdWordsCID")]
         public ulong AccountSampleAdWordsCID { get; set; }
 
-        [Newtonsoft.Json.JsonPropertyAttribute("isMCA")]
+        // Set by retrieving MCA status via the API after service setup in
+        // ShoppingContentSample.Main().
         public bool IsMCA { get; set; }
 
         public static MerchantConfig Load(String configPath)
