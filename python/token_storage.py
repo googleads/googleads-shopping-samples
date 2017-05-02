@@ -39,9 +39,11 @@ class Storage(oauth2client.client.Storage):
 
   def dump_json(self):
     output_file = os.path.join(self._config['path'], _constants.CONFIG_FILE)
-    # Copy the config so we can strip out the path key.
+    # Calculated configuration contents should not be written back to the file.
+    to_strip = ['path', 'isMCA']
     to_dump = copy.deepcopy(self._config)
-    to_dump.pop('path')
+    for key in to_strip:
+      to_dump.pop(key)
     with open(output_file, 'w') as outfile:
       json.dump(to_dump, outfile, sort_keys=True, indent=2,
                 separators=(',', ': '))

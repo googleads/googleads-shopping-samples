@@ -26,7 +26,9 @@ import time
 import _constants
 import auth
 from googleapiclient import discovery
+from googleapiclient import errors
 import httplib2
+from oauth2client import client
 from oauth2client import tools
 
 
@@ -89,6 +91,8 @@ def init(argv, doc, parents=None, sandbox=False):
       (_constants.SANDBOX_SERVICE_VERSION if sandbox
        else _constants.SERVICE_VERSION),
       http=http)
+  config['isMCA'] = retrieve_mca_status(service, config)
+
   return (service, config, flags)
 
 unique_id_increment = 0
@@ -107,6 +111,45 @@ def get_unique_id():
     unique_id_increment = 0
   unique_id_increment += 1
   return '%d%d' % (int(time.time()), unique_id_increment)
+
+
+def retrieve_mca_status(service, config):
+  """Retrieves whether or not the configured account is an MCA from the API.
+
+  Args:
+    service: Content API service object
+    config: dictionary, Python representation of config JSON.
+
+  Returns:
+    Whether or not the configured account is an MCA.
+  """
+  merchant_id = config['merchantId']
+  try:
+    authinfo = service.accounts().authinfo().execute()
+    for account_id in authinfo['accountIdentifiers']:
+      if ('aggregatorId' in account_id and
+          int(account_id['aggregatorId']) == merchant_id):
+        return True
+      if ('merchantId' in account_id and
+          int(account_id['merchantId']) == merchant_id):
+        return False
+    # If we get here and we don't have a value yet, then either:
+    #  * The configured Merchant Center is a subaccount of an accessible MCA.
+    #    (Subaccounts cannot be MCAs.)
+    #  * We do not have access to the Merchant Center in the configuration.
+    try:
+      _ = (service.accounts()
+           .get(merchantId=merchant_id, accountId=merchant_id)
+           .execute())
+      return False
+    except errors.HttpError:
+      print ('The currently authenticated user does not have access to '
+             'MC %d.' % merchant_id)
+      sys.exit(1)
+  except client.AccessTokenRefreshError:
+    print ('The credentials have been revoked or expired, please re-run the '
+           'application to re-authorize.')
+    sys.exit(1)
 
 
 def check_mca(config, should_be_mca, msg=None):
