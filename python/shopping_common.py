@@ -62,6 +62,10 @@ def init(argv, doc, parents=None, sandbox=False):
       '--config_path', metavar='PATH',
       default=os.path.expanduser('~/shopping-samples'),
       help='configuration directory for the Shopping samples')
+  parser.add_argument(
+      '--root_url', metavar='URL',
+      default=None,
+      help='root URL for API calls (if non-standard)')
   flags = parser.parse_args(argv[1:])
 
   if not os.path.isdir(flags.config_path):
@@ -86,11 +90,21 @@ def init(argv, doc, parents=None, sandbox=False):
   config['path'] = content_path
   credentials = auth.authorize(config, flags)
   http = credentials.authorize(http=httplib2.Http())
-  service = discovery.build(
-      _constants.SERVICE_NAME,
-      (_constants.SANDBOX_SERVICE_VERSION if sandbox
-       else _constants.SERVICE_VERSION),
-      http=http)
+  if flags.root_url:
+    print('Using non-standard root for API endpoint: %s' % flags.root_url)
+    service = discovery.build(
+        _constants.SERVICE_NAME,
+        (_constants.SANDBOX_SERVICE_VERSION if sandbox
+         else _constants.SERVICE_VERSION),
+        discoveryServiceUrl=(flags.root_url + '/discovery/v1/apis/'
+                             '{api}/{apiVersion}/rest'),
+        http=http)
+  else:
+    service = discovery.build(
+        _constants.SERVICE_NAME,
+        (_constants.SANDBOX_SERVICE_VERSION if sandbox
+         else _constants.SERVICE_VERSION),
+        http=http)
   config['isMCA'] = retrieve_mca_status(service, config)
 
   return (service, config, flags)
