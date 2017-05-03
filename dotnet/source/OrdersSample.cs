@@ -4,7 +4,6 @@ using Google.Apis.Services;
 using Google.Apis.ShoppingContent.v2.Data;
 using System.Collections.Generic;
 using CommandLine;
-using System.IO;
 
 namespace ShoppingSamples.Content
 {
@@ -24,40 +23,20 @@ namespace ShoppingSamples.Content
     /// <description>It avoids accidentally mutating existing real orders.</description>
     /// </item></list>
     /// </summary>
-    public class OrdersSample
+    internal class OrdersSample : BaseContentSample
     {
-        private ShoppingContentService service;
         private Random prng; // Used for random order/tracking/shipment ID creation.
         private ulong nonce; // Nonce used for creating new operation IDs.
 
-        // For this particular sample, we want to use the sandbox API endpoint. Instead of
-        // importing the v2sandbox version of the library, we can just change the BasePath
-        // and BaseUri of the service.
-        class SandboxService : ShoppingContentService
+        public OrdersSample()
         {
-            private string sandboxPath = "content/v2sandbox/";
-
-            public override string BaseUri
-            {
-                get { return "https://www.googleapis.com/" + sandboxPath; }
-            }
-
-            public override string BasePath { get { return sandboxPath; } }
-
-            public SandboxService(Initializer i)
-                : base(i)
-            {
-            }
-        }
-
-        public OrdersSample(ShoppingContentService service)
-        {
-            this.service = service;
             this.prng = new Random();
         }
 
-        internal void RunCalls(ulong merchantId)
+        internal override void runCalls()
         {
+            var merchantId = config.MerchantId;
+
             // First, we create a new test order using the template1 template.  Normally, orders
             // would be automatically populated by Google in the non-sandbox version, and we'd
             // skip ahead to find out what orders are currently waiting for our acknowledgment.
@@ -486,50 +465,6 @@ namespace ShoppingSamples.Content
                     Console.WriteLine("    - Reason text: {0}", ret.ReasonText);
                 }
             }
-        }
-
-        private static readonly string defaultPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-            "shopping-samples");
-
-        internal class Options {
-            [Option('p', "config_path",
-                HelpText = "Configuration directory for Shopping samples.")]
-            public string ConfigPath { get; set; }
-        }
-
-        [STAThread]
-        internal static void Main(string[] args)
-        {
-            Console.WriteLine("Content API for Shopping Orders Sample");
-            Console.WriteLine("============================================");
-
-            var options = new Options();
-            CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
-
-            if (options.ConfigPath == null)
-            {
-                options.ConfigPath = defaultPath;
-            }
-
-            MerchantConfig config = MerchantConfig.Load(options.ConfigPath);
-
-            var initializer = Authenticator.authenticate(config, ShoppingContentService.Scope.Content);
-            if (initializer == null)
-            {
-                Console.WriteLine("Failed to authenticate, so exiting.");
-                return;
-            }
-
-            // Create the (sandbox-using) service.
-            var service = new SandboxService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = initializer,
-                    ApplicationName = config.ApplicationName,
-                });
-
-            OrdersSample ordersSample = new OrdersSample(service);
-            ordersSample.RunCalls(config.MerchantId);
         }
     }
 }

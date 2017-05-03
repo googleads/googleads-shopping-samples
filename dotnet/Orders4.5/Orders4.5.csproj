@@ -51,6 +51,15 @@
     <Compile Include="..\source\Properties\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\source\BaseSample.cs">
+      <Link>BaseSample.cs</Link>
+    </Compile>
+    <Compile Include="..\source\OrdersRunner.cs">
+      <Link>OrdersRunner.cs</Link>
+    </Compile>
+    <Compile Include="..\source\BaseContentSample.cs">
+      <Link>BaseContentSample.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

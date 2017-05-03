@@ -17,9 +17,6 @@ namespace ShoppingSamples.Manufacturers
         [Newtonsoft.Json.JsonPropertyAttribute("manufacturerId")]
         public ulong ManufacturerId { get; set; }
 
-        [Newtonsoft.Json.JsonPropertyAttribute("applicationName")]
-        public string ApplicationName { get; set; }
-
         [Newtonsoft.Json.JsonPropertyAttribute("websiteUrl")]
         public string WebsiteURL { get; set; }
 
@@ -53,7 +50,6 @@ namespace ShoppingSamples.Manufacturers
 
             return config;
         }
-
     }
 }
 

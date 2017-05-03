@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
@@ -8,65 +7,13 @@ using CommandLine;
 
 namespace ShoppingSamples.Content
 {
-    /// <summary>
-    /// A sample application that runs multiple requests against the Content API for Shopping.
-    /// <list type="bullet">
-    /// <item>
-    /// <description>Initializes the user credentials</description>
-    /// </item>
-    /// <item>
-    /// <description>Creates the service that queries the API</description>
-    /// </item>
-    /// <item>
-    /// <description>Executes the requests</description>
-    /// </item>
-    /// </list>
-    /// </summary>
-    internal class ShoppingContentSample
+    internal class ShoppingContentSample : BaseContentSample
     {
         private static readonly int MaxListPageSize = 50;
-        private static readonly string defaultPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-            "shopping-samples");
 
-        internal class Options {
-            // Would like to use the DefaultValue attribute here, but we have to calculate the
-            // default path at runtime, which means it can't be used as an attribute value.
-            [Option('p', "config_path",
-                HelpText = "Configuration directory for Shopping samples.")]
-            public string ConfigPath { get; set; }
-        }
 
-        [STAThread]
-        internal static void Main(string[] args)
+        internal override void runCalls()
         {
-            Console.WriteLine("Content API for Shopping Command Line Sample");
-            Console.WriteLine("============================================");
-
-            var options = new Options();
-            CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
-
-            if (options.ConfigPath == null)
-            {
-                options.ConfigPath = defaultPath;
-            }
-
-            MerchantConfig config = MerchantConfig.Load(options.ConfigPath);
-
-            var initializer = Authenticator.authenticate(config, ShoppingContentService.Scope.Content);
-            if (initializer == null)
-            {
-                Console.WriteLine("Failed to authenticate, so exiting.");
-                return;
-            }
-
-            // Create the service.
-            var service = new ShoppingContentService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = initializer,
-                    ApplicationName = config.ApplicationName,
-                });
-
             // Retrieve whether the configured MC account is an MCA via the API.
             config.IsMCA = retrieveMCAStatus(service, config);
 
@@ -79,7 +26,8 @@ namespace ShoppingSamples.Content
             ProductstatusesSample productstatusesSample =
                 new ProductstatusesSample(service, MaxListPageSize);
             ShippingsettingsSample shippingsettingsSample = new ShippingsettingsSample(service);
-            MultiClientAccountSample multiClientAccountSample = new MultiClientAccountSample(service);
+            MultiClientAccountSample multiClientAccountSample =
+                new MultiClientAccountSample(service);
 
             if (!config.IsMCA)
             {
@@ -88,7 +36,8 @@ namespace ShoppingSamples.Content
                 productstatusesSample.RunCalls(config.MerchantId);
                 datafeedsSample.RunCalls(config.MerchantId);
                 accountstatusesSample.RunCalls(config.MerchantId);
-                accountsSample.RunCalls(config.MerchantId, config.AccountSampleUser, config.AccountSampleAdWordsCID);
+                accountsSample.RunCalls(config.MerchantId, config.AccountSampleUser,
+                    config.AccountSampleAdWordsCID);
                 accounttaxSample.RunCalls(config.MerchantId);
                 shippingsettingsSample.RunCalls(config.MerchantId);
             }
@@ -100,8 +49,8 @@ namespace ShoppingSamples.Content
             }
         }
 
-        internal static bool retrieveMCAStatus(ShoppingContentService service,
-                                               MerchantConfig config) {
+        internal bool retrieveMCAStatus(ShoppingContentService service, MerchantConfig config)
+        {
             Console.WriteLine("Retrieving MCA status for configured account.");
             // The resource returned by Accounts.get() does not have the MCA status, but if
             // the authenticated user is directly listed as a user of the Merchant Center account

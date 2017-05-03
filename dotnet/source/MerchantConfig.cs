@@ -17,9 +17,6 @@ namespace ShoppingSamples.Content
         [Newtonsoft.Json.JsonPropertyAttribute("merchantId")]
         public ulong MerchantId { get; set; }
 
-        [Newtonsoft.Json.JsonPropertyAttribute("applicationName")]
-        public string ApplicationName { get; set; }
-
         [Newtonsoft.Json.JsonPropertyAttribute("websiteUrl")]
         public string WebsiteURL { get; set; }
 

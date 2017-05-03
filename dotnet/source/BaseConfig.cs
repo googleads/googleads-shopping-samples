@@ -19,6 +19,9 @@ namespace ShoppingSamples
         [Newtonsoft.Json.JsonPropertyAttribute("token")]
         public TokenResponse Token { get; set; }
 
+        [Newtonsoft.Json.JsonPropertyAttribute("applicationName")]
+        public string ApplicationName { get; set; }
+
         public void Save()
         {
             JsonSerializer serializer = new JsonSerializer();

@@ -81,5 +81,8 @@
     <Compile Include="..\source\Properties\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\source\BaseSample.cs">
+      <Link>BaseSample.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>
