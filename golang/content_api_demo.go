@@ -6,9 +6,11 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"net/url"
 	"os"
 	"os/user"
 	"path"
+	"strings"
 	"time"
 
 	"golang.org/x/net/context"
@@ -53,6 +55,7 @@ func main() {
 	}
 	defaultPath := path.Join(usr.HomeDir, "shopping-samples")
 	configPath := flag.String("config_path", defaultPath, "configuration directory for Shopping samples")
+	baseURL := flag.String("base_url", "", "base URL for API calls (if non-standard)")
 
 	flag.Usage = usage
 	flag.Parse()
@@ -74,6 +77,21 @@ func main() {
 	contentService, err := content.New(client)
 	if err != nil {
 		log.Fatal(err)
+	}
+	if *baseURL != "" {
+		// The API client expects the contents of BasePath will have a trailing /.
+		s := strings.TrimSuffix(*baseURL, "/") + "/"
+		// There may be other issues with the base URL that show up during calls,
+		// but let's do some straightforward syntactic checks here.
+		u, err := url.Parse(s)
+		if err != nil {
+			log.Fatal("Failure to parse base_url argument as URL: " + err.Error())
+		}
+		if !u.IsAbs() {
+			log.Fatal("Expected absolute URL for base_url argument: " + *baseURL)
+		}
+		fmt.Println("Using non-standard API endpoint URL: " + s)
+		contentService.BasePath = s
 	}
 	samplesConfig.IsMCA = checkMCAStatus(ctx, contentService, &samplesConfig)
 
