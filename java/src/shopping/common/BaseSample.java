@@ -28,15 +28,16 @@ public abstract class BaseSample {
   protected final HttpTransport httpTransport;
   protected final Authenticator authenticator;
   protected final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+  protected final CommandLine parsedArgs;
 
   public BaseSample(String[] args) throws IOException, ParseException {
     Options options = BaseOption.createCommandLineOptions();
     CommandLineParser parser = new DefaultParser();
-    CommandLine parsedArgs = parser.parse(options, args);
+    parsedArgs = parser.parse(options, args);
     if (parsedArgs.hasOption("h")) {
       printHelpAndExit(options);
     }
-    loadConfig(convertConfigPath(parsedArgs));
+    loadConfig(convertConfigPath());
     httpTransport = createHttpTransport();
     authenticator = loadAuthentication();
     credential = createCredential();
@@ -48,8 +49,8 @@ public abstract class BaseSample {
     System.exit(0);
   }
 
-  protected File convertConfigPath(CommandLine line) throws IOException {
-    String pathString = CONFIG_PATH.getOptionValue(line);
+  protected File convertConfigPath() throws IOException {
+    String pathString = CONFIG_PATH.getOptionValue(parsedArgs);
     File path = new File(pathString);
     if (!path.exists()) {
       throw new IOException("Configuration directory '" + pathString + "' does not exist");
@@ -77,10 +78,10 @@ public abstract class BaseSample {
     // err can be null if response is not JSON
     if (err != null) {
       // For errors in the 4xx range, print out the errors and continue normally.
-     if (err.getCode() >= 400 && err.getCode() < 500) {
-       System.out.printf("There are %d error(s)%n", err.getErrors().size());
-       for (ErrorInfo info : err.getErrors()) {
-         System.out.printf("- [%s] %s%n", info.getReason(), info.getMessage());
+      if (err.getCode() >= 400 && err.getCode() < 500) {
+        System.out.printf("There are %d error(s)%n", err.getErrors().size());
+        for (ErrorInfo info : err.getErrors()) {
+          System.out.printf("- [%s] %s%n", info.getReason(), info.getMessage());
         }
       } else {
         throw e;

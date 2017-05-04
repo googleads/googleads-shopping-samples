@@ -1,5 +1,7 @@
 package shopping.content.v2.samples;
 
+import static shopping.common.BaseOption.ROOT_URL;
+
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.ShoppingContentScopes;
 import com.google.api.services.content.model.Error;
@@ -29,14 +31,23 @@ public abstract class ContentSample extends BaseSample {
   }
 
   protected ShoppingContent createContentService() {
-    return new ShoppingContent.Builder(httpTransport, jsonFactory, credential)
-        .setApplicationName(config.getApplicationName())
+    ShoppingContent.Builder builder =
+        new ShoppingContent.Builder(httpTransport, jsonFactory, credential);
+    String rootUrl = ROOT_URL.getOptionValue(parsedArgs);
+    if (rootUrl != null) {
+      builder.setRootUrl(rootUrl);
+    }
+    return builder.setApplicationName(config.getApplicationName())
         .build();
   }
 
   protected ShoppingContent createSandboxContentService() {
     ShoppingContent.Builder builder =
         new ShoppingContent.Builder(httpTransport, jsonFactory, credential);
+    String rootUrl = ROOT_URL.getOptionValue(parsedArgs);
+    if (rootUrl != null) {
+      builder.setRootUrl(rootUrl);
+    }
     return builder.setApplicationName(config.getApplicationName())
         .setServicePath("content/v2sandbox/")
         .build();

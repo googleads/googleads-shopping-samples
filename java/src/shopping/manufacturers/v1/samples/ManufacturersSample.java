@@ -1,5 +1,7 @@
 package shopping.manufacturers.v1.samples;
 
+import static shopping.common.BaseOption.ROOT_URL;
+
 import com.google.api.services.manufacturers.v1.ManufacturerCenter;
 import com.google.api.services.manufacturers.v1.ManufacturerCenterScopes;
 import com.google.api.services.manufacturers.v1.model.Attributes;
@@ -31,8 +33,13 @@ public abstract class ManufacturersSample extends BaseSample {
   }
 
   protected ManufacturerCenter createManufacturersService() {
-    return new ManufacturerCenter.Builder(httpTransport, jsonFactory, credential)
-        .setApplicationName(config.getApplicationName())
+    ManufacturerCenter.Builder builder =
+        new ManufacturerCenter.Builder(httpTransport, jsonFactory, credential);
+    String rootUrl = ROOT_URL.getOptionValue(parsedArgs);
+    if (rootUrl != null) {
+      builder.setRootUrl(rootUrl);
+    }
+    return builder.setApplicationName(config.getApplicationName())
         .build();
   }
 
