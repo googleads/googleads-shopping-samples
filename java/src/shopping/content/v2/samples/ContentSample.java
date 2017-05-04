@@ -1,11 +1,12 @@
 package shopping.content.v2.samples;
 
 import com.google.api.services.content.ShoppingContent;
-
 import com.google.api.services.content.ShoppingContentScopes;
 import com.google.api.services.content.model.Error;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import org.apache.commons.cli.ParseException;
 import shopping.common.Authenticator;
 import shopping.common.BaseSample;
 
@@ -17,14 +18,14 @@ public abstract class ContentSample extends BaseSample {
   protected ShoppingContent content;
   protected ShoppingContent sandbox;
 
-  public ContentSample() throws IOException {
-    super();
+  public ContentSample(String args[]) throws IOException, ParseException {
+    super(args);
     content = createContentService();
     sandbox = createSandboxContentService();
   }
 
-  protected void loadConfig() throws IOException {
-    config = ContentConfig.load();
+  protected void loadConfig(File path) throws IOException {
+    config = ContentConfig.load(path);
   }
 
   protected ShoppingContent createContentService() {
@@ -42,8 +43,7 @@ public abstract class ContentSample extends BaseSample {
   }
 
   protected Authenticator loadAuthentication() throws IOException {
-    return new Authenticator(httpTransport, jsonFactory, ShoppingContentScopes.all(),
-        config, ContentConfig.CONTENT_DIR);
+    return new Authenticator(httpTransport, jsonFactory, ShoppingContentScopes.all(), config);
   }
 
   protected void checkMCA() {

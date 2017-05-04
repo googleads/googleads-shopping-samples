@@ -5,13 +5,16 @@ import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.model.Account;
 import com.google.api.services.content.model.AccountsListResponse;
 import java.io.IOException;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
  * Sample that lists the Merchant Center subaccounts for the given MCA.
  */
 public class AccountsListSample extends ContentSample {
-  public AccountsListSample() throws IOException {}
+  public AccountsListSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -37,7 +40,7 @@ public class AccountsListSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    new AccountsListSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new AccountsListSample(args).execute();
   }
 }

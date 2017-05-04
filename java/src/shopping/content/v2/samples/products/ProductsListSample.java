@@ -3,8 +3,8 @@ package shopping.content.v2.samples.products;
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductsListResponse;
-
 import java.io.IOException;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -12,7 +12,9 @@ import shopping.content.v2.samples.ContentSample;
  * of results, we fetch each page in turn.
  */
 public class ProductsListSample extends ContentSample {
-  public ProductsListSample() throws IOException {}
+  public ProductsListSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -38,7 +40,7 @@ public class ProductsListSample extends ContentSample {
     } while (true);
   }
 
-  public static void main(String[] args) throws IOException {
-    new ProductsListSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new ProductsListSample(args).execute();
   }
 }

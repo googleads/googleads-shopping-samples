@@ -6,8 +6,10 @@ import com.google.api.services.manufacturers.v1.model.Attributes;
 import com.google.api.services.manufacturers.v1.model.Issue;
 import com.google.api.services.manufacturers.v1.model.Product;
 import com.google.common.base.Joiner;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import org.apache.commons.cli.ParseException;
 import shopping.common.Authenticator;
 import shopping.common.BaseSample;
 
@@ -18,14 +20,14 @@ public abstract class ManufacturersSample extends BaseSample {
   protected ManufacturersConfig config;
   protected ManufacturerCenter manufacturers;
 
-  public ManufacturersSample() throws IOException {
-    super();
+  public ManufacturersSample(String[] args) throws IOException, ParseException {
+    super(args);
     manufacturers = createManufacturersService();
   }
 
   @Override
-  protected void loadConfig() throws IOException {
-    config = ManufacturersConfig.load();
+  protected void loadConfig(File path) throws IOException {
+    config = ManufacturersConfig.load(path);
   }
 
   protected ManufacturerCenter createManufacturersService() {
@@ -36,8 +38,7 @@ public abstract class ManufacturersSample extends BaseSample {
 
   @Override
   protected Authenticator loadAuthentication() throws IOException {
-    return new Authenticator(httpTransport, jsonFactory, ManufacturerCenterScopes.all(),
-        config, ManufacturersConfig.MANUFACTURERS_DIR);
+    return new Authenticator(httpTransport, jsonFactory, ManufacturerCenterScopes.all(), config);
   }
 
   /* Unlike the Content API, the Manufacturer Center API doesn't take the ID directly, but

@@ -4,6 +4,7 @@ import com.google.api.services.manufacturers.v1.ManufacturerCenter;
 import com.google.api.services.manufacturers.v1.model.ListProductsResponse;
 import com.google.api.services.manufacturers.v1.model.Product;
 import java.io.IOException;
+import org.apache.commons.cli.ParseException;
 import shopping.manufacturers.v1.samples.ManufacturersSample;
 
 /**
@@ -11,7 +12,9 @@ import shopping.manufacturers.v1.samples.ManufacturersSample;
  * page of results, we fetch each page in turn.
  */
 public class ProductsListSample extends ManufacturersSample {
-  public ProductsListSample() throws IOException {}
+  public ProductsListSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -31,7 +34,7 @@ public class ProductsListSample extends ManufacturersSample {
     } while (productsList.getPageToken() != null);
   }
 
-  public static void main(String[] args) throws IOException {
-    new ProductsListSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new ProductsListSample(args).execute();
   }
 }

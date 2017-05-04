@@ -7,11 +7,14 @@ import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /** Sample that updates the accounttax information for the current Merchant Center account. */
 public class AccounttaxUpdateSample extends ContentSample {
-  public AccounttaxUpdateSample() throws IOException {}
+  public AccounttaxUpdateSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -37,7 +40,7 @@ public class AccounttaxUpdateSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    new AccounttaxUpdateSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new AccounttaxUpdateSample(args).execute();
   }
 }

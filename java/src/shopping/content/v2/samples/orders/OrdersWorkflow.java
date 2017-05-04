@@ -15,6 +15,7 @@ import com.google.api.services.content.model.OrdersUpdateShipmentRequest;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.Random;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -26,7 +27,9 @@ public class OrdersWorkflow extends ContentSample {
   private int nonce = 0;
   private final Random random = new Random();
 
-  private OrdersWorkflow() throws IOException {}
+  private OrdersWorkflow(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -233,7 +236,7 @@ public class OrdersWorkflow extends ContentSample {
     return ret;
   }
 
-  public static void main(String[] args) throws IOException {
-    new OrdersWorkflow().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new OrdersWorkflow(args).execute();
   }
 }

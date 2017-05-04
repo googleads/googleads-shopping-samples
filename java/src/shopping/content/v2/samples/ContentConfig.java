@@ -3,7 +3,6 @@ package shopping.content.v2.samples;
 import com.google.api.client.json.JsonGenerator;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,9 +18,8 @@ import shopping.common.Config;
  * Center account ID.
  */
 public class ContentConfig extends Config {
-  protected static final File CONTENT_DIR = new File(CONFIG_DIR, "content");
+  private static final String CONTENT_DIR = "content";
   private static final String FILE_NAME = "merchant-info.json";
-  private static final File CONFIG_FILE = new File(CONTENT_DIR, FILE_NAME);
 
   @Key
   private BigInteger merchantId;
@@ -41,15 +39,21 @@ public class ContentConfig extends Config {
   @Key
   private boolean isMCA;
 
-  public static ContentConfig load() throws IOException {
-    return ContentConfig.load(CONFIG_FILE);
-  }
-
-  public static ContentConfig load(File configFile) throws IOException {
+  public static ContentConfig load(File basePath) throws IOException {
     InputStream inputStream = null;
+    File configPath = new File(basePath, CONTENT_DIR);
+    if (!configPath.exists()) {
+      throw new IOException(
+          "Content API for Shopping configuration directory '"
+              + configPath.getCanonicalPath()
+              + "' does not exist");
+    }
+    File configFile = new File(configPath, FILE_NAME);
     try {
       inputStream = new FileInputStream(configFile);
-      return new JacksonFactory().fromInputStream(inputStream, ContentConfig.class);
+      ContentConfig config = new JacksonFactory().fromInputStream(inputStream, ContentConfig.class);
+      config.setPath(configPath);
+      return config;
     } catch (IOException e) {
       throw new IOException("Could not find or read the config file at "
           + configFile.getCanonicalPath() + ". You can use the " + FILE_NAME + " file in the "
@@ -63,8 +67,9 @@ public class ContentConfig extends Config {
 
   public void save() throws IOException {
     OutputStream outputStream = null;
+    File configFile = new File(getPath(), FILE_NAME);
     try {
-      outputStream = new FileOutputStream(ContentConfig.CONFIG_FILE);
+      outputStream = new FileOutputStream(configFile);
       JsonGenerator generator = new JacksonFactory().createJsonGenerator(outputStream,
           Charset.defaultCharset());
       generator.enablePrettyPrint();

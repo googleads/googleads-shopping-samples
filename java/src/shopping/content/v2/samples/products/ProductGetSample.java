@@ -2,8 +2,8 @@ package shopping.content.v2.samples.products;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.Product;
-
 import java.io.IOException;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -11,7 +11,9 @@ import shopping.content.v2.samples.ContentSample;
  * ProductInsert sample.
  */
 public class ProductGetSample extends ContentSample {
-  public ProductGetSample() throws IOException {}
+  public ProductGetSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -31,7 +33,7 @@ public class ProductGetSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    new ProductGetSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new ProductGetSample(args).execute();
   }
 }

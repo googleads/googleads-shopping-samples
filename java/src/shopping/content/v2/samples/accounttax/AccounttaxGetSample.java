@@ -3,11 +3,14 @@ package shopping.content.v2.samples.accounttax;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.AccountTax;
 import java.io.IOException;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /** Sample that retrieves the accounttax information for the current Merchant Center account. */
 public class AccounttaxGetSample extends ContentSample {
-  public AccounttaxGetSample() throws IOException {}
+  public AccounttaxGetSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -20,7 +23,7 @@ public class AccounttaxGetSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    new AccounttaxGetSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new AccounttaxGetSample(args).execute();
   }
 }

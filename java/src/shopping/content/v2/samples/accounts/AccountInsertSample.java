@@ -3,6 +3,7 @@ package shopping.content.v2.samples.accounts;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.Account;
 import java.io.IOException;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -10,7 +11,9 @@ import shopping.content.v2.samples.ContentSample;
  * working with an MCA for this to run.
  */
 public class AccountInsertSample extends ContentSample {
-  public AccountInsertSample() throws IOException {}
+  public AccountInsertSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -30,7 +33,7 @@ public class AccountInsertSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    new AccountInsertSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new AccountInsertSample(args).execute();
   }
 }

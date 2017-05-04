@@ -18,9 +18,8 @@ import shopping.common.Config;
  * Center account ID.
  */
 public class ManufacturersConfig extends Config {
-  protected static final File MANUFACTURERS_DIR = new File(CONFIG_DIR, "manufacturers");
+  private static final String MANUFACTURERS_DIR = "manufacturers";
   private static final String FILE_NAME = "manufacturer-info.json";
-  private static final File CONFIG_FILE = new File(MANUFACTURERS_DIR, FILE_NAME);
 
   @Key
   private BigInteger manufacturerId;
@@ -31,15 +30,22 @@ public class ManufacturersConfig extends Config {
   @Key
   private String websiteUrl;
 
-  public static ManufacturersConfig load() throws IOException {
-    return ManufacturersConfig.load(CONFIG_FILE);
-  }
-
-  public static ManufacturersConfig load(File configFile) throws IOException {
+  public static ManufacturersConfig load(File basePath) throws IOException {
     InputStream inputStream = null;
+    File configPath = new File(basePath, MANUFACTURERS_DIR);
+    if (!configPath.exists()) {
+      throw new IOException(
+          "Manufacturer Center API configuration directory '"
+              + configPath.getCanonicalPath()
+              + "' does not exist");
+    }
+    File configFile = new File(configPath, FILE_NAME);
     try {
       inputStream = new FileInputStream(configFile);
-      return new JacksonFactory().fromInputStream(inputStream, ManufacturersConfig.class);
+      ManufacturersConfig config =
+          new JacksonFactory().fromInputStream(inputStream, ManufacturersConfig.class);
+      config.setPath(configPath);
+      return config;
     } catch (IOException e) {
       throw new IOException("Could not find or read the config file at "
           + configFile.getCanonicalPath() + ". You can use the " + FILE_NAME + " file in the "
@@ -53,9 +59,10 @@ public class ManufacturersConfig extends Config {
 
   @Override
   public void save() throws IOException {
+    File configFile = new File(getPath(), FILE_NAME);
     OutputStream outputStream = null;
     try {
-      outputStream = new FileOutputStream(ManufacturersConfig.CONFIG_FILE);
+      outputStream = new FileOutputStream(configFile);
       JsonGenerator generator = new JacksonFactory().createJsonGenerator(outputStream,
           Charset.defaultCharset());
       generator.enablePrettyPrint();

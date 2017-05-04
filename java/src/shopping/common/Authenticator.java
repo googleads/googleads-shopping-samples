@@ -30,11 +30,11 @@ public class Authenticator {
   private JsonFactory jsonFactory;
   private DataStoreFactory dataStoreFactory;
 
-  public Authenticator(HttpTransport httpTransport, JsonFactory jsonFactory,
-      Set<String> scopes, Config config, File configDir)
+  public Authenticator(
+      HttpTransport httpTransport, JsonFactory jsonFactory, Set<String> scopes, Config config)
       throws IOException {
-    this.serviceAccountFile = new File(configDir, "service-account.json");
-    this.clientSecretsFile = new File(configDir, "client-secrets.json");
+    this.serviceAccountFile = new File(config.getPath(), "service-account.json");
+    this.clientSecretsFile = new File(config.getPath(), "client-secrets.json");
     this.scopes = scopes;
     this.httpTransport = httpTransport;
     this.jsonFactory = jsonFactory;

@@ -8,13 +8,16 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
  * Sample that patches changes to the users and AdWords links for the given account.
  */
 public class AccountPatchSample extends ContentSample {
-  public AccountPatchSample() throws IOException {}
+  public AccountPatchSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -100,7 +103,7 @@ public class AccountPatchSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    new AccountPatchSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new AccountPatchSample(args).execute();
   }
 }

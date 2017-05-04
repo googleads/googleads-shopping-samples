@@ -5,6 +5,7 @@ import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.model.AccountStatus;
 import com.google.api.services.content.model.AccountstatusesListResponse;
 import java.io.IOException;
+import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -12,7 +13,9 @@ import shopping.content.v2.samples.ContentSample;
  * account.  Requires a multi-client account.
  */
 public class AccountstatusesListSample extends ContentSample {
-  public AccountstatusesListSample() throws IOException {}
+  public AccountstatusesListSample(String[] args) throws IOException, ParseException {
+    super(args);
+  }
 
   @Override
   public void execute() throws IOException {
@@ -40,7 +43,7 @@ public class AccountstatusesListSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    new AccountstatusesListSample().execute();
+  public static void main(String[] args) throws IOException, ParseException {
+    new AccountstatusesListSample(args).execute();
   }
 }
