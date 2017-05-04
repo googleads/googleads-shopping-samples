@@ -27,7 +27,7 @@ namespace ShoppingSamples.Content
         public ulong AccountSampleAdWordsCID { get; set; }
 
         // Set by retrieving MCA status via the API after service setup in
-        // ShoppingContentSample.Main().
+        // BaseContentSample#initializeService().
         public bool IsMCA { get; set; }
 
         public static MerchantConfig Load(String configPath)

@@ -48,7 +48,7 @@ namespace ShoppingSamples.Content
             {
                 var req = new OrdersCreateTestOrderRequest();
                 req.TemplateName = "template1";
-                var resp = service.Orders.Createtestorder(req, merchantId).Execute();
+                var resp = sandboxService.Orders.Createtestorder(req, merchantId).Execute();
                 orderId = resp.OrderId;
             }
 
@@ -99,7 +99,7 @@ namespace ShoppingSamples.Content
             Console.WriteLine("=================================================================");
             Console.WriteLine("Advancing Test Order {0}", orderId);
             Console.WriteLine("=================================================================");
-            service.Orders.Advancetestorder(merchantId, orderId).Execute();
+            sandboxService.Orders.Advancetestorder(merchantId, orderId).Execute();
             Console.WriteLine();
 
             currentOrder = GetOrder(merchantId, orderId);
@@ -164,7 +164,7 @@ namespace ShoppingSamples.Content
             Console.WriteLine("=================================================================");
 
 
-            Order status = service.Orders.Get(merchantId, orderId).Execute();
+            Order status = sandboxService.Orders.Get(merchantId, orderId).Execute();
             Console.WriteLine();
 
             return status;
@@ -185,7 +185,7 @@ namespace ShoppingSamples.Content
 
             do
             {
-                OrdersResource.ListRequest ordersRequest = service.Orders.List(merchantId);
+                OrdersResource.ListRequest ordersRequest = sandboxService.Orders.List(merchantId);
                 ordersRequest.Acknowledged = false;
                 ordersRequest.PageToken = pageToken;
 
@@ -227,7 +227,7 @@ namespace ShoppingSamples.Content
 
             var req = new OrdersAcknowledgeRequest();
             req.OperationId = NewOperationId();
-            var resp = service.Orders.Acknowledge(req, merchantId, orderId).Execute();
+            var resp = sandboxService.Orders.Acknowledge(req, merchantId, orderId).Execute();
 
             Console.WriteLine("Finished with status {0}.", resp.ExecutionStatus);
             Console.WriteLine();
@@ -242,7 +242,9 @@ namespace ShoppingSamples.Content
             var req = new OrdersUpdateMerchantOrderIdRequest();
             req.OperationId = NewOperationId();
             req.MerchantOrderId = merchantOrderId;
-            var resp = service.Orders.Updatemerchantorderid(req, merchantId, orderId).Execute();
+            var resp = sandboxService.Orders
+                .Updatemerchantorderid(req, merchantId, orderId)
+                .Execute();
 
             Console.WriteLine("Finished with status {0}.", resp.ExecutionStatus);
             Console.WriteLine();
@@ -255,7 +257,7 @@ namespace ShoppingSamples.Content
             Console.WriteLine("Canceling {0} of item {1}", req.Quantity, req.LineItemId);
             Console.WriteLine("=================================================================");
 
-            var resp = service.Orders.Cancellineitem(req, merchantId, orderId).Execute();
+            var resp = sandboxService.Orders.Cancellineitem(req, merchantId, orderId).Execute();
 
             Console.WriteLine("Finished with status {0}.", resp.ExecutionStatus);
             Console.WriteLine();
@@ -280,7 +282,7 @@ namespace ShoppingSamples.Content
             req.LineItems.Add(itemShip);
             req.OperationId = NewOperationId();
 
-            var resp = service.Orders.Shiplineitems(req, merchantId, orderId).Execute();
+            var resp = sandboxService.Orders.Shiplineitems(req, merchantId, orderId).Execute();
 
             Console.WriteLine("Finished with status {0}.", resp.ExecutionStatus);
             Console.WriteLine();
@@ -305,7 +307,7 @@ namespace ShoppingSamples.Content
             req.Status = "delivered";
             req.OperationId = NewOperationId();
 
-            var resp = service.Orders.Updateshipment(req, merchantId, orderId).Execute();
+            var resp = sandboxService.Orders.Updateshipment(req, merchantId, orderId).Execute();
 
             Console.WriteLine("Finished with status {0}.", resp.ExecutionStatus);
             Console.WriteLine();
@@ -319,7 +321,7 @@ namespace ShoppingSamples.Content
                 req.LineItemId);
             Console.WriteLine("=================================================================");
 
-            var resp = service.Orders.Returnlineitem(req, merchantId, orderId).Execute();
+            var resp = sandboxService.Orders.Returnlineitem(req, merchantId, orderId).Execute();
 
             Console.WriteLine("Finished with status {0}.", resp.ExecutionStatus);
             Console.WriteLine();

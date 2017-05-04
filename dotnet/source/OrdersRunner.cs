@@ -8,7 +8,7 @@ namespace ShoppingSamples.Content
         internal static void Main(string[] args)
         {
             var samples = new OrdersSample();
-            samples.startSamples(args, "https://www.googleapis.com/content/v2sandbox/");
+            samples.startSamples(args);
         }
     }
 }

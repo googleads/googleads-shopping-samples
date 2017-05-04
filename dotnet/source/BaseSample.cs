@@ -21,6 +21,7 @@ namespace ShoppingSamples
     /// </summary>
     internal abstract class BaseSample
     {
+        private static readonly string endpointEnvVar = "GOOGLE_SHOPPING_SAMPLES_ENDPOINT";
         private static readonly string defaultPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.Personal),
             "shopping-samples");
@@ -44,13 +45,9 @@ namespace ShoppingSamples
             [Option('p', "config_path",
                 HelpText = "Configuration directory for Shopping samples.")]
             public string ConfigPath { get; set; }
-
-            [Option('r', "base_url",
-                HelpText = "Base URL to use for API endpoint (if non-standard)")]
-            public string BaseUri { get; set; }
         }
 
-        internal void startSamples(string[] args, string endpoint = null)
+        internal void startSamples(string[] args)
         {
             Console.WriteLine("{0} Command Line Sample", ApiName);
             Console.WriteLine("============================================");
@@ -78,20 +75,13 @@ namespace ShoppingSamples
                 ApplicationName = Config.ApplicationName,
             };
 
-            if (CliOptions.BaseUri == null)
+            if (Environment.GetEnvironmentVariable(endpointEnvVar) == null)
             {
-                if (endpoint == null)
-                {
-                    initializeService(init);
-                }
-                else
-                {
-                    initializeService(init, new Uri(endpoint));
-                }
+                initializeService(init);
             }
             else
             {
-                string url = CliOptions.BaseUri;
+                string url = Environment.GetEnvironmentVariable(endpointEnvVar);
                 // BaseUri must have a trailing /.
                 if (!url.EndsWith("/"))
                 {

@@ -14,9 +14,6 @@ namespace ShoppingSamples.Content
 
         internal override void runCalls()
         {
-            // Retrieve whether the configured MC account is an MCA via the API.
-            config.IsMCA = retrieveMCAStatus(service, config);
-
             AccountsSample accountsSample = new AccountsSample(service);
             AccountstatusesSample accountstatusesSample =
                 new AccountstatusesSample(service, MaxListPageSize);
@@ -47,36 +44,6 @@ namespace ShoppingSamples.Content
                 accountstatusesSample.RunMultiCalls(config.MerchantId);
                 multiClientAccountSample.RunCalls(config.MerchantId);
             }
-        }
-
-        internal bool retrieveMCAStatus(ShoppingContentService service, MerchantConfig config)
-        {
-            Console.WriteLine("Retrieving MCA status for configured account.");
-            // The resource returned by Accounts.get() does not have the MCA status, but if
-            // the authenticated user is directly listed as a user of the Merchant Center account
-            // in question, we can see whether it is an MCA or not by calling Accounts.authinfo().
-            var authinfo = service.Accounts.Authinfo().Execute();
-            foreach (var accountId in authinfo.AccountIdentifiers) {
-                if (config.MerchantId == accountId.AggregatorId)
-                {
-                    return true;
-                }
-                if (config.MerchantId == accountId.MerchantId)
-                {
-                    return false;
-                }
-            }
-            // If the configured account wasn't listed in the authinfo response, then either
-            // it is a sub-account of an MCA that was listed, or the authenticated user does
-            // not have access. Check this by trying to call Accounts.get().
-            try {
-                service.Accounts.Get(config.MerchantId, config.MerchantId).Execute();
-            } catch (Google.GoogleApiException) {
-                throw new ArgumentException(String.Format(
-                    "Authenticated user does not have access to account {0}.", config.MerchantId));
-            }
-            // Sub-accounts cannot be MCAs.
-            return false;
         }
     }
 }
