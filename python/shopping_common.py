@@ -22,6 +22,7 @@ import json
 import os
 import sys
 import time
+import urlparse
 
 import _constants
 import auth
@@ -49,6 +50,7 @@ def init(argv, doc, parents=None, sandbox=False):
     are the parsed command-line flags.
   """
   service = None
+  sandbox_service = None
   flags = None
   parent_parsers = [tools.argparser]
   if parents is not None:
@@ -62,10 +64,6 @@ def init(argv, doc, parents=None, sandbox=False):
       '--config_path', metavar='PATH',
       default=os.path.expanduser('~/shopping-samples'),
       help='configuration directory for the Shopping samples')
-  parser.add_argument(
-      '--root_url', metavar='URL',
-      default=None,
-      help='root URL for API calls (if non-standard)')
   flags = parser.parse_args(argv[1:])
 
   if not os.path.isdir(flags.config_path):
@@ -90,24 +88,40 @@ def init(argv, doc, parents=None, sandbox=False):
   config['path'] = content_path
   credentials = auth.authorize(config, flags)
   http = credentials.authorize(http=httplib2.Http())
-  if flags.root_url:
-    print('Using non-standard root for API endpoint: %s' % flags.root_url)
+  if _constants.ENDPOINT_ENV_VAR in os.environ:
+    # Strip off everything after the host/port in the URL.
+    root_url = urlparse.urljoin(os.environ[_constants.ENDPOINT_ENV_VAR], '/')
+    print('Using non-standard root for API endpoint: %s' % root_url)
+    discovery_url = root_url + '/discovery/v1/apis/{api}/{apiVersion}/rest'
     service = discovery.build(
         _constants.SERVICE_NAME,
-        (_constants.SANDBOX_SERVICE_VERSION if sandbox
-         else _constants.SERVICE_VERSION),
-        discoveryServiceUrl=(flags.root_url + '/discovery/v1/apis/'
-                             '{api}/{apiVersion}/rest'),
+        _constants.SERVICE_VERSION,
+        discoveryServiceUrl=discovery_url,
         http=http)
+    if sandbox:
+      sandbox_service = discovery.build(
+          _constants.SERVICE_NAME,
+          _constants.SANDBOX_SERVICE_VERSION,
+          discoveryServiceUrl=discovery_url,
+          http=http)
   else:
     service = discovery.build(
         _constants.SERVICE_NAME,
-        (_constants.SANDBOX_SERVICE_VERSION if sandbox
-         else _constants.SERVICE_VERSION),
+        _constants.SERVICE_VERSION,
         http=http)
+    if sandbox:
+      sandbox_service = discovery.build(
+          _constants.SERVICE_NAME,
+          _constants.SANDBOX_SERVICE_VERSION,
+          http=http)
+
+  # The sandbox service object only has access to the Orders service, so
+  # we'll need to use the regular service object for this whether sandbox
+  # is set or not.
   config['isMCA'] = retrieve_mca_status(service, config)
 
-  return (service, config, flags)
+  return (sandbox_service if sandbox else service, config, flags)
+
 
 unique_id_increment = 0
 

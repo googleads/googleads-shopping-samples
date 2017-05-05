@@ -37,3 +37,6 @@ CHANNEL = 'online'
 CONTENT_LANGUAGE = 'en'
 # The products are sold in the USA.
 TARGET_COUNTRY = 'US'
+
+# Environment variable used for testing against different endpoints.
+ENDPOINT_ENV_VAR = 'GOOGLE_SHOPPING_SAMPLES_ENDPOINT'
