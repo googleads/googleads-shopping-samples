@@ -18,6 +18,7 @@
 #
 # Handles common tasks across all Google Content API for Shopping samples.
 
+require 'addressable/uri'
 require 'google/apis/content_v2'
 require 'google/api_client/client_secrets'
 require 'googleauth'
@@ -27,6 +28,8 @@ require 'multi_json'
 require_relative 'arg_parser'
 require_relative 'config'
 require_relative 'token_store'
+
+ENDPOINT_ENV_VAR = 'GOOGLE_SHOPPING_SAMPLES_ENDPOINT'
 
 API_NAME = 'content'
 API_VERSION = 'v2'
@@ -102,12 +105,36 @@ def service_setup(options, use_sandbox = false)
   # Initialize API Service.
   service = Google::Apis::ContentV2::ShoppingContentService.new
   service.authorization = credentials
-  if use_sandbox
-    # Use the sandbox API endpoint instead.
-    service.base_path = Addressable::URI.parse("content/v2sandbox/")
+  if ENV[ENDPOINT_ENV_VAR]
+    str = ENV[ENDPOINT_ENV_VAR]
+    # Endpoint must end in a "/".
+    str = str + "/" unless str.end_with? "/"
+    uri = Addressable::URI.parse(str)
+    unless uri.absolute?
+      puts ("API endpoint must be absolute: #{uri}")
+      exit
+    end
+    service.root_url = uri.site
+    service.base_path = uri.path
+    puts ("Using non-standard API endpoint: #{uri}")
   end
-  puts "Retrieving info about the authenticated user."
+
+  # Whether sandbox was requested or not, we need to make the calls
+  # here against the normal service, since the sandbox only has access
+  # to the methods in the Orders service.
   config.is_mca = retrieve_mca_account(service, config)
+
+  if use_sandbox
+    # Since there are no other needs for the regular service, we'll just
+    # change it to point at the sandbox endpoint.
+    uri = Addressable::URI.parse(service.root_url + service.base_path)
+    if uri.basename == "v2"
+      service.base_path = uri.join("../v2sandbox/").path
+    else
+      puts ("Using same API endpoint for sandbox service.")
+      puts ("The Orders sample will fail unless it supports sandbox methods.")
+    end
+  end
 
   return config, service
 end
