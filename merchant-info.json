@@ -4,6 +4,5 @@
   "emailAddress": "merchant_user@example.com",
   "websiteUrl": "http://my-book-shop.com",
   "accountSampleUser": "",
-  "accountSampleAdWordsCID": 0,
-  "isMCA": false
+  "accountSampleAdWordsCID": 0
 }

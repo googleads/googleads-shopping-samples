@@ -89,7 +89,6 @@ Console. Both APIs can be selected if you wish to try samples for both APIs.
     | `websiteUrl`              | string | The URL (without trailing slash) associated with the Merchant Center account. |
     | `accountSampleUser`       | string | If non-empty, the email address for the user to add/remove in samples for the `Accounts` service. |
     | `accountSampleAdWordsCID` | number | If non-zero, the AdWords Customer ID to link/unlink in samples for the `Accounts` service. |
-    | `isMCA`                   | bool   | Whether or not the Merchant Center account associated with `merchantId` is a multi-client account. |
 
     For the Manufacturer Center API, take the example `manufacturer-info.json`
     from the repository root and copy it into
