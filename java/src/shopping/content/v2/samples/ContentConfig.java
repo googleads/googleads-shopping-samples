@@ -36,7 +36,7 @@ public class ContentConfig extends Config {
   @Key
   private BigInteger accountSampleAdWordsCID;
 
-  @Key
+  // This is no longer done via configuration, but instead by querying the API.
   private boolean isMCA;
 
   public static ContentConfig load(File basePath) throws IOException {

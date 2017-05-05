@@ -2,8 +2,11 @@ package shopping.content.v2.samples;
 
 import static shopping.common.BaseOption.ROOT_URL;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.ShoppingContentScopes;
+import com.google.api.services.content.model.AccountIdentifier;
+import com.google.api.services.content.model.AccountsAuthInfoResponse;
 import com.google.api.services.content.model.Error;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +27,7 @@ public abstract class ContentSample extends BaseSample {
     super(args);
     content = createContentService();
     sandbox = createSandboxContentService();
+    config.setIsMCA(retrieveMCAStatus());
   }
 
   protected void loadConfig(File path) throws IOException {
@@ -55,6 +59,32 @@ public abstract class ContentSample extends BaseSample {
 
   protected Authenticator loadAuthentication() throws IOException {
     return new Authenticator(httpTransport, jsonFactory, ShoppingContentScopes.all(), config);
+  }
+
+  protected boolean retrieveMCAStatus() throws IOException {
+    System.out.printf("Retrieving MCA status for account %d.%n", config.getMerchantId());
+    AccountsAuthInfoResponse resp = content.accounts().authinfo().execute();
+    for (AccountIdentifier ids : resp.getAccountIdentifiers()) {
+      if (ids.getAggregatorId() == config.getMerchantId()) {
+        return true;
+      }
+      if (ids.getMerchantId() == config.getMerchantId()) {
+        return false;
+      }
+    }
+    // If we are not explicitly authenticated as a user of the configured account,
+    // then it should be a subaccount of an MCA we are authenticated for. Check to
+    // see if we have access by calling Accounts.get().
+    try {
+      content.accounts().get(config.getMerchantId(), config.getMerchantId()).execute();
+    } catch (GoogleJsonResponseException e) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Authenticated user does not have access to account %d", config.getMerchantId()),
+          e);
+    }
+    // Sub-accounts cannot be MCAs.
+    return false;
   }
 
   protected void checkMCA() {
