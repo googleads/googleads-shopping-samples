@@ -22,11 +22,16 @@ func ordersDemo(ctx context.Context, service *content.APIService, config *mercha
 	}
 	// Local copy to avoid clobbering shared service endpoint.
 	sandboxService := *service
-	// Need to change endpoint from /v2/ to /v2sandbox/
+	// If the endpoint ends in /v2/, need to change to /v2sandbox/.
 	serviceURL, _ := url.Parse(sandboxService.BasePath)
 	servicePath, version := path.Split(path.Clean(serviceURL.Path))
-	serviceURL.Path = path.Join(servicePath, version+"sandbox")
-	sandboxService.BasePath = serviceURL.String() + "/"
+	if version == "v2" {
+		serviceURL.Path = path.Join(servicePath, version+"sandbox")
+		sandboxService.BasePath = serviceURL.String() + "/"
+	} else {
+		fmt.Println("Attempting to run Orders workflow on endpoint: " + sandboxService.BasePath)
+		fmt.Println("This will fail if this endpoint does not support sandbox methods.")
+	}
 
 	orders := content.NewOrdersService(&sandboxService)
 	// Following is used to create operation IDs, which ensures

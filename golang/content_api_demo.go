@@ -10,12 +10,13 @@ import (
 	"os"
 	"os/user"
 	"path"
-	"strings"
 	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/api/content/v2"
 )
+
+const endpointEnvVar = "GOOGLE_SHOPPING_SAMPLES_ENDPOINT"
 
 var demos = map[string](func(context.Context, *content.APIService, *merchantInfo)){
 	"products":           productDemo,
@@ -55,7 +56,6 @@ func main() {
 	}
 	defaultPath := path.Join(usr.HomeDir, "shopping-samples")
 	configPath := flag.String("config_path", defaultPath, "configuration directory for Shopping samples")
-	baseURL := flag.String("base_url", "", "base URL for API calls (if non-standard)")
 
 	flag.Usage = usage
 	flag.Parse()
@@ -78,20 +78,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if *baseURL != "" {
-		// The API client expects the contents of BasePath will have a trailing /.
-		s := strings.TrimSuffix(*baseURL, "/") + "/"
+	baseURL := os.Getenv(endpointEnvVar)
+	if baseURL != "" {
 		// There may be other issues with the base URL that show up during calls,
 		// but let's do some straightforward syntactic checks here.
-		u, err := url.Parse(s)
+		u, err := url.Parse(baseURL)
 		if err != nil {
-			log.Fatal("Failure to parse base_url argument as URL: " + err.Error())
+			log.Fatal("Failure to parse " + endpointEnvVar + " value as URL: " + err.Error())
 		}
 		if !u.IsAbs() {
-			log.Fatal("Expected absolute URL for base_url argument: " + *baseURL)
+			log.Fatal("Expected absolute URL for " + endpointEnvVar + " value: " + baseURL)
 		}
-		fmt.Println("Using non-standard API endpoint URL: " + s)
-		contentService.BasePath = s
+		// The API client expects the contents of BasePath will have a trailing /.
+		contentService.BasePath = u.String() + "/"
+		fmt.Println("Using non-standard API endpoint URL: " + contentService.BasePath)
 	}
 	samplesConfig.IsMCA = checkMCAStatus(ctx, contentService, &samplesConfig)
 
