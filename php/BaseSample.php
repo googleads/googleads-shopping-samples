@@ -34,6 +34,7 @@ abstract class BaseSample {
   const CONFIGFILE_NAME = 'merchant-info.json';
   const SERVICE_ACCOUNT_FILE_NAME = 'service-account.json';
   const OAUTH_CLIENT_FILE_NAME = 'client-secrets.json';
+  const ENDPOINT_ENV_VAR = 'GOOGLE_SHOPPING_SAMPLES_ENDPOINT';
 
   // Constructor that sets up configuration and authentication for all
   // the samples.
@@ -68,29 +69,96 @@ abstract class BaseSample {
 
     $this->merchantId = $this->config->merchantId;
     $this->websiteUrl = $this->config->websiteUrl;
-    $this->service = new Google_Service_ShoppingContent($client);
-    $this->sandboxService = $this->createSandbox($client);
+    $this->prepareServices($client);
     $this->mcaStatus = $this->retrieveMCAStatus();
   }
 
   /**
-   * Instead of requiring the v2sandbox library, we'll instead just
-   * make a version of the service that calls the sandbox API endpoint.
-   * Changing $sandboxService->servicePath is not enough, since that
-   * value is cached during construction of the objects that correspond
-   * to the API services, so we use reflection to access the caching (private)
-   * field of the $sandboxService->orders object and change it there instead.
+   * Prepares the service and sandboxService fields, taking into
+   * consideration any needed endpoint changes.
    */
-  private function createSandbox($client) {
+  private function prepareServices($client) {
+    $endpoint = getenv(self::ENDPOINT_ENV_VAR);
+    if (!empty($endpoint)) {
+      $endpointParts = parse_url($endpoint);
+      if (!array_key_exists('scheme', $endpointParts)
+          || !array_key_exists('host', $endpointParts)) {
+        throw new InvalidArgumentException(
+            'Expected absolute endpoint URL: ' . $endpoint);
+      }
+      $rootUrl =
+          sprintf('%s://%s', $endpointParts['scheme'], $endpointParts['host']);
+      if (array_key_exists('port', $endpointParts)) {
+        $rootUrl .= ':' . $endpointParts['port'];
+      }
+      $rootUrl .= '/';
+      $basePath = '';
+      if (array_key_exists('path', $endpointParts)) {
+        $basePath = trim($endpointParts['path'], '/') . '/';
+      }
+
+      $this->service =
+          $this->getServiceWithEndpoint($client, $rootUrl, $basePath);
+      printf("Using non-standard API endpoint: %s%s\n", $rootUrl, $basePath);
+    } else {
+      $this->service = new Google_Service_ShoppingContent($client);
+
+      // Fetch the standard rootUrl and basePath to set things up
+      // for sandbox creation.
+      $class = new ReflectionClass('Google_Service_Resource');
+      $rootProperty = $class->getProperty('rootUrl');
+      $rootProperty->setAccessible(true);
+      $pathProperty = $class->getProperty('servicePath');
+      $pathProperty->setAccessible(true);
+      $rootUrl = $rootProperty->getValue($this->service->accounts);
+      $basePath = $pathProperty->getValue($this->service->accounts);
+    }
+    // Attempt to determine a sandbox endpoint from the given endpoint.
+    // If we can't, then fall back to using the same endpoint for
+    // sandbox methods.
+    $pathParts = explode('/', rtrim($basePath, '/'));
+    if ($pathParts[count($pathParts) - 1] === 'v2') {
+      $pathParts = array_slice($pathParts, 0, -1);
+      $pathParts[] = 'v2sandbox';
+      $basePath = implode('/', $pathParts) . '/';
+    } else {
+      print 'Using same endpoint for sandbox methods.';
+    }
+    $this->sandboxService =
+        $this->getServiceWithEndpoint($client, $rootUrl, $basePath);
+  }
+
+  /**
+   * Creates a new Content API service object from the given client
+   * and changes the rootUrl and/or the basePath of the Content API
+   * service resource objects within.
+   */
+  private function getServiceWithEndpoint($client, $rootUrl, $basePath) {
+    $service = new Google_Service_ShoppingContent($client);
+
+    // First get the fields that are directly defined in
+    // Google_Service_ShoppingContent, as those are the fields that
+    // contain the different service resource objects.
+    $gsClass = new ReflectionClass('Google_Service');
+    $gsscClass = new ReflectionClass('Google_Service_ShoppingContent');
+    $gsProps = $gsClass->getProperties(ReflectionProperty::IS_PUBLIC);
+    $gsscProps = array_diff(
+        $gsscClass->getProperties(ReflectionProperty::IS_PUBLIC), $gsProps);
+
+    // Prepare the properties we (may) be modifying in these objects.
     $class = new ReflectionClass('Google_Service_Resource');
-    $property = $class->getProperty('servicePath');
-    $property->setAccessible(true);
+    $rootProperty = $class->getProperty('rootUrl');
+    $rootProperty->setAccessible(true);
+    $pathProperty = $class->getProperty('servicePath');
+    $pathProperty->setAccessible(true);
 
-    $sandboxService = new Google_Service_ShoppingContent($client);
-    $orders = $sandboxService->orders;
-    $property->setValue($orders, 'content/v2sandbox/');
+    foreach ($gsscProps as $prop) {
+      $resource = $prop->getValue($service);
+      $rootProperty->setValue($resource, $rootUrl);
+      $pathProperty->setValue($resource, $basePath);
+    }
 
-    return $sandboxService;
+    return $service;
   }
 
   abstract public function run();
