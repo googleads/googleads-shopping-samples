@@ -5,14 +5,13 @@ import com.google.api.client.googleapis.json.GoogleJsonError.ErrorInfo;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.Datafeed;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
  * Sample that inserts a datafeed. The datafeed created here is used in other samples.
  */
 public class DatafeedInsertSample extends ContentSample {
-  public DatafeedInsertSample(String[] args) throws IOException, ParseException {
+  public DatafeedInsertSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -40,7 +39,7 @@ public class DatafeedInsertSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new DatafeedInsertSample(args).execute();
   }
 }

@@ -4,7 +4,6 @@ import com.google.api.services.content.ShoppingContent.Datafeeds.List;
 import com.google.api.services.content.model.Datafeed;
 import com.google.api.services.content.model.DatafeedsListResponse;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -12,7 +11,7 @@ import shopping.content.v2.samples.ContentSample;
  * of results, we fetch each page in turn.
  */
 public class DatafeedListSample extends ContentSample {
-  public DatafeedListSample(String[] args) throws IOException, ParseException {
+  public DatafeedListSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -38,7 +37,7 @@ public class DatafeedListSample extends ContentSample {
     } while (true);
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new DatafeedListSample(args).execute();
   }
 }

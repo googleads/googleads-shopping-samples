@@ -2,7 +2,6 @@ package shopping.content.v2.samples.products;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -10,7 +9,7 @@ import shopping.content.v2.samples.ContentSample;
  * sample.
  */
 public class ProductDeleteSample extends ContentSample {
-  public ProductDeleteSample(String[] args) throws IOException, ParseException {
+  public ProductDeleteSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -28,7 +27,7 @@ public class ProductDeleteSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new ProductDeleteSample(args).execute();
   }
 }

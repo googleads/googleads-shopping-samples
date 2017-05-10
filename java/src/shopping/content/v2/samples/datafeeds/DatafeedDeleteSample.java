@@ -5,7 +5,6 @@ import com.google.api.services.content.model.Datafeed;
 import com.google.api.services.content.model.DatafeedsListResponse;
 import java.io.IOException;
 import java.math.BigInteger;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -13,7 +12,7 @@ import shopping.content.v2.samples.ContentSample;
  * sample.
  */
 public class DatafeedDeleteSample extends ContentSample {
-  public DatafeedDeleteSample(String[] args) throws IOException, ParseException {
+  public DatafeedDeleteSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -53,7 +52,7 @@ public class DatafeedDeleteSample extends ContentSample {
     System.out.printf("Datafeed %s with id %d deleted.\n", name, id);
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new DatafeedDeleteSample(args).execute();
   }
 }

@@ -3,7 +3,6 @@ package shopping.manufacturers.v1.samples.products;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.manufacturers.v1.model.Product;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.manufacturers.v1.samples.ManufacturersSample;
 
 /**
@@ -11,7 +10,7 @@ import shopping.manufacturers.v1.samples.ManufacturersSample;
  * in the format {target_country}:{content_language}:{product_id}.
  */
 public class ProductGetSample extends ManufacturersSample {
-  public ProductGetSample(String[] args) throws IOException, ParseException {
+  public ProductGetSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -37,7 +36,7 @@ public class ProductGetSample extends ManufacturersSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new ProductGetSample(args).execute();
   }
 }

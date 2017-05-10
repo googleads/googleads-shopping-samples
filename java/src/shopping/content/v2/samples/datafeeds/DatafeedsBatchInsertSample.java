@@ -9,7 +9,6 @@ import com.google.api.services.content.model.DatafeedsCustomBatchResponseEntry;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -18,7 +17,7 @@ import shopping.content.v2.samples.ContentSample;
 public class DatafeedsBatchInsertSample extends ContentSample {
   private static final int DATAFEED_COUNT = 5;
 
-  public DatafeedsBatchInsertSample(String[] args) throws IOException, ParseException {
+  public DatafeedsBatchInsertSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -59,7 +58,7 @@ public class DatafeedsBatchInsertSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new DatafeedsBatchInsertSample(args).execute();
   }
 }

@@ -8,14 +8,13 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
  * Sample that deletes new MC accounts created by AccountInsertSample.
  */
 public class AccountDeleteSample extends ContentSample {
-  public AccountDeleteSample(String[] args) throws IOException, ParseException {
+  public AccountDeleteSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -55,7 +54,7 @@ public class AccountDeleteSample extends ContentSample {
     } while (true);
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new AccountDeleteSample(args).execute();
   }
 }

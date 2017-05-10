@@ -6,7 +6,6 @@ import com.google.api.services.content.model.ProductStatusDataQualityIssue;
 import com.google.api.services.content.model.ProductstatusesListResponse;
 import java.io.IOException;
 import java.util.List;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -14,7 +13,7 @@ import shopping.content.v2.samples.ContentSample;
  * page of results, we fetch each page in turn.
  */
 public class ProductstatusesListSample extends ContentSample {
-  public ProductstatusesListSample(String[] args) throws IOException, ParseException {
+  public ProductstatusesListSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -51,7 +50,7 @@ public class ProductstatusesListSample extends ContentSample {
     } while(true);
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new ProductstatusesListSample(args).execute();
   }
 }

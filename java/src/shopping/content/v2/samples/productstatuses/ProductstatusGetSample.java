@@ -4,7 +4,6 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.ProductStatus;
 import com.google.api.services.content.model.ProductStatusDestinationStatus;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -12,7 +11,7 @@ import shopping.content.v2.samples.ContentSample;
  * ProductInsert sample.
  */
 public class ProductstatusGetSample extends ContentSample {
-  public ProductstatusGetSample(String[] args) throws IOException, ParseException {
+  public ProductstatusGetSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -37,7 +36,7 @@ public class ProductstatusGetSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new ProductstatusGetSample(args).execute();
   }
 }

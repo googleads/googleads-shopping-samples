@@ -5,14 +5,13 @@ import com.google.api.services.content.ShoppingContent.Products.List;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductsListResponse;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
  * Sample demonstrating retrieving only a subset of fields for an item.
  */
 public class PartialResponseSample extends ContentSample {
-  public PartialResponseSample(String[] args) throws IOException, ParseException {
+  public PartialResponseSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -39,7 +38,7 @@ public class PartialResponseSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new PartialResponseSample(args).execute();
   }
 }

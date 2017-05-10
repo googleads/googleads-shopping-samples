@@ -1,7 +1,5 @@
 package shopping.content.v2.samples;
 
-import static shopping.common.BaseOption.ROOT_URL;
-
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.ShoppingContentScopes;
@@ -10,8 +8,9 @@ import com.google.api.services.content.model.AccountsAuthInfoResponse;
 import com.google.api.services.content.model.Error;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
-import org.apache.commons.cli.ParseException;
 import shopping.common.Authenticator;
 import shopping.common.BaseSample;
 
@@ -23,10 +22,13 @@ public abstract class ContentSample extends BaseSample {
   protected ShoppingContent content;
   protected ShoppingContent sandbox;
 
-  public ContentSample(String args[]) throws IOException, ParseException {
+  public ContentSample(String args[]) throws IOException {
     super(args);
-    content = createContentService();
-    sandbox = createSandboxContentService();
+    ShoppingContent.Builder builder =
+        new ShoppingContent.Builder(httpTransport, jsonFactory, credential)
+            .setApplicationName(config.getApplicationName());
+    content = createService(builder);
+    sandbox = createSandboxContentService(builder);
     config.setIsMCA(retrieveMCAStatus());
   }
 
@@ -34,27 +36,26 @@ public abstract class ContentSample extends BaseSample {
     config = ContentConfig.load(path);
   }
 
-  protected ShoppingContent createContentService() {
-    ShoppingContent.Builder builder =
-        new ShoppingContent.Builder(httpTransport, jsonFactory, credential);
-    String rootUrl = ROOT_URL.getOptionValue(parsedArgs);
-    if (rootUrl != null) {
-      builder.setRootUrl(rootUrl);
+  // This method assumes a builder that's already been used to create the standard
+  // ShoppingContent service object, so we'll just modify the path if needed.
+  protected ShoppingContent createSandboxContentService(ShoppingContent.Builder builder) {
+    try {
+      URI u = new URI(builder.getServicePath());
+      URI parent = u.resolve("..");
+      String lastElem = parent.relativize(u).getPath();
+      // If the path ends with "v2/", then use an ending of "v2sandbox/" instead.
+      // Otherwise, we'll try and use the same endpoint with a warning.
+      if (lastElem.equals("v2/")) {
+        builder.setServicePath(parent.resolve("v2sandbox/").getPath());
+      } else {
+        System.out.println("Using same API endpoint for standard and sandbox service calls.");
+        System.out.println("Order samples will fail if sandbox methods not supported.");
+      }
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
     }
-    return builder.setApplicationName(config.getApplicationName())
-        .build();
-  }
 
-  protected ShoppingContent createSandboxContentService() {
-    ShoppingContent.Builder builder =
-        new ShoppingContent.Builder(httpTransport, jsonFactory, credential);
-    String rootUrl = ROOT_URL.getOptionValue(parsedArgs);
-    if (rootUrl != null) {
-      builder.setRootUrl(rootUrl);
-    }
-    return builder.setApplicationName(config.getApplicationName())
-        .setServicePath("content/v2sandbox/")
-        .build();
+    return builder.build();
   }
 
   protected Authenticator loadAuthentication() throws IOException {

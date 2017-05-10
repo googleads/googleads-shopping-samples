@@ -7,11 +7,14 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonError.ErrorInfo;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.googleapis.services.AbstractGoogleClient;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -24,16 +27,17 @@ import org.apache.commons.cli.ParseException;
  * Base class for both sets of API samples.
  */
 public abstract class BaseSample {
+  protected static final String ENDPOINT_ENV_VAR = "GOOGLE_SHOPPING_SAMPLES_ENDPOINT";
+
   protected final Credential credential;
   protected final HttpTransport httpTransport;
   protected final Authenticator authenticator;
   protected final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
   protected final CommandLine parsedArgs;
 
-  public BaseSample(String[] args) throws IOException, ParseException {
+  public BaseSample(String[] args) throws IOException {
     Options options = BaseOption.createCommandLineOptions();
-    CommandLineParser parser = new DefaultParser();
-    parsedArgs = parser.parse(options, args);
+    parsedArgs = parseCommandLineArguments(options, args);
     if (parsedArgs.hasOption("h")) {
       printHelpAndExit(options);
     }
@@ -41,6 +45,15 @@ public abstract class BaseSample {
     httpTransport = createHttpTransport();
     authenticator = loadAuthentication();
     credential = createCredential();
+  }
+
+  protected CommandLine parseCommandLineArguments(Options options, String[] args) {
+    CommandLineParser parser = new DefaultParser();
+    try {
+      return parser.parse(options, args);
+    } catch (ParseException e) {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   protected void printHelpAndExit(Options options) {
@@ -89,6 +102,24 @@ public abstract class BaseSample {
     } else {
       throw e;
     }
+  }
+
+  protected <T extends AbstractGoogleClient> T createService(T.Builder builder) {
+    String endpoint = System.getenv(ENDPOINT_ENV_VAR);
+    if (endpoint != null) {
+      try {
+        URI u = new URI(endpoint);
+        if (!u.isAbsolute()) {
+          throw new IllegalArgumentException("Endpoint URL must be absolute: " + endpoint);
+        }
+        builder.setRootUrl(u.resolve("/").toString());
+        builder.setServicePath(u.getPath());
+        System.out.println("Using non-standard API endpoint: " + endpoint);
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return (T) builder.build();
   }
 
   protected abstract void loadConfig(File configPath) throws IOException;

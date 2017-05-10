@@ -8,7 +8,6 @@ import com.google.api.services.content.model.ProductsCustomBatchResponseEntry;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -17,7 +16,7 @@ import shopping.content.v2.samples.ContentSample;
 public class ProductsBatchInsertSample extends ContentSample {
   private static final int PRODUCT_COUNT = 10;
 
-  public ProductsBatchInsertSample(String[] args) throws IOException, ParseException {
+  public ProductsBatchInsertSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -55,7 +54,7 @@ public class ProductsBatchInsertSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new ProductsBatchInsertSample(args).execute();
   }
 }

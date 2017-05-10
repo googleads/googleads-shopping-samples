@@ -13,8 +13,7 @@ public enum BaseOption {
       "PATH",
       "Configuration directory for Shopping samples",
       new File(System.getProperty("user.home"), "shopping-samples").getAbsolutePath()),
-  HELP("h", "help", "print this message"),
-  ROOT_URL("r", "root_url", "URL", "Root URL for API calls if non-standard", null);
+  HELP("h", "help", "print this message");
 
   private final String option;
   private final String longOpt;

@@ -4,7 +4,6 @@ import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductsListResponse;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -12,7 +11,7 @@ import shopping.content.v2.samples.ContentSample;
  * of results, we fetch each page in turn.
  */
 public class ProductsListSample extends ContentSample {
-  public ProductsListSample(String[] args) throws IOException, ParseException {
+  public ProductsListSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -40,7 +39,7 @@ public class ProductsListSample extends ContentSample {
     } while (true);
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new ProductsListSample(args).execute();
   }
 }

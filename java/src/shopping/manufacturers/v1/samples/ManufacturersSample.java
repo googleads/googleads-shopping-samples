@@ -1,7 +1,5 @@
 package shopping.manufacturers.v1.samples;
 
-import static shopping.common.BaseOption.ROOT_URL;
-
 import com.google.api.services.manufacturers.v1.ManufacturerCenter;
 import com.google.api.services.manufacturers.v1.ManufacturerCenterScopes;
 import com.google.api.services.manufacturers.v1.model.Attributes;
@@ -11,7 +9,6 @@ import com.google.common.base.Joiner;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import org.apache.commons.cli.ParseException;
 import shopping.common.Authenticator;
 import shopping.common.BaseSample;
 
@@ -22,25 +19,17 @@ public abstract class ManufacturersSample extends BaseSample {
   protected ManufacturersConfig config;
   protected ManufacturerCenter manufacturers;
 
-  public ManufacturersSample(String[] args) throws IOException, ParseException {
+  public ManufacturersSample(String[] args) throws IOException {
     super(args);
-    manufacturers = createManufacturersService();
+    ManufacturerCenter.Builder builder =
+        new ManufacturerCenter.Builder(httpTransport, jsonFactory, credential)
+            .setApplicationName(config.getApplicationName());
+    manufacturers = createService(builder);
   }
 
   @Override
   protected void loadConfig(File path) throws IOException {
     config = ManufacturersConfig.load(path);
-  }
-
-  protected ManufacturerCenter createManufacturersService() {
-    ManufacturerCenter.Builder builder =
-        new ManufacturerCenter.Builder(httpTransport, jsonFactory, credential);
-    String rootUrl = ROOT_URL.getOptionValue(parsedArgs);
-    if (rootUrl != null) {
-      builder.setRootUrl(rootUrl);
-    }
-    return builder.setApplicationName(config.getApplicationName())
-        .build();
   }
 
   @Override

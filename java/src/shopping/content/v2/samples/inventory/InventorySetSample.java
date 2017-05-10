@@ -5,14 +5,13 @@ import com.google.api.services.content.model.InventorySetRequest;
 import com.google.api.services.content.model.Price;
 import com.google.api.services.content.model.Product;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
  * Sample that modifies a product. We modify the product added in ProductInsertSample.
  */
 public class InventorySetSample extends ContentSample {
-  public InventorySetSample(String[] args) throws IOException, ParseException {
+  public InventorySetSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -59,7 +58,7 @@ public class InventorySetSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new InventorySetSample(args).execute();
   }
 }

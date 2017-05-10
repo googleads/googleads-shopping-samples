@@ -3,14 +3,13 @@ package shopping.content.v2.samples.accounts;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.Account;
 import java.io.IOException;
-import org.apache.commons.cli.ParseException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
  * Sample that gets the Merchant Center account information for the main MC ID.
  */
 public class AccountGetSample extends ContentSample {
-  public AccountGetSample(String[] args) throws IOException, ParseException {
+  public AccountGetSample(String[] args) throws IOException {
     super(args);
   }
 
@@ -32,7 +31,7 @@ public class AccountGetSample extends ContentSample {
     }
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
+  public static void main(String[] args) throws IOException {
     new AccountGetSample(args).execute();
   }
 }
