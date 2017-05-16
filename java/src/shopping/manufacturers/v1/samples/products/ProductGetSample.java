@@ -6,8 +6,8 @@ import java.io.IOException;
 import shopping.manufacturers.v1.samples.ManufacturersSample;
 
 /**
- * Sample that shows how to retrieve the details of a particular product, given its name
- * in the format {target_country}:{content_language}:{product_id}.
+ * Sample that shows how to retrieve the details of a particular product, given its name in the
+ * format {target_country}:{content_language}:{product_id}.
  */
 public class ProductGetSample extends ManufacturersSample {
   public ProductGetSample(String[] args) throws IOException {
@@ -22,13 +22,13 @@ public class ProductGetSample extends ManufacturersSample {
     String productId = "test-product-519";
     String name = targetCountry + ":" + contentLanguage + ":" + productId;
     try {
-      Product product = manufacturers.accounts().products()
-          .get(getManufacturerId(), name)
-          .execute();
+      Product product =
+          manufacturers.accounts().products().get(getManufacturerId(), name).execute();
       printProduct(product);
     } catch (GoogleJsonResponseException e) {
       if (e.getDetails().getCode() == 404) {
-        System.out.printf("The product %s for country %s and language %s was not found.%n",
+        System.out.printf(
+            "The product %s for country %s and language %s was not found.%n",
             productId, targetCountry, contentLanguage);
       } else {
         checkGoogleJsonResponseException(e);

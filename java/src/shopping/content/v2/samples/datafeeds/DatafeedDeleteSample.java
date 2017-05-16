@@ -38,16 +38,14 @@ public class DatafeedDeleteSample extends ContentSample {
         break;
       }
       datafeedsList.setPageToken(page.getNextPageToken());
-    } while(true);
+    } while (true);
 
     if (id == null) {
       System.out.println("Sample datafeed not found. Run DatafeedInsertSample first.");
       return;
     }
 
-    content.datafeeds()
-        .delete(this.config.getMerchantId(), id)
-        .execute();
+    content.datafeeds().delete(this.config.getMerchantId(), id).execute();
 
     System.out.printf("Datafeed %s with id %d deleted.\n", name, id);
   }

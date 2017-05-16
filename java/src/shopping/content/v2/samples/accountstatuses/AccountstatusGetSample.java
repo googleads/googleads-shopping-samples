@@ -20,7 +20,7 @@ public class AccountstatusGetSample extends ContentSample {
           content.accountstatuses().get(config.getMerchantId(), config.getMerchantId()).execute();
       AccountstatusUtils.printAccountStatus(accountStatus);
     } catch (GoogleJsonResponseException e) {
-        checkGoogleJsonResponseException(e);
+      checkGoogleJsonResponseException(e);
     }
   }
 

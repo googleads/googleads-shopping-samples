@@ -8,8 +8,8 @@ import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
 
 /**
- * Sample that gets the account statuses for all subaccounts of the current Merchant Center
- * account.  Requires a multi-client account.
+ * Sample that gets the account statuses for all subaccounts of the current Merchant Center account.
+ * Requires a multi-client account.
  */
 public class AccountstatusesListSample extends ContentSample {
   public AccountstatusesListSample(String[] args) throws IOException {
@@ -38,7 +38,7 @@ public class AccountstatusesListSample extends ContentSample {
         accountStatusesList.setPageToken(page.getNextPageToken());
       } while (true);
     } catch (GoogleJsonResponseException e) {
-        checkGoogleJsonResponseException(e);
+      checkGoogleJsonResponseException(e);
     }
   }
 

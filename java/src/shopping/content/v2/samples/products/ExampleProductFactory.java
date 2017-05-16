@@ -3,17 +3,19 @@ package shopping.content.v2.samples.products;
 import com.google.api.services.content.model.Price;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductShipping;
-
 import java.util.ArrayList;
 import shopping.content.v2.samples.ContentConfig;
 
 /**
- * Factory for creating Products to be inserted by the ProductInsert and ProductBatchInsert
- * samples.
+ * Factory for creating Products to be inserted by the ProductInsert and ProductBatchInsert samples.
  */
 public class ExampleProductFactory {
-  public static Product create(ContentConfig config, String channel, String contentLanguage,
-      String targetCountry, String offerId) {
+  public static Product create(
+      ContentConfig config,
+      String channel,
+      String contentLanguage,
+      String targetCountry,
+      String offerId) {
     Product product = new Product();
     String websiteUrl = config.getWebsiteUrl();
 

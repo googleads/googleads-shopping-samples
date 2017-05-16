@@ -18,11 +18,12 @@ public class AccounttaxUpdateSample extends ContentSample {
   @Override
   public void execute() throws IOException {
     try {
-      List<AccountTaxTaxRule> rules = ImmutableList.of(
-          new AccountTaxTaxRule()
-              .setCountry("US")
-              .setLocationId(new BigInteger("21167"))
-              .setUseGlobalRate(true));
+      List<AccountTaxTaxRule> rules =
+          ImmutableList.of(
+              new AccountTaxTaxRule()
+                  .setCountry("US")
+                  .setLocationId(new BigInteger("21167"))
+                  .setUseGlobalRate(true));
 
       AccountTax newSettings =
           new AccountTax().setAccountId(config.getMerchantId()).setRules(rules);

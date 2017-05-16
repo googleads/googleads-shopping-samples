@@ -21,20 +21,15 @@ public class ContentConfig extends Config {
   private static final String CONTENT_DIR = "content";
   private static final String FILE_NAME = "merchant-info.json";
 
-  @Key
-  private BigInteger merchantId;
+  @Key private BigInteger merchantId;
 
-  @Key
-  private String applicationName;
+  @Key private String applicationName;
 
-  @Key
-  private String websiteUrl;
+  @Key private String websiteUrl;
 
-  @Key
-  private String accountSampleUser;
+  @Key private String accountSampleUser;
 
-  @Key
-  private BigInteger accountSampleAdWordsCID;
+  @Key private BigInteger accountSampleAdWordsCID;
 
   // This is no longer done via configuration, but instead by querying the API.
   private boolean isMCA;
@@ -55,9 +50,13 @@ public class ContentConfig extends Config {
       config.setPath(configPath);
       return config;
     } catch (IOException e) {
-      throw new IOException("Could not find or read the config file at "
-          + configFile.getCanonicalPath() + ". You can use the " + FILE_NAME + " file in the "
-          + "samples root as a template.");
+      throw new IOException(
+          "Could not find or read the config file at "
+              + configFile.getCanonicalPath()
+              + ". You can use the "
+              + FILE_NAME
+              + " file in the "
+              + "samples root as a template.");
     } finally {
       if (inputStream != null) {
         inputStream.close();
@@ -70,8 +69,8 @@ public class ContentConfig extends Config {
     File configFile = new File(getPath(), FILE_NAME);
     try {
       outputStream = new FileOutputStream(configFile);
-      JsonGenerator generator = new JacksonFactory().createJsonGenerator(outputStream,
-          Charset.defaultCharset());
+      JsonGenerator generator =
+          new JacksonFactory().createJsonGenerator(outputStream, Charset.defaultCharset());
       generator.enablePrettyPrint();
       generator.serialize(this);
       generator.flush();

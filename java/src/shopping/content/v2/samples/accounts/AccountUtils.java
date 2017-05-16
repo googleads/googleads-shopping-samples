@@ -4,9 +4,7 @@ import com.google.api.services.content.model.Account;
 import com.google.api.services.content.model.AccountAdwordsLink;
 import com.google.api.services.content.model.AccountUser;
 
-/**
- * Utility class for storing actions performed on Accounts.
- */
+/** Utility class for storing actions performed on Accounts. */
 public class AccountUtils {
   public static final String SAMPLE_ACCOUNT_NAME = "sampleAccount123";
 

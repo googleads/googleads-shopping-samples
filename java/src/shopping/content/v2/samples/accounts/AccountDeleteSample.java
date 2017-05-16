@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample that deletes new MC accounts created by AccountInsertSample.
- */
+/** Sample that deletes new MC accounts created by AccountInsertSample. */
 public class AccountDeleteSample extends ContentSample {
   public AccountDeleteSample(String[] args) throws IOException {
     super(args);
@@ -38,7 +36,7 @@ public class AccountDeleteSample extends ContentSample {
   }
 
   private List<BigInteger> getAccountIdsWithName(String name) throws IOException {
-    List <BigInteger> results = new ArrayList<BigInteger>();
+    List<BigInteger> results = new ArrayList<BigInteger>();
     ShoppingContent.Accounts.List listAccounts = content.accounts().list(config.getMerchantId());
     do {
       AccountsListResponse page = listAccounts.execute();

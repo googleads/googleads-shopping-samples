@@ -5,9 +5,7 @@ import com.google.api.services.content.model.AccountStatusDataQualityIssue;
 import com.google.api.services.content.model.AccountStatusExampleItem;
 import java.util.List;
 
-/**
- * Created by sstrickl on 11/2/16.
- */
+/** Created by sstrickl on 11/2/16. */
 public class AccountstatusUtils {
   public static void printAccountStatus(AccountStatus accountStatus) {
     System.out.printf("- Account ID %s\n", accountStatus.getAccountId());
@@ -16,8 +14,9 @@ public class AccountstatusUtils {
     if (issues != null) {
       System.out.printf("  There are %d data quality issue(s)%n", issues.size());
       for (AccountStatusDataQualityIssue issue : issues) {
-        System.out.printf("  - Issue (%s) [%s] on %d items%n", issue.getSeverity(), issue.getId(),
-            issue.getNumItems());
+        System.out.printf(
+            "  - Issue (%s) [%s] on %d items%n",
+            issue.getSeverity(), issue.getId(), issue.getNumItems());
         if (issue.getExampleItems() != null) {
           System.out.printf("    %d example items:%n", issue.getExampleItems().size());
           for (AccountStatusExampleItem item : issue.getExampleItems()) {

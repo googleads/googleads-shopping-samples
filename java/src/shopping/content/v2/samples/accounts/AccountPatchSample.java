@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample that patches changes to the users and AdWords links for the given account.
- */
+/** Sample that patches changes to the users and AdWords links for the given account. */
 public class AccountPatchSample extends ContentSample {
   public AccountPatchSample(String[] args) throws IOException {
     super(args);
@@ -23,8 +21,8 @@ public class AccountPatchSample extends ContentSample {
     try {
       // First we need to get the current account information, since we're going to be sending
       // back the changes.
-      Account account = content.accounts().get(config.getMerchantId(), config.getMerchantId())
-          .execute();
+      Account account =
+          content.accounts().get(config.getMerchantId(), config.getMerchantId()).execute();
       AccountUtils.printAccount(account);
 
       Boolean changed = false;
@@ -56,18 +54,20 @@ public class AccountPatchSample extends ContentSample {
         return;
       }
 
-      account = content.accounts().patch(config.getMerchantId(), config.getMerchantId(), account)
-        .execute();
+      account =
+          content
+              .accounts()
+              .patch(config.getMerchantId(), config.getMerchantId(), account)
+              .execute();
       System.out.printf("%nAccount information after adding new user/link:%n");
       AccountUtils.printAccount(account);
 
-        // We can also create a new Account object, setting only the fields we want to change.
+      // We can also create a new Account object, setting only the fields we want to change.
       Account patchedAccount = new Account();
 
       if (config.getAccountSampleUser() != null && !config.getAccountSampleUser().equals("")) {
         System.out.printf("Removing new user %s%n", config.getAccountSampleUser());
         List<AccountUser> users = new ArrayList<AccountUser>();
-
 
         for (AccountUser user : account.getUsers()) {
           if (!user.getEmailAddress().equals(config.getAccountSampleUser())) {
@@ -78,10 +78,9 @@ public class AccountPatchSample extends ContentSample {
         patchedAccount.setUsers(users);
       }
       if (!config.getAccountSampleAdWordsCID().equals(BigInteger.ZERO)) {
-        System.out.printf("Removing new AdWords link for %s%n",
-            config.getAccountSampleAdWordsCID());
+        System.out.printf(
+            "Removing new AdWords link for %s%n", config.getAccountSampleAdWordsCID());
         List<AccountAdwordsLink> links = new ArrayList<AccountAdwordsLink>();
-
 
         for (AccountAdwordsLink link : account.getAdwordsLinks()) {
           if (!link.getAdwordsId().equals(config.getAccountSampleAdWordsCID())) {
@@ -92,9 +91,11 @@ public class AccountPatchSample extends ContentSample {
         patchedAccount.setAdwordsLinks(links);
       }
 
-      account = content.accounts()
-          .patch(config.getMerchantId(), config.getMerchantId(), patchedAccount)
-          .execute();
+      account =
+          content
+              .accounts()
+              .patch(config.getMerchantId(), config.getMerchantId(), patchedAccount)
+              .execute();
       System.out.printf("%nAccount information after removing new user/link:%n");
       AccountUtils.printAccount(account);
     } catch (GoogleJsonResponseException e) {

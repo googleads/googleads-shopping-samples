@@ -35,8 +35,8 @@ public class ProductstatusesListSample extends ContentSample {
           System.out.printf("  There are %d data quality issue(s)%n", issues.size());
           for (ProductStatusDataQualityIssue issue : issues) {
             if (issue.getDetail() != null) {
-              System.out.printf("  - (%s) [%s] %s%n", issue.getSeverity(), issue.getId(),
-                  issue.getDetail());
+              System.out.printf(
+                  "  - (%s) [%s] %s%n", issue.getSeverity(), issue.getId(), issue.getDetail());
             } else {
               System.out.printf("  - (%s) [%s]%n", issue.getSeverity(), issue.getId());
             }
@@ -47,7 +47,7 @@ public class ProductstatusesListSample extends ContentSample {
         break;
       }
       productStatusesList.setPageToken(page.getNextPageToken());
-    } while(true);
+    } while (true);
   }
 
   public static void main(String[] args) throws IOException {

@@ -5,9 +5,7 @@ import com.google.api.services.content.model.Account;
 import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample that gets the Merchant Center account information for the main MC ID.
- */
+/** Sample that gets the Merchant Center account information for the main MC ID. */
 public class AccountGetSample extends ContentSample {
   public AccountGetSample(String[] args) throws IOException {
     super(args);
@@ -16,8 +14,8 @@ public class AccountGetSample extends ContentSample {
   @Override
   public void execute() throws IOException {
     try {
-      Account account = content.accounts().get(config.getMerchantId(), config.getMerchantId())
-          .execute();
+      Account account =
+          content.accounts().get(config.getMerchantId(), config.getMerchantId()).execute();
       AccountUtils.printAccount(account);
       if (!config.getWebsiteUrl().equals(account.getWebsiteUrl())) {
         System.out.println("- Website URL differs from sample configuration:");

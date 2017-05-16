@@ -12,8 +12,8 @@ import shopping.content.v2.samples.ContentConfig;
  * samples.
  */
 public class ExampleDatafeedFactory {
-  public static Datafeed create(ContentConfig config, String contentLanguage, String targetCountry,
-      String name) {
+  public static Datafeed create(
+      ContentConfig config, String contentLanguage, String targetCountry, String name) {
     Datafeed datafeed = new Datafeed();
     String websiteUrl = config.getWebsiteUrl();
 

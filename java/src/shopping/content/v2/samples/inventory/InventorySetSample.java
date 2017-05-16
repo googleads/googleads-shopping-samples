@@ -7,9 +7,7 @@ import com.google.api.services.content.model.Product;
 import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample that modifies a product. We modify the product added in ProductInsertSample.
- */
+/** Sample that modifies a product. We modify the product added in ProductInsertSample. */
 public class InventorySetSample extends ContentSample {
   public InventorySetSample(String[] args) throws IOException {
     super(args);
@@ -29,16 +27,20 @@ public class InventorySetSample extends ContentSample {
     request.setPrice(price);
     request.setAvailability("out of stock");
 
-    System.out.printf("Setting information for %s: price %s %s, availability %s%n",
-        offerId, request.getPrice().getValue(), request.getPrice().getCurrency(),
+    System.out.printf(
+        "Setting information for %s: price %s %s, availability %s%n",
+        offerId,
+        request.getPrice().getValue(),
+        request.getPrice().getCurrency(),
         request.getAvailability());
 
     try {
       content.inventory().set(config.getMerchantId(), "online", offerId, request).execute();
     } catch (GoogleJsonResponseException e) {
       if (e.getDetails().getCode() == 404) {
-        System.out.println("The item was not found. Try running "
-            + "shopping.content.v2.samples.products.ProductInsertSample first.");
+        System.out.println(
+            "The item was not found. Try running "
+                + "shopping.content.v2.samples.products.ProductInsertSample first.");
       } else {
         checkGoogleJsonResponseException(e);
       }
@@ -47,11 +49,11 @@ public class InventorySetSample extends ContentSample {
     System.out.println("Inventory.set call succeeded. Fetching product information.");
 
     try {
-      Product product = content.products()
-          .get(config.getMerchantId(), offerId)
-          .execute();
-      System.out.printf("New product information: price %s %s, availability %s%n",
-          product.getPrice().getValue(), product.getPrice().getCurrency(),
+      Product product = content.products().get(config.getMerchantId(), offerId).execute();
+      System.out.printf(
+          "New product information: price %s %s, availability %s%n",
+          product.getPrice().getValue(),
+          product.getPrice().getCurrency(),
           product.getAvailability());
     } catch (GoogleJsonResponseException e) {
       checkGoogleJsonResponseException(e);

@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample that shows batching product inserts.
- */
+/** Sample that shows batching product inserts. */
 public class ProductsBatchInsertSample extends ContentSample {
   private static final int PRODUCT_COUNT = 10;
 
@@ -47,8 +45,8 @@ public class ProductsBatchInsertSample extends ContentSample {
         printErrors(entry.getErrors().getErrors());
       } else {
         Product product = entry.getProduct();
-        System.out.printf("Batch entry %d succesfully inserted %s%n", entry.getBatchId(),
-            product.getOfferId());
+        System.out.printf(
+            "Batch entry %d succesfully inserted %s%n", entry.getBatchId(), product.getOfferId());
         printWarnings(product.getWarnings());
       }
     }

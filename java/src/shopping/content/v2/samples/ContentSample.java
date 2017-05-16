@@ -14,9 +14,7 @@ import java.util.List;
 import shopping.common.Authenticator;
 import shopping.common.BaseSample;
 
-/**
- * Base class for the Content API samples.
- */
+/** Base class for the Content API samples. */
 public abstract class ContentSample extends BaseSample {
   protected ContentConfig config;
   protected ShoppingContent content;

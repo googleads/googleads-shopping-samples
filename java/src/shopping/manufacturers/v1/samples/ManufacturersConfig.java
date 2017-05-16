@@ -21,14 +21,11 @@ public class ManufacturersConfig extends Config {
   private static final String MANUFACTURERS_DIR = "manufacturers";
   private static final String FILE_NAME = "manufacturer-info.json";
 
-  @Key
-  private BigInteger manufacturerId;
+  @Key private BigInteger manufacturerId;
 
-  @Key
-  private String applicationName;
+  @Key private String applicationName;
 
-  @Key
-  private String websiteUrl;
+  @Key private String websiteUrl;
 
   public static ManufacturersConfig load(File basePath) throws IOException {
     InputStream inputStream = null;
@@ -47,9 +44,13 @@ public class ManufacturersConfig extends Config {
       config.setPath(configPath);
       return config;
     } catch (IOException e) {
-      throw new IOException("Could not find or read the config file at "
-          + configFile.getCanonicalPath() + ". You can use the " + FILE_NAME + " file in the "
-          + "samples root as a template.");
+      throw new IOException(
+          "Could not find or read the config file at "
+              + configFile.getCanonicalPath()
+              + ". You can use the "
+              + FILE_NAME
+              + " file in the "
+              + "samples root as a template.");
     } finally {
       if (inputStream != null) {
         inputStream.close();
@@ -63,8 +64,8 @@ public class ManufacturersConfig extends Config {
     OutputStream outputStream = null;
     try {
       outputStream = new FileOutputStream(configFile);
-      JsonGenerator generator = new JacksonFactory().createJsonGenerator(outputStream,
-          Charset.defaultCharset());
+      JsonGenerator generator =
+          new JacksonFactory().createJsonGenerator(outputStream, Charset.defaultCharset());
       generator.enablePrettyPrint();
       generator.serialize(this);
       generator.flush();

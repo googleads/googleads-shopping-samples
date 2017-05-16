@@ -7,9 +7,7 @@ import com.google.api.services.content.model.ProductsListResponse;
 import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample demonstrating retrieving only a subset of fields for an item.
- */
+/** Sample demonstrating retrieving only a subset of fields for an item. */
 public class PartialResponseSample extends ContentSample {
   public PartialResponseSample(String[] args) throws IOException {
     super(args);

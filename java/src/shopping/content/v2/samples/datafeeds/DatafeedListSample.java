@@ -27,8 +27,8 @@ public class DatafeedListSample extends ContentSample {
         return;
       }
       for (Datafeed datafeed : page.getResources()) {
-        System.out.printf("Datafeed with name %s and ID %d%n", datafeed.getName(),
-            datafeed.getId());
+        System.out.printf(
+            "Datafeed with name %s and ID %d%n", datafeed.getName(), datafeed.getId());
       }
       if (page.getNextPageToken() == null) {
         break;

@@ -7,9 +7,7 @@ import com.google.api.services.content.model.AccountsListResponse;
 import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample that lists the Merchant Center subaccounts for the given MCA.
- */
+/** Sample that lists the Merchant Center subaccounts for the given MCA. */
 public class AccountsListSample extends ContentSample {
   public AccountsListSample(String[] args) throws IOException {
     super(args);
@@ -33,7 +31,7 @@ public class AccountsListSample extends ContentSample {
           break;
         }
         listAccounts.setPageToken(page.getNextPageToken());
-      } while(true);
+      } while (true);
     } catch (GoogleJsonResponseException e) {
       checkGoogleJsonResponseException(e);
     }

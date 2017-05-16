@@ -12,9 +12,7 @@ import com.google.api.services.content.model.OrderShipment;
 import com.google.api.services.content.model.OrderShipmentLineItemShipment;
 import com.google.api.services.content.model.Price;
 
-/**
- * Utility class for working with Order resources.
- */
+/** Utility class for working with Order resources. */
 public class OrdersUtils {
   public static void printOrder(Order order) {
     System.out.printf("Order \"%s\":%n", order.getId());
@@ -37,11 +35,11 @@ public class OrdersUtils {
       OrderPaymentMethod method = order.getPaymentMethod();
       System.out.println("- Payment method:");
       System.out.printf("  - Type: %s%n", method.getType());
-      System.out.printf("  - Expiration date: %d/%d%n", method.getExpirationMonth(),
-          method.getExpirationYear());
+      System.out.printf(
+          "  - Expiration date: %d/%d%n", method.getExpirationMonth(), method.getExpirationYear());
     }
-    System.out.println("- Acknowledged: "
-        + (order.getAcknowledged() == Boolean.TRUE ? "yes" : "no"));
+    System.out.println(
+        "- Acknowledged: " + (order.getAcknowledged() == Boolean.TRUE ? "yes" : "no"));
     if (order.getLineItems() != null && order.getLineItems().size() > 0) {
       System.out.printf("- %d line items:%n", order.getLineItems().size());
       for (OrderLineItem item : order.getLineItems()) {
@@ -67,12 +65,12 @@ public class OrdersUtils {
 
   private static void printOrderLineItem(OrderLineItem item, String indent) {
     System.out.printf(indent + "Line item \"%s\":%n", item.getId());
-    System.out.printf(indent + "- Product: %s (%s)%n", item.getProduct().getId(),
-        item.getProduct().getTitle());
-    System.out.printf(indent + "- Price: %s %s%n", item.getPrice().getValue(),
-        item.getPrice().getCurrency());
-    System.out.printf(indent + "- Tax: %s %s%n", item.getTax().getValue(),
-        item.getTax().getCurrency());
+    System.out.printf(
+        indent + "- Product: %s (%s)%n", item.getProduct().getId(), item.getProduct().getTitle());
+    System.out.printf(
+        indent + "- Price: %s %s%n", item.getPrice().getValue(), item.getPrice().getCurrency());
+    System.out.printf(
+        indent + "- Tax: %s %s%n", item.getTax().getValue(), item.getTax().getCurrency());
     printIfNonzero(item.getQuantityOrdered(), "Quantity ordered", indent);
     printIfNonzero(item.getQuantityPending(), "Quantity pending", indent);
     printIfNonzero(item.getQuantityShipped(), "Quantity shipped", indent);
@@ -84,8 +82,11 @@ public class OrdersUtils {
       System.out.printf(indent + "- Ship by date: %s%n", details.getShipByDate());
       System.out.printf(indent + "- Deliver by date: %s%n", details.getDeliverByDate());
       OrderLineItemShippingDetailsMethod method = details.getMethod();
-      System.out.printf(indent + "- Deliver via: %s %s (%s - %s days)%n",
-          method.getCarrier(), method.getMethodName(), method.getMinDaysInTransit(),
+      System.out.printf(
+          indent + "- Deliver via: %s %s (%s - %s days)%n",
+          method.getCarrier(),
+          method.getMethodName(),
+          method.getMinDaysInTransit(),
           method.getMaxDaysInTransit());
     }
     if (item.getReturnInfo() != null && item.getReturnInfo().getIsReturnable() == Boolean.TRUE) {
@@ -128,8 +129,8 @@ public class OrdersUtils {
     if (shipment.getLineItems() != null && shipment.getLineItems().size() > 0) {
       System.out.printf(indent + "- %d line items:%n", shipment.getLineItems().size());
       for (OrderShipmentLineItemShipment item : shipment.getLineItems()) {
-        System.out.printf(indent + "  %d of item \"%s\"%n", item.getQuantity(),
-            item.getLineItemId());
+        System.out.printf(
+            indent + "  %d of item \"%s\"%n", item.getQuantity(), item.getLineItemId());
       }
     }
     if (shipment.getDeliveryDate() != null && !shipment.getDeliveryDate().equals("")) {

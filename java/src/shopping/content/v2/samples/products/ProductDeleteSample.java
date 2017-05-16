@@ -19,9 +19,7 @@ public class ProductDeleteSample extends ContentSample {
     // The shopping.content.v2.samples.products.ProductInsertSample creates a product with ID
     // online:en:GB:book123, so that is the ID we will delete here.
     try {
-      content.products()
-          .delete(this.config.getMerchantId(), "online:en:GB:book123")
-          .execute();
+      content.products().delete(this.config.getMerchantId(), "online:en:GB:book123").execute();
     } catch (GoogleJsonResponseException e) {
       checkGoogleJsonResponseException(e);
     }

@@ -17,8 +17,8 @@ import java.io.InputStreamReader;
 import java.util.Set;
 
 /**
- * Class that contains all the authentication logic, including choosing between
- * service account credentials and OAuth2 client credentials.
+ * Class that contains all the authentication logic, including choosing between service account
+ * credentials and OAuth2 client credentials.
  */
 public class Authenticator {
 
@@ -46,8 +46,7 @@ public class Authenticator {
     InputStream inputStream = null;
 
     try {
-      Credential credential = GoogleCredential.getApplicationDefault()
-          .createScoped(scopes);
+      Credential credential = GoogleCredential.getApplicationDefault().createScoped(scopes);
       System.out.println("Loaded the Application Default Credentials.");
       return credential;
     } catch (IOException e) {
@@ -58,14 +57,15 @@ public class Authenticator {
       try {
         inputStream = new FileInputStream(serviceAccountFile);
         GoogleCredential credential =
-          GoogleCredential.fromStream(inputStream, httpTransport, jsonFactory)
-              .createScoped(scopes);
-        System.out.printf("Loaded service account credentials for %s%n",
-            credential.getServiceAccountId());
+            GoogleCredential.fromStream(inputStream, httpTransport, jsonFactory)
+                .createScoped(scopes);
+        System.out.printf(
+            "Loaded service account credentials for %s%n", credential.getServiceAccountId());
         return credential;
       } catch (IOException e) {
-        throw new IOException("Could not retrieve service account credentials from the file "
-            + serviceAccountFile.getCanonicalPath());
+        throw new IOException(
+            "Could not retrieve service account credentials from the file "
+                + serviceAccountFile.getCanonicalPath());
       } finally {
         if (inputStream != null) {
           inputStream.close();
@@ -76,16 +76,18 @@ public class Authenticator {
       System.out.println("Loading OAuth2 client credentials.");
       try {
         inputStream = new FileInputStream(clientSecretsFile);
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory,
-            new InputStreamReader(inputStream));
+        GoogleClientSecrets clientSecrets =
+            GoogleClientSecrets.load(jsonFactory, new InputStreamReader(inputStream));
         // set up authorization code flow
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-            httpTransport, jsonFactory, clientSecrets, scopes)
-            .setDataStoreFactory(dataStoreFactory)
-            .build();
+        GoogleAuthorizationCodeFlow flow =
+            new GoogleAuthorizationCodeFlow.Builder(
+                    httpTransport, jsonFactory, clientSecrets, scopes)
+                .setDataStoreFactory(dataStoreFactory)
+                .build();
         // authorize
         String userID = config.getEmailAddress();
-        Credential storedCredential = flow.loadCredential(userID);;
+        Credential storedCredential = flow.loadCredential(userID);
+        ;
         if (storedCredential != null) {
           System.out.printf("Retrieved stored credential for user %s%n", userID);
           return storedCredential;
@@ -96,17 +98,21 @@ public class Authenticator {
         System.out.printf("Retrieved credential for user %s from web%n", userID);
         return credential;
       } catch (IOException e) {
-        throw new IOException("Could not retrieve OAuth2 client credentials from the file "
-            + clientSecretsFile.getCanonicalPath());
+        throw new IOException(
+            "Could not retrieve OAuth2 client credentials from the file "
+                + clientSecretsFile.getCanonicalPath());
       } finally {
         if (inputStream != null) {
           inputStream.close();
         }
       }
     }
-    throw new IOException("No authentication credentials found. Checked the Google Application"
-        + "Default Credentials and the paths "
-        + serviceAccountFile.getCanonicalPath() + " and " + clientSecretsFile.getCanonicalPath()
-        + ". Please read the accompanying README.");
+    throw new IOException(
+        "No authentication credentials found. Checked the Google Application"
+            + "Default Credentials and the paths "
+            + serviceAccountFile.getCanonicalPath()
+            + " and "
+            + clientSecretsFile.getCanonicalPath()
+            + ". Please read the accompanying README.");
   }
 }

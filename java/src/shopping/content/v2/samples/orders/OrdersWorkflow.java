@@ -18,8 +18,8 @@ import java.util.Random;
 import shopping.content.v2.samples.ContentSample;
 
 /**
- * Sample that runs through an entire test order workflow. We run this sample on the sandbox
- * API endpoint, so that we have access to test order creation and don't accidentally mutate real
+ * Sample that runs through an entire test order workflow. We run this sample on the sandbox API
+ * endpoint, so that we have access to test order creation and don't accidentally mutate real
  * orders.
  */
 public class OrdersWorkflow extends ContentSample {
@@ -36,19 +36,22 @@ public class OrdersWorkflow extends ContentSample {
     // automatically populated by Google in the non-sandbox version, and we'd skip
     // to finding out what orders are currently waiting for us.
     System.out.print("Creating test order... ");
-    String orderId = sandbox.orders().createtestorder(config.getMerchantId(),
-        new OrdersCreateTestOrderRequest()
-            .setTemplateName("template1"))
-        .execute()
-        .getOrderId();
+    String orderId =
+        sandbox
+            .orders()
+            .createtestorder(
+                config.getMerchantId(),
+                new OrdersCreateTestOrderRequest().setTemplateName("template1"))
+            .execute()
+            .getOrderId();
     System.out.println("done.");
     System.out.printf("Order \"%s\" created.%n", orderId);
     System.out.println();
 
     // List the unacknowledged orders.
     System.out.printf("Listing unacknowledged orders for merchant %d:%n", config.getMerchantId());
-    ShoppingContent.Orders.List listCall = sandbox.orders().list(config.getMerchantId())
-        .setAcknowledged(false);
+    ShoppingContent.Orders.List listCall =
+        sandbox.orders().list(config.getMerchantId()).setAcknowledged(false);
     do {
       OrdersListResponse page = listCall.execute();
       for (Order product : page.getResources()) {
@@ -64,10 +67,14 @@ public class OrdersWorkflow extends ContentSample {
     // Acknowledge the newly received order. (Normally we'd do this for the orders returned by the
     // list call, but here, we'll just use the one we got from creating the test order.)
     System.out.printf("Acknowledging order \"%s\"... ", orderId);
-    System.out.printf("done with status \"%s\".%n",
-        sandbox.orders().acknowledge(config.getMerchantId(), orderId,
-            new OrdersAcknowledgeRequest()
-                .setOperationId(newOperationId()))
+    System.out.printf(
+        "done with status \"%s\".%n",
+        sandbox
+            .orders()
+            .acknowledge(
+                config.getMerchantId(),
+                orderId,
+                new OrdersAcknowledgeRequest().setOperationId(newOperationId()))
             .execute()
             .getExecutionStatus());
     System.out.println();
@@ -75,11 +82,16 @@ public class OrdersWorkflow extends ContentSample {
     // Set the new order's merchant order ID.
     String merchantOrderId = "test order " + String.valueOf(random.nextLong());
     System.out.printf("Updating merchant order ID to \"%s\"... ", merchantOrderId);
-    System.out.printf("done with status \"%s\".%n",
-        sandbox.orders().updatemerchantorderid(config.getMerchantId(), orderId,
-            new OrdersUpdateMerchantOrderIdRequest()
-                .setMerchantOrderId(merchantOrderId)
-                .setOperationId(newOperationId()))
+    System.out.printf(
+        "done with status \"%s\".%n",
+        sandbox
+            .orders()
+            .updatemerchantorderid(
+                config.getMerchantId(),
+                orderId,
+                new OrdersUpdateMerchantOrderIdRequest()
+                    .setMerchantOrderId(merchantOrderId)
+                    .setOperationId(newOperationId()))
             .execute()
             .getExecutionStatus());
     System.out.println();
@@ -90,18 +102,22 @@ public class OrdersWorkflow extends ContentSample {
 
     // Oops, not enough stock for all the Chromecasts, so we cancel one of them.
     System.out.print("Canceling one Chromecast order... ");
-    System.out.printf("done with status \"%s\".%n",
-        sandbox.orders().cancellineitem(config.getMerchantId(), orderId,
-            new OrdersCancelLineItemRequest()
-                .setOperationId(newOperationId())
-                .setLineItemId(currentOrder.getLineItems().get(0).getId())
-                .setQuantity(1L)
-                .setReason("noInventory")
-                .setReasonText("Ran out of inventory while fulfilling request."))
+    System.out.printf(
+        "done with status \"%s\".%n",
+        sandbox
+            .orders()
+            .cancellineitem(
+                config.getMerchantId(),
+                orderId,
+                new OrdersCancelLineItemRequest()
+                    .setOperationId(newOperationId())
+                    .setLineItemId(currentOrder.getLineItems().get(0).getId())
+                    .setQuantity(1L)
+                    .setReason("noInventory")
+                    .setReasonText("Ran out of inventory while fulfilling request."))
             .execute()
             .getExecutionStatus());
     System.out.println();
-
 
     currentOrder = getOrder(orderId);
     OrdersUtils.printOrder(currentOrder);
@@ -111,8 +127,7 @@ public class OrdersWorkflow extends ContentSample {
     // Google when an order is no longer cancelable by the customer, but here we need
     // to do it ourselves.
     System.out.print("Advancing test order... ");
-    sandbox.orders().advancetestorder(config.getMerchantId(), orderId)
-        .execute();
+    sandbox.orders().advancetestorder(config.getMerchantId(), orderId).execute();
     System.out.println("done.");
     System.out.println();
 
@@ -125,17 +140,22 @@ public class OrdersWorkflow extends ContentSample {
     System.out.print("Notifying Google about shipment of first line item... ");
     OrderLineItem item1 = currentOrder.getLineItems().get(0);
     // Storing this in a variable so we can access the shipment/tracking IDs later.
-    OrdersShipLineItemsRequest shipReq1 = new OrdersShipLineItemsRequest()
-        .setOperationId(newOperationId())
-        .setLineItems(ImmutableList.of(
-            new OrderShipmentLineItemShipment()
-                .setLineItemId(item1.getId())
-                .setQuantity(item1.getQuantityPending())))
-        .setCarrier(item1.getShippingDetails().getMethod().getCarrier())
-        .setShipmentId(String.valueOf(random.nextLong()))
-        .setTrackingId(String.valueOf(random.nextLong()));
-    System.out.printf("done with status \"%s\".%n",
-        sandbox.orders().shiplineitems(config.getMerchantId(), orderId, shipReq1)
+    OrdersShipLineItemsRequest shipReq1 =
+        new OrdersShipLineItemsRequest()
+            .setOperationId(newOperationId())
+            .setLineItems(
+                ImmutableList.of(
+                    new OrderShipmentLineItemShipment()
+                        .setLineItemId(item1.getId())
+                        .setQuantity(item1.getQuantityPending())))
+            .setCarrier(item1.getShippingDetails().getMethod().getCarrier())
+            .setShipmentId(String.valueOf(random.nextLong()))
+            .setTrackingId(String.valueOf(random.nextLong()));
+    System.out.printf(
+        "done with status \"%s\".%n",
+        sandbox
+            .orders()
+            .shiplineitems(config.getMerchantId(), orderId, shipReq1)
             .execute()
             .getExecutionStatus());
     System.out.println();
@@ -147,17 +167,22 @@ public class OrdersWorkflow extends ContentSample {
     // Now we ship the rest.
     System.out.print("Notifying Google about shipment of second line item... ");
     OrderLineItem item2 = currentOrder.getLineItems().get(1);
-    OrdersShipLineItemsRequest shipReq2 = new OrdersShipLineItemsRequest()
-        .setOperationId(newOperationId())
-        .setLineItems(ImmutableList.of(
-            new OrderShipmentLineItemShipment()
-                .setLineItemId(item2.getId())
-                .setQuantity(item2.getQuantityPending())))
-        .setCarrier(item2.getShippingDetails().getMethod().getCarrier())
-        .setShipmentId(String.valueOf(random.nextLong()))
-        .setTrackingId(String.valueOf(random.nextLong()));
-    System.out.printf("done with status \"%s\".%n",
-        sandbox.orders().shiplineitems(config.getMerchantId(), orderId, shipReq2)
+    OrdersShipLineItemsRequest shipReq2 =
+        new OrdersShipLineItemsRequest()
+            .setOperationId(newOperationId())
+            .setLineItems(
+                ImmutableList.of(
+                    new OrderShipmentLineItemShipment()
+                        .setLineItemId(item2.getId())
+                        .setQuantity(item2.getQuantityPending())))
+            .setCarrier(item2.getShippingDetails().getMethod().getCarrier())
+            .setShipmentId(String.valueOf(random.nextLong()))
+            .setTrackingId(String.valueOf(random.nextLong()));
+    System.out.printf(
+        "done with status \"%s\".%n",
+        sandbox
+            .orders()
+            .shiplineitems(config.getMerchantId(), orderId, shipReq2)
             .execute()
             .getExecutionStatus());
     System.out.println();
@@ -168,14 +193,19 @@ public class OrdersWorkflow extends ContentSample {
 
     // First item arrives to the customer.
     System.out.print("Notifying Google about delivery of first line item... ");
-    System.out.printf("done with status \"%s\".%n",
-        sandbox.orders().updateshipment(config.getMerchantId(), orderId,
-            new OrdersUpdateShipmentRequest()
-                .setOperationId(newOperationId())
-                .setCarrier(shipReq1.getCarrier())
-                .setTrackingId(shipReq1.getTrackingId())
-                .setShipmentId(shipReq1.getShipmentId())
-                .setStatus("delivered"))
+    System.out.printf(
+        "done with status \"%s\".%n",
+        sandbox
+            .orders()
+            .updateshipment(
+                config.getMerchantId(),
+                orderId,
+                new OrdersUpdateShipmentRequest()
+                    .setOperationId(newOperationId())
+                    .setCarrier(shipReq1.getCarrier())
+                    .setTrackingId(shipReq1.getTrackingId())
+                    .setShipmentId(shipReq1.getShipmentId())
+                    .setStatus("delivered"))
             .execute()
             .getExecutionStatus());
     System.out.println();
@@ -186,14 +216,19 @@ public class OrdersWorkflow extends ContentSample {
 
     // Second item arrives.
     System.out.print("Notifying Google about delivery of second line item... ");
-    System.out.printf("done with status \"%s\".%n",
-        sandbox.orders().updateshipment(config.getMerchantId(), orderId,
-            new OrdersUpdateShipmentRequest()
-                .setOperationId(newOperationId())
-                .setCarrier(shipReq2.getCarrier())
-                .setTrackingId(shipReq2.getTrackingId())
-                .setShipmentId(shipReq2.getShipmentId())
-                .setStatus("delivered"))
+    System.out.printf(
+        "done with status \"%s\".%n",
+        sandbox
+            .orders()
+            .updateshipment(
+                config.getMerchantId(),
+                orderId,
+                new OrdersUpdateShipmentRequest()
+                    .setOperationId(newOperationId())
+                    .setCarrier(shipReq2.getCarrier())
+                    .setTrackingId(shipReq2.getTrackingId())
+                    .setShipmentId(shipReq2.getShipmentId())
+                    .setStatus("delivered"))
             .execute()
             .getExecutionStatus());
     System.out.println();
@@ -204,14 +239,19 @@ public class OrdersWorkflow extends ContentSample {
 
     // Customer returns the first delivered item because it's malfunctioning.
     System.out.print("Notifying Google about return of first line item... ");
-    System.out.printf("... done with status \"%s\".%n",
-        sandbox.orders().returnlineitem(config.getMerchantId(), orderId,
-            new OrdersReturnLineItemRequest()
-                .setOperationId(newOperationId())
-                .setLineItemId(item1.getId())
-                .setQuantity(1L)
-                .setReason("productArrivedDamaged")
-                .setReasonText("Item malfunctioning upon receipt."))
+    System.out.printf(
+        "... done with status \"%s\".%n",
+        sandbox
+            .orders()
+            .returnlineitem(
+                config.getMerchantId(),
+                orderId,
+                new OrdersReturnLineItemRequest()
+                    .setOperationId(newOperationId())
+                    .setLineItemId(item1.getId())
+                    .setQuantity(1L)
+                    .setReason("productArrivedDamaged")
+                    .setReasonText("Item malfunctioning upon receipt."))
             .execute()
             .getExecutionStatus());
     System.out.println();

@@ -12,9 +12,7 @@ import java.util.List;
 import shopping.common.Authenticator;
 import shopping.common.BaseSample;
 
-/**
- * Base class for the Manufacturer Center API samples.
- */
+/** Base class for the Manufacturer Center API samples. */
 public abstract class ManufacturersSample extends BaseSample {
   protected ManufacturersConfig config;
   protected ManufacturerCenter manufacturers;
@@ -46,7 +44,7 @@ public abstract class ManufacturersSample extends BaseSample {
   }
 
   protected void printProduct(Product product) {
-    System.out.printf("Product \"%s\"%n" , product.getName());
+    System.out.printf("Product \"%s\"%n", product.getName());
 
     System.out.println("  Final attributes:");
     printAttributes(product.getFinalAttributes(), "  ");
@@ -76,8 +74,8 @@ public abstract class ManufacturersSample extends BaseSample {
     }
     System.out.printf(prefix + "- Title: %s%n", attributes.getTitle());
     System.out.printf(prefix + "- Brand: %s%n", attributes.getBrand());
-    System.out.printf(prefix + "- Global Trade Item Number(s): %s%n",
-        Joiner.on(", ").join(attributes.getGtin()));
+    System.out.printf(
+        prefix + "- Global Trade Item Number(s): %s%n", Joiner.on(", ").join(attributes.getGtin()));
     if (attributes.getMpn() != null) {
       System.out.printf(prefix + "- Manufacturer Part Number: %s%n", attributes.getMpn());
     }

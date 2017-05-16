@@ -22,8 +22,13 @@ public enum BaseOption {
   private final String argName;
   private final String defaultArg;
 
-  private BaseOption(String option, String longOpt, String description,
-      boolean hasArg, String argName, String defaultArg) {
+  private BaseOption(
+      String option,
+      String longOpt,
+      String description,
+      boolean hasArg,
+      String argName,
+      String defaultArg) {
     this.option = option;
     this.longOpt = longOpt;
     this.description = description;
@@ -32,8 +37,8 @@ public enum BaseOption {
     this.defaultArg = defaultArg;
   }
 
-  private BaseOption(String option, String longOpt, String description,
-      String argName, String defaultArg) {
+  private BaseOption(
+      String option, String longOpt, String description, String argName, String defaultArg) {
     this(option, longOpt, description, true, argName, defaultArg);
   }
 

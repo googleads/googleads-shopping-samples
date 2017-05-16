@@ -7,9 +7,7 @@ import com.google.api.services.content.model.Datafeed;
 import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample that inserts a datafeed. The datafeed created here is used in other samples.
- */
+/** Sample that inserts a datafeed. The datafeed created here is used in other samples. */
 public class DatafeedInsertSample extends ContentSample {
   public DatafeedInsertSample(String[] args) throws IOException {
     super(args);

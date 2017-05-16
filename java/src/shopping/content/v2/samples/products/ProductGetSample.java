@@ -19,9 +19,8 @@ public class ProductGetSample extends ContentSample {
     checkNonMCA();
     try {
       // We create a product with ID online:en:GB:book123 in the ProductInsert sample
-      Product product = content.products()
-          .get(this.config.getMerchantId(), "online:en:GB:book123")
-          .execute();
+      Product product =
+          content.products().get(this.config.getMerchantId(), "online:en:GB:book123").execute();
       System.out.printf("%s %s\n", product.getId(), product.getTitle());
     } catch (GoogleJsonResponseException e) {
       if (e.getDetails().getCode() == 404) {

@@ -22,21 +22,23 @@ public class ShippingsettingsUpdateSample extends ContentSample {
   @Override
   public void execute() throws IOException {
     try {
-      List<RateGroup> newGroups = ImmutableList.of(
-        new RateGroup()
-            .setApplicableShippingLabels(ImmutableList.<String>of())
-            .setSingleValue(
-                new Value().setFlatRate(new Price().setValue("5.00").setCurrency("USD"))));
+      List<RateGroup> newGroups =
+          ImmutableList.of(
+              new RateGroup()
+                  .setApplicableShippingLabels(ImmutableList.<String>of())
+                  .setSingleValue(
+                      new Value().setFlatRate(new Price().setValue("5.00").setCurrency("USD"))));
 
-      List<Service> newServices = ImmutableList.of(
-          new Service()
-              .setName("USPS")
-              .setCurrency("USD")
-              .setDeliveryCountry("US")
-              .setDeliveryTime(
-                  new DeliveryTime().setMinTransitTimeInDays(3L).setMaxTransitTimeInDays(7L))
-              .setActive(true)
-              .setRateGroups(newGroups));
+      List<Service> newServices =
+          ImmutableList.of(
+              new Service()
+                  .setName("USPS")
+                  .setCurrency("USD")
+                  .setDeliveryCountry("US")
+                  .setDeliveryTime(
+                      new DeliveryTime().setMinTransitTimeInDays(3L).setMaxTransitTimeInDays(7L))
+                  .setActive(true)
+                  .setRateGroups(newGroups));
 
       ShippingSettings newSettings =
           new ShippingSettings()

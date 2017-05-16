@@ -23,9 +23,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-/**
- * Base class for both sets of API samples.
- */
+/** Base class for both sets of API samples. */
 public abstract class BaseSample {
   protected static final String ENDPOINT_ENV_VAR = "GOOGLE_SHOPPING_SAMPLES_ENDPOINT";
 
@@ -123,6 +121,8 @@ public abstract class BaseSample {
   }
 
   protected abstract void loadConfig(File configPath) throws IOException;
+
   protected abstract Authenticator loadAuthentication() throws IOException;
+
   public abstract void execute() throws IOException;
 }

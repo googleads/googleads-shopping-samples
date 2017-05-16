@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import shopping.content.v2.samples.ContentSample;
 
-/**
- * Sample that shows batching product inserts.
- */
+/** Sample that shows batching product inserts. */
 public class DatafeedsBatchInsertSample extends ContentSample {
   private static final int DATAFEED_COUNT = 5;
 
@@ -49,8 +47,8 @@ public class DatafeedsBatchInsertSample extends ContentSample {
           printErrors(entry.getErrors().getErrors());
         } else {
           Datafeed datafeed = entry.getDatafeed();
-          System.out.printf("Inserted datafeed %s with ID %d%n",
-              datafeed.getName(), datafeed.getId());
+          System.out.printf(
+              "Inserted datafeed %s with ID %d%n", datafeed.getName(), datafeed.getId());
         }
       }
     } catch (GoogleJsonResponseException e) {
