@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Gets all datafeeds on the specified account."""
 
 import sys
@@ -38,13 +37,14 @@ def main(argv):
       else:
         datafeeds = result['resources']
         for datafeed in datafeeds:
-          print ('Datafeed "%s" with name "%s" was found.' %
-                 (datafeed['id'], datafeed['name']))
+          print('Datafeed "%s" with name "%s" was found.' % (datafeed['id'],
+                                                             datafeed['name']))
         request = service.datafeeds().list_next(request, result)
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

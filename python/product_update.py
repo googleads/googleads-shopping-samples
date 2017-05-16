@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Updates the specified product on the specified account.
 
 This should only be used for properties unsupported by the inventory
@@ -29,9 +28,7 @@ import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'product_id',
-    help='The ID of the product to update.')
+argparser.add_argument('product_id', help='The ID of the product to update.')
 
 
 def main(argv):
@@ -54,16 +51,16 @@ def main(argv):
     # Notice that we use insert. The products service does not have an update
     # method. Inserting a product with an ID that already exists means the same
     # as doing an update.
-    request = service.products().insert(merchantId=merchant_id,
-                                        body=product)
+    request = service.products().insert(merchantId=merchant_id, body=product)
 
     result = request.execute()
-    print ('Product with offerId "%s" and productType "%s" was updated.' %
-           (result['offerId'], result['productType']))
+    print('Product with offerId "%s" and productType "%s" was updated.' %
+          (result['offerId'], result['productType']))
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

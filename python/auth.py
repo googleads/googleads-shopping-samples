@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Authentication-related info for the Content API for Shopping samples."""
 from __future__ import print_function
 import os
@@ -58,8 +57,7 @@ def authorize(config, flags):
   if os.path.isfile(service_account_path):
     print('Using service account credentials from %s.' % service_account_path)
     return ServiceAccountCredentials.from_json_keyfile_name(
-        service_account_path,
-        scopes=_constants.API_SCOPE)
+        service_account_path, scopes=_constants.API_SCOPE)
   elif os.path.isfile(client_secrets_path):
     print('Using OAuth2 client secrets from %s.' % client_secrets_path)
     storage = token_storage.Storage(config)

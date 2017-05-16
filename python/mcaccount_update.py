@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Updates the specified account on the specified account."""
 
 import argparse
@@ -24,9 +23,7 @@ import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'account_id',
-    help='The ID of the account to update.')
+argparser.add_argument('account_id', help='The ID of the account to update.')
 
 
 def main(argv):
@@ -39,17 +36,17 @@ def main(argv):
 
   try:
     new_name = 'updated-account%s' % (shopping_common.get_unique_id(),)
-    request = service.accounts().patch(merchantId=merchant_id,
-                                       accountId=account_id,
-                                       body={'name': new_name})
+    request = service.accounts().patch(
+        merchantId=merchant_id, accountId=account_id, body={'name': new_name})
 
     result = request.execute()
-    print ('Account with id "%s" was updated with new name "%s".' %
-           (account_id, result['name']))
+    print('Account with id "%s" was updated with new name "%s".' %
+          (account_id, result['name']))
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

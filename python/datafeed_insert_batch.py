@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Adds several datafeeds to the specified account, in a single batch."""
 
 import sys
@@ -32,8 +31,8 @@ def datafeed_inserted(unused_request_id, response, exception):
     # Do something with the exception.
     print 'There was an error: ' + str(exception)
   else:
-    print ('Datafeed with name "%s" and ID "%s" was created.' %
-           (response['name'], response['id']))
+    print('Datafeed with name "%s" and ID "%s" was created.' %
+          (response['name'], response['id']))
 
 
 def main(argv):
@@ -48,13 +47,13 @@ def main(argv):
     datafeed = datafeed_sample.create_datafeed_sample(config, name)
 
     # Add datafeed to the batch.
-    batch.add(service.datafeeds().insert(merchantId=merchant_id,
-                                         body=datafeed))
+    batch.add(service.datafeeds().insert(merchantId=merchant_id, body=datafeed))
   try:
     batch.execute()
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

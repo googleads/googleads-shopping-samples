@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Gets all products on the specified account."""
 
 import sys
@@ -42,14 +41,15 @@ def main(argv):
       else:
         products = result['resources']
         for product in products:
-          print ('Product "%s" with title "%s" was found.' %
-                 (product['id'], product['title']))
+          print('Product "%s" with title "%s" was found.' % (product['id'],
+                                                             product['title']))
 
         request = service.products().list_next(request, result)
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

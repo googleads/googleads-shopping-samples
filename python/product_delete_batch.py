@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Deletes several products from the specified account, in a single batch."""
 
 import argparse
@@ -26,8 +25,7 @@ import shopping_common
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
-    'product_ids', nargs='*',
-    help='The IDs of the products to delete.')
+    'product_ids', nargs='*', help='The IDs of the products to delete.')
 
 
 def product_deleted(request_id, unused_response, exception):
@@ -49,13 +47,14 @@ def main(argv):
 
   for product_id in product_ids:
     # Add product deletion to the batch.
-    batch.add(service.products().delete(merchantId=merchant_id,
-                                        productId=product_id))
+    batch.add(
+        service.products().delete(merchantId=merchant_id, productId=product_id))
   try:
     batch.execute()
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

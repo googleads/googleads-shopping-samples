@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Creates a sample accounttax object for the accounttax samples."""
 
 
@@ -21,7 +20,7 @@ def create_accounttax_sample(account_id, **overwrites):
   """Creates a sample accounttax resource object for the accounttax samples.
 
   Args:
-      config: dictionary, Python version of config JSON
+      account_id: int, Merchant Center ID these tax settings are for.
       **overwrites: dictionary, a set of accounttax attributes to overwrite
 
   Returns:

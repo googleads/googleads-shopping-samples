@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Deletes an account from the specified multi-client account."""
 
 import argparse
@@ -24,9 +23,7 @@ import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'account_id',
-    help='The ID of the account to delete.')
+argparser.add_argument('account_id', help='The ID of the account to delete.')
 
 
 def main(argv):
@@ -37,14 +34,15 @@ def main(argv):
   account_id = flags.account_id
   shopping_common.check_mca(config, True)
 
-  request = service.accounts().delete(merchantId=merchant_id,
-                                      accountId=account_id)
+  request = service.accounts().delete(
+      merchantId=merchant_id, accountId=account_id)
   try:
     request.execute()
     print 'Account was deleted.'
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

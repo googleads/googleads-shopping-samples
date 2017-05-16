@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Creates a sample product object for the product samples."""
 import _constants
 import shopping_common
@@ -35,25 +34,46 @@ def create_product_sample(config, offer_id, **overwrites):
     website_url = config['websiteUrl']
 
   product = {
-      'offerId': offer_id,
-      'title': 'A Tale of Two Cities',
-      'description': 'A classic novel about the French Revolution',
-      'link': website_url + '/tale-of-two-cities.html',
-      'imageLink': website_url + '/tale-of-two-cities.jpg',
-      'contentLanguage': _constants.CONTENT_LANGUAGE,
-      'targetCountry': _constants.TARGET_COUNTRY,
-      'channel': _constants.CHANNEL,
-      'availability': 'in stock',
-      'condition': 'new',
-      'googleProductCategory': 'Media > Books',
-      'gtin': '9780007350896',
-      'price': {'value': '2.50', 'currency': 'USD'},
+      'offerId':
+          offer_id,
+      'title':
+          'A Tale of Two Cities',
+      'description':
+          'A classic novel about the French Revolution',
+      'link':
+          website_url + '/tale-of-two-cities.html',
+      'imageLink':
+          website_url + '/tale-of-two-cities.jpg',
+      'contentLanguage':
+          _constants.CONTENT_LANGUAGE,
+      'targetCountry':
+          _constants.TARGET_COUNTRY,
+      'channel':
+          _constants.CHANNEL,
+      'availability':
+          'in stock',
+      'condition':
+          'new',
+      'googleProductCategory':
+          'Media > Books',
+      'gtin':
+          '9780007350896',
+      'price': {
+          'value': '2.50',
+          'currency': 'USD'
+      },
       'shipping': [{
           'country': 'US',
           'service': 'Standard shipping',
-          'price': {'value': '0.99', 'currency': 'USD'}
+          'price': {
+              'value': '0.99',
+              'currency': 'USD'
+          }
       }],
-      'shippingWeight': {'value': '200', 'unit': 'grams'}
+      'shippingWeight': {
+          'value': '200',
+          'unit': 'grams'
+      }
   }
   product.update(overwrites)
   return product

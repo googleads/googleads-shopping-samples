@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Adds several products to the specified account, in a single batch."""
 
 import sys
@@ -39,12 +38,15 @@ def main(argv):
         config,
         offer_id,
         title='This is book number %d' % (i,),
-        price={'value': '%d.50' % (i,), 'currency': 'USD'})
+        price={'value': '%d.50' % (i,),
+               'currency': 'USD'})
     # Add product to the batch.
-    batch['entries'].append({'batchId': i,
-                             'merchantId': merchant_id,
-                             'method': 'insert',
-                             'product': product})
+    batch['entries'].append({
+        'batchId': i,
+        'merchantId': merchant_id,
+        'method': 'insert',
+        'product': product
+    })
 
   try:
     request = service.products().custombatch(body=batch)
@@ -55,15 +57,16 @@ def main(argv):
       for entry in entries:
         if not shopping_common.json_absent_or_false(entry, 'product'):
           product = entry['product']
-          print ('Product with offerId "%s" and title "%s" was created.' %
-                 (product['offerId'], product['title']))
+          print('Product with offerId "%s" and title "%s" was created.' %
+                (product['offerId'], product['title']))
         elif not shopping_common.json_absent_or_false(entry, 'errors'):
           print entry['errors']
     else:
       print 'There was an error. Response: %s' % (result)
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

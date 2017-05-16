@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """This example adds a datafeed to a specified account."""
 
 import sys
@@ -33,17 +32,17 @@ def main(argv):
     datafeed = datafeed_sample.create_datafeed_sample(config, name)
 
     # Add datafeed.
-    request = service.datafeeds().insert(merchantId=merchant_id,
-                                         body=datafeed)
+    request = service.datafeeds().insert(merchantId=merchant_id, body=datafeed)
 
     result = request.execute()
 
-    print ('Datafeed with name "%s" and ID "%s" was created.' %
-           (result['name'], result['id']))
+    print('Datafeed with name "%s" and ID "%s" was created.' % (result['name'],
+                                                                result['id']))
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

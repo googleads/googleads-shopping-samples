@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Gets the shipping settings of the specified account."""
 
 import argparse
@@ -39,8 +38,9 @@ def main(argv):
 
   if merchant_id != account_id:
     shopping_common.check_mca(
-        config, True,
-        msg = 'Non-multi-client accounts can only get their own information.')
+        config,
+        True,
+        msg='Non-multi-client accounts can only get their own information.')
 
   try:
     status = service.shippingsettings().get(
@@ -67,8 +67,9 @@ def main(argv):
         else:
           print '  - %d rate groups.' % len(service['rateGroups'])
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Deletes a product from the specified account."""
 
 import argparse
@@ -24,9 +23,7 @@ import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'product_id',
-    help='The ID of the product to delete.')
+argparser.add_argument('product_id', help='The ID of the product to delete.')
 
 
 def main(argv):
@@ -36,14 +33,15 @@ def main(argv):
   merchant_id = config['merchantId']
   product_id = flags.product_id
 
-  request = service.products().delete(merchantId=merchant_id,
-                                      productId=product_id)
+  request = service.products().delete(
+      merchantId=merchant_id, productId=product_id)
   try:
     request.execute()
     print 'Product was deleted.'
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

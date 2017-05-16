@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """This example adds a product to a specified account."""
 
 import sys
@@ -33,16 +32,16 @@ def main(argv):
     product = product_sample.create_product_sample(config, offer_id)
 
     # Add product.
-    request = service.products().insert(merchantId=merchant_id,
-                                        body=product)
+    request = service.products().insert(merchantId=merchant_id, body=product)
 
     result = request.execute()
-    print ('Product with offerId "%s" and title "%s" was created.' %
-           (result['offerId'], result['title']))
+    print('Product with offerId "%s" and title "%s" was created.' %
+          (result['offerId'], result['title']))
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

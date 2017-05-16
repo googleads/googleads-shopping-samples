@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """This example adds an account to a specified multi-client account."""
 
 import sys
@@ -30,23 +29,19 @@ def main(argv):
 
   try:
     name = 'account%s' % shopping_common.get_unique_id()
-    account = {
-        'name': name,
-        'websiteUrl': 'https://%s.example.com/' % (name,)
-    }
+    account = {'name': name, 'websiteUrl': 'https://%s.example.com/' % (name,)}
 
     # Add account.
-    request = service.accounts().insert(merchantId=merchant_id,
-                                        body=account)
+    request = service.accounts().insert(merchantId=merchant_id, body=account)
 
     result = request.execute()
 
-    print ('Created account ID "%s" for MCA "%s".' %
-           (result['id'], merchant_id))
+    print 'Created account ID "%s" for MCA "%s".' % (result['id'], merchant_id)
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

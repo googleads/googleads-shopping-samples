@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """This example runs through an example order workflow.
 
 Unlike the other samples, this example contains an entire example workflow
@@ -44,8 +43,7 @@ def main(argv):
     # and we'd skip ahead to find out what orders are currently waiting for us.
     print('Creating new test order... ', end='')
     request = orders.createtestorder(
-        merchantId=merchant_id,
-        body={'templateName': 'template1'})
+        merchantId=merchant_id, body={'templateName': 'template1'})
     response = request.execute()
     order_id = response['orderId']
     print('done (%s).' % order_id)
@@ -91,7 +89,8 @@ def main(argv):
     # one of them.
     print('Canceling one Chromecast order... ', end='')
     request = orders.cancellineitem(
-        merchantId=merchant_id, orderId=order_id,
+        merchantId=merchant_id,
+        orderId=order_id,
         body={
             'operationId': _new_operation_id(),
             'lineItemId': current_order['lineItems'][0]['id'],
@@ -133,15 +132,17 @@ def main(argv):
             'lineItemId': item1['id'],
             'quantity': item1['quantityPending']
         }],
-        'carrier': item1['shippingDetails']['method']['carrier'],
-        'shipmentId': '%d' % random.getrandbits(32),
-        'trackingId': '%d' % random.getrandbits(32),
-        'operationId': _new_operation_id()
+        'carrier':
+            item1['shippingDetails']['method']['carrier'],
+        'shipmentId':
+            '%d' % random.getrandbits(32),
+        'trackingId':
+            '%d' % random.getrandbits(32),
+        'operationId':
+            _new_operation_id()
     }
     request = orders.shiplineitems(
-        merchantId=merchant_id,
-        orderId=order_id,
-        body=shipping_request_1)
+        merchantId=merchant_id, orderId=order_id, body=shipping_request_1)
     response = request.execute()
     print('done (%s).' % response['executionStatus'])
 
@@ -158,15 +159,17 @@ def main(argv):
             'lineItemId': item2['id'],
             'quantity': item2['quantityPending']
         }],
-        'carrier': item2['shippingDetails']['method']['carrier'],
-        'shipmentId': '%d' % random.getrandbits(32),
-        'trackingId': '%d' % random.getrandbits(32),
-        'operationId': _new_operation_id()
+        'carrier':
+            item2['shippingDetails']['method']['carrier'],
+        'shipmentId':
+            '%d' % random.getrandbits(32),
+        'trackingId':
+            '%d' % random.getrandbits(32),
+        'operationId':
+            _new_operation_id()
     }
     request = orders.shiplineitems(
-        merchantId=merchant_id,
-        orderId=order_id,
-        body=shipping_request_2)
+        merchantId=merchant_id, orderId=order_id, body=shipping_request_2)
     response = request.execute()
     print('done (%s).' % response['executionStatus'])
 
@@ -238,8 +241,8 @@ def main(argv):
     print_order(current_order)
     print()
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
 
 
 _nonce = 0

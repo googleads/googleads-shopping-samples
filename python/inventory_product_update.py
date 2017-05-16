@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Updates the specified product on the specified account.
 
 Uses the inventory collection. If you're updating any of the supported
@@ -29,9 +28,7 @@ import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'product_id',
-    help='The ID of the product to update.')
+argparser.add_argument('product_id', help='The ID of the product to update.')
 
 
 def main(argv):
@@ -43,7 +40,11 @@ def main(argv):
 
   new_status = {
       'availability': 'out of stock',
-      'price': {'value': 3.00, 'currency': 'USD'}}
+      'price': {
+          'value': 3.00,
+          'currency': 'USD'
+      }
+  }
 
   request = service.inventory().set(
       merchantId=merchant_id,
@@ -57,8 +58,9 @@ def main(argv):
     print 'Product with ID "%s" was updated.' % (product_id,)
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

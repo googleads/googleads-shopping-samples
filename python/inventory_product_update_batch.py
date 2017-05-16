@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Updates several products from the specified account.
 
 Uses the inventory collection and a single batch. If you're updating any of
@@ -31,8 +30,7 @@ import shopping_common
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
-    'product_ids', nargs='*',
-    help='The IDs of the products to update.')
+    'product_ids', nargs='*', help='The IDs of the products to update.')
 
 
 def product_updated(request_id, unused_response, exception):
@@ -55,7 +53,11 @@ def main(argv):
   for product_id in product_ids:
     new_status = {
         'availability': 'out of stock',
-        'price': {'value': 3.14, 'currency': 'USD'}}
+        'price': {
+            'value': 3.14,
+            'currency': 'USD'
+        }
+    }
 
     # Add product update to the batch.
     batch.add(service.inventory().set(
@@ -67,8 +69,9 @@ def main(argv):
     batch.execute()
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

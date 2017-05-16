@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Gets the tax settings of the specified account."""
 
 import argparse
@@ -39,8 +38,9 @@ def main(argv):
 
   if merchant_id != account_id:
     shopping_common.check_mca(
-        config, True,
-        msg = 'Non-multi-client accounts can only get their own information.')
+        config,
+        True,
+        msg='Non-multi-client accounts can only get their own information.')
 
   try:
     status = service.accounttax().get(
@@ -49,7 +49,7 @@ def main(argv):
     if shopping_common.json_absent_or_false(status, 'rules'):
       print '- No tax settings, so no tax is charged.'
     else:
-      print('- Found %d tax rules:' % len(status['rules']))
+      print '- Found %d tax rules:' % len(status['rules'])
       for issue in status['rules']:
         if not shopping_common.json_absent_or_false(issue, 'ratePercent'):
           print('  - For %s in %s: %s%%' %
@@ -60,8 +60,9 @@ def main(argv):
         if not shopping_common.json_absent_or_false(issue, 'shippingTaxed'):
           print '   NOTE: Shipping charges are also taxed.'
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

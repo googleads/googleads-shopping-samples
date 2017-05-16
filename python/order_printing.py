@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """This utility file contains the code for printing out order information."""
 
 from __future__ import print_function
@@ -25,7 +24,8 @@ def print_order(order):
   """Prints out the given order with some human-readable indentation.
 
   Args:
-    order: The Python representation of a Order resource."""
+    order: The Python representation of a Order resource.
+  """
   print('Order %s:' % order['id'])
   print('- Status: %s' % order['status'])
   print('- Merchant: %s' % order['merchantId'])
@@ -37,8 +37,8 @@ def print_order(order):
     print('  - Email: %s' % order['customer']['email'])
   print('- Placed on date: %s' % order['placedDate'])
   if not shopping_common.json_absent_or_false(order, 'netAmount'):
-    print('- Name amount: %s %s' %
-          (order['netAmount']['value'], order['netAmount']['currency']))
+    print('- Name amount: %s %s' % (order['netAmount']['value'],
+                                    order['netAmount']['currency']))
   print('- Payment status: %s' % order['paymentStatus'])
   if not shopping_common.json_absent_or_false(order, 'paymentMethod'):
     print('- Payment method:')
@@ -56,12 +56,11 @@ def print_order(order):
       _print_line_item(item)
   print('- Shipping option: %s' % order['shippingOption'])
   if not shopping_common.json_absent_or_false(order, 'shippingCost'):
-    print('- Shipping cost: %s %s' %
-          (order['shippingCost']['value'], order['shippingCost']['currency']))
+    print('- Shipping cost: %s %s' % (order['shippingCost']['value'],
+                                      order['shippingCost']['currency']))
   if not shopping_common.json_absent_or_false(order, 'shippingCostTax'):
-    print('- Shipping cost tax: %s %s' %
-          (order['shippingCostTax']['value'],
-           order['shippingCostTax']['currency']))
+    print('- Shipping cost tax: %s %s' % (order['shippingCostTax']['value'],
+                                          order['shippingCostTax']['currency']))
   if not shopping_common.json_absent_or_false(order, 'shipments'):
     print('- %d shipments(s):' % len(order['shipments']))
     for shipment in order['shipments']:
@@ -79,17 +78,17 @@ def print_order(order):
 
 def _print_line_item(item):
   """Factored out line item printing to reduce nesting depth."""
+
   def print_if_nonzero(value, text):
     if value > 0:
       print('  - %s: %s' % (text, value))
 
   print('  Line item %s' % item['id'])
-  print('  - Product: %s (%s)' %
-        (item['product']['id'], item['product']['title']))
-  print('  - Price: %s %s' %
-        (item['price']['value'], item['price']['currency']))
-  print('  - Tax: %s %s' %
-        (item['tax']['value'], item['tax']['currency']))
+  print('  - Product: %s (%s)' % (item['product']['id'],
+                                  item['product']['title']))
+  print('  - Price: %s %s' % (item['price']['value'],
+                              item['price']['currency']))
+  print('  - Tax: %s %s' % (item['tax']['value'], item['tax']['currency']))
   print_if_nonzero(item['quantityOrdered'], 'Quantity ordered')
   print_if_nonzero(item['quantityPending'], 'Quantity pending')
   print_if_nonzero(item['quantityShipped'], 'Quantity shipped')

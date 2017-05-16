@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Removes a user from the primary account."""
 
 import sys
@@ -34,9 +33,9 @@ def main(argv):
 
   try:
     # First we need to retrieve the existing set of users.
-    account = service.accounts().get(merchantId=merchant_id,
-                                      accountId=merchant_id,
-                                      fields='users').execute()
+    account = service.accounts().get(
+        merchantId=merchant_id, accountId=merchant_id,
+        fields='users').execute()
 
     if shopping_common.json_absent_or_false(account, 'users'):
       print 'No users in account %d.' % (merchant_id,)
@@ -51,15 +50,15 @@ def main(argv):
       account['users'].remove(u)
 
     # Patch account with new user list.
-    response = service.accounts().patch(merchantId=merchant_id,
-                                        accountId=merchant_id,
-                                        body=account).execute()
+    service.accounts().patch(
+        merchantId=merchant_id, accountId=merchant_id, body=account).execute()
 
     print 'User %s was removed from merchant ID %s' % (email, merchant_id)
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

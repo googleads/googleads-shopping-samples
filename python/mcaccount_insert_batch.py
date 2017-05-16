@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Adds accounts to the specified multi-client account, in a single batch."""
 
 import sys
@@ -31,8 +30,8 @@ def account_inserted(unused_request_id, response, exception):
     # Do something with the exception.
     print 'There was an error: ' + str(exception)
   else:
-    print ('Account with ID "%s" and name "%s" was created.' %
-           (response['id'], response['name']))
+    print('Account with ID "%s" and name "%s" was created.' %
+          (response['id'], response['name']))
 
 
 def main(argv):
@@ -45,18 +44,15 @@ def main(argv):
 
   for _ in range(BATCH_SIZE):
     name = 'account%s' % shopping_common.get_unique_id()
-    account = {
-        'name': name,
-        'websiteUrl': 'https://%s.example.com/' % (name,)
-    }
+    account = {'name': name, 'websiteUrl': 'https://%s.example.com/' % (name,)}
     # Add account to the batch.
-    batch.add(service.accounts().insert(merchantId=merchant_id,
-                                        body=account))
+    batch.add(service.accounts().insert(merchantId=merchant_id, body=account))
   try:
     batch.execute()
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

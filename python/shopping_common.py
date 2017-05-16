@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Common utils for the Content API for Shopping samples."""
 from __future__ import print_function
 
@@ -61,20 +60,24 @@ def init(argv, doc, parents=None, sandbox=False):
       formatter_class=argparse.RawDescriptionHelpFormatter,
       parents=parent_parsers)
   parser.add_argument(
-      '--config_path', metavar='PATH',
+      '--config_path',
+      metavar='PATH',
       default=os.path.expanduser('~/shopping-samples'),
       help='configuration directory for the Shopping samples')
   flags = parser.parse_args(argv[1:])
 
   if not os.path.isdir(flags.config_path):
-    print('Configuration directory "%s" does not exist.' % flags.config_path,
-          file=sys.stderr)
+    print(
+        'Configuration directory "%s" does not exist.' % flags.config_path,
+        file=sys.stderr)
     sys.exit(1)
 
   content_path = os.path.join(flags.config_path, 'content')
   if not os.path.isdir(content_path):
-    print('Content API configuration directory "%s" does not exist.' %
-          content_path, file=sys.stderr)
+    print(
+        'Content API configuration directory "%s" does not exist.' %
+        content_path,
+        file=sys.stderr)
     sys.exit(1)
 
   config_file = os.path.join(content_path, 'merchant-info.json')
@@ -106,9 +109,7 @@ def init(argv, doc, parents=None, sandbox=False):
           http=http)
   else:
     service = discovery.build(
-        _constants.SERVICE_NAME,
-        _constants.SERVICE_VERSION,
-        http=http)
+        _constants.SERVICE_NAME, _constants.SERVICE_VERSION, http=http)
     if sandbox:
       sandbox_service = discovery.build(
           _constants.SERVICE_NAME,
@@ -165,18 +166,18 @@ def retrieve_mca_status(service, config):
     #  * The configured Merchant Center is a subaccount of an accessible MCA.
     #    (Subaccounts cannot be MCAs.)
     #  * We do not have access to the Merchant Center in the configuration.
+    # To see which, try to access the Merchant Center account information.
     try:
-      _ = (service.accounts()
-           .get(merchantId=merchant_id, accountId=merchant_id)
-           .execute())
+      service.accounts().get(
+          merchantId=merchant_id, accountId=merchant_id).execute()
       return False
     except errors.HttpError:
-      print ('The currently authenticated user does not have access to '
-             'MC %d.' % merchant_id)
+      print('The currently authenticated user does not have access to '
+            'MC %d.' % merchant_id)
       sys.exit(1)
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize.')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize.')
     sys.exit(1)
 
 

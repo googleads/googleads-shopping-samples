@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Creates a sample shippingsettings object for the shippingsettings samples."""
 
 
@@ -29,18 +28,25 @@ def create_shippingsettings_sample(**overwrites):
   shipping = {
       'postalCodeGroups': [],
       'services': [{
-          'name': 'USPS',
-          'currency': 'USD',
-          'deliveryCountry': 'US',
+          'name':
+              'USPS',
+          'currency':
+              'USD',
+          'deliveryCountry':
+              'US',
           'deliveryTime': {
               'minTransitTimeInDays': 3,
               'maxTransitTimeInDays': 7
           },
-          'active': True,
+          'active':
+              True,
           'rateGroups': [{
               'applicableShippingLabels': [],
               'singleValue': {
-                'flatRate': { 'value': '5.00', 'currency': 'USD' }
+                  'flatRate': {
+                      'value': '5.00',
+                      'currency': 'USD'
+                  }
               }
           }]
       }]

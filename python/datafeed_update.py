@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Updates the specified datafeed on the specified account."""
 
 import argparse
@@ -24,9 +23,7 @@ import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'datafeed_id',
-    help='The ID of the datafeed to update.')
+argparser.add_argument('datafeed_id', help='The ID of the datafeed to update.')
 
 
 def main(argv):
@@ -38,17 +35,19 @@ def main(argv):
 
   try:
     # Changing the scheduled fetch time to 7:00.
-    request = service.datafeeds().patch(merchantId=merchant_id,
-                                        datafeedId=datafeed_id,
-                                        body={'fetchSchedule': {'hour': 7}})
+    request = service.datafeeds().patch(
+        merchantId=merchant_id,
+        datafeedId=datafeed_id,
+        body={'fetchSchedule': {'hour': 7}})
 
     result = request.execute()
-    print ('Datafeed with ID "%s" and fetchSchedule %s was updated.' %
-           (result['id'], str(result['fetchSchedule'])))
+    print('Datafeed with ID "%s" and fetchSchedule %s was updated.' %
+          (result['id'], str(result['fetchSchedule'])))
 
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

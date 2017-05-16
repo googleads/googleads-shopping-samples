@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Gets the status of the specified product."""
 
 import argparse
@@ -24,9 +23,7 @@ import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
-argparser.add_argument(
-    'product_id',
-    help='The ID of the product to query.')
+argparser.add_argument('product_id', help='The ID of the product to query.')
 
 
 def main(argv):
@@ -41,8 +38,8 @@ def main(argv):
     status = service.productstatuses().get(
         merchantId=merchant_id, productId=product_id).execute()
 
-    print ('- Product "%s" with title "%s":' %
-           (status['productId'], status['title']))
+    print('- Product "%s" with title "%s":' % (status['productId'],
+                                               status['title']))
     if shopping_common.json_absent_or_false(status, 'dataQualityIssues'):
       print '  No data quality issues.'
     else:
@@ -51,11 +48,12 @@ def main(argv):
         if shopping_common.json_absent_or_false(issue, 'detail'):
           print '  - (%s) [%s]' % (issue['severity'], issue['id'])
         else:
-          print('  - (%s) [%s] %s' %
-                (issue['severity'], issue['id'], issue['detail']))
+          print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
+                                      issue['detail']))
   except client.AccessTokenRefreshError:
-    print ('The credentials have been revoked or expired, please re-run the '
-           'application to re-authorize')
+    print('The credentials have been revoked or expired, please re-run the '
+          'application to re-authorize')
+
 
 if __name__ == '__main__':
   main(sys.argv)

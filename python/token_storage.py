@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Backing store implementation for OAuth2 clients based on config data."""
 import copy
 from datetime import datetime
@@ -45,8 +44,8 @@ class Storage(oauth2client.client.Storage):
     for key in to_strip:
       to_dump.pop(key)
     with open(output_file, 'w') as outfile:
-      json.dump(to_dump, outfile, sort_keys=True, indent=2,
-                separators=(',', ': '))
+      json.dump(
+          to_dump, outfile, sort_keys=True, indent=2, separators=(',', ': '))
 
   def locked_delete(self):
     del self._config['token']
