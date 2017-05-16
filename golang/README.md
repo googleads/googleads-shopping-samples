@@ -25,6 +25,10 @@ support package for Google's protocol buffers:
         $ go get github.com/pkg/browser
         $ go get github.com/golang/protobuf/proto
 
+Finally, this code uses the backoff package to handle retries:
+
+        $ go get github.com/cenkalti/backoff
+
 ## Setup Authentication and Sample Configuration
 
 If you have not already done so, please read the top-level `README` to discover
@@ -52,5 +56,8 @@ directory. If not, check out the code to a local directory.
    browser automatically so you can agree to the OAuth2 access.  The access
    token will be stored in the sample configuration file, so if you have
    authentication issues, delete the `token` field and reauthenticate.
+
+   If no demos are selected on the command line, then all demos except for the
+   Orders demo will be run.
 
 4. Examine your shell output, be inspired and start hacking an amazing new app!

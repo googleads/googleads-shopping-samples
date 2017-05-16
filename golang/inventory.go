@@ -22,7 +22,7 @@ func inventoryDemo(ctx context.Context, service *content.APIService, config *mer
 	product := createSampleProduct(config, offerID)
 
 	newPrice := content.Price{
-		Currency: "US",
+		Currency: "USD",
 		Value:    "5.00",
 	}
 	invReq := content.InventorySetRequest{
@@ -46,7 +46,7 @@ func inventoryDemo(ctx context.Context, service *content.APIService, config *mer
 	if err != nil {
 		dumpAPIErrorAndStop(err, "Retrieval failed")
 	}
-	fmt.Printf("done.")
+	fmt.Println("done.")
 	fmt.Printf("Retrieved product %s @ (%s, %s)\n\n",
 		productInfo.Id, productInfo.Availability,
 		productInfo.Price.Currency)

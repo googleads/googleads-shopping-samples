@@ -95,7 +95,17 @@ func main() {
 	}
 	samplesConfig.IsMCA = checkMCAStatus(ctx, contentService, &samplesConfig)
 
-	for _, d := range flag.Args() {
+	modules := flag.Args()
+	// If no modules were specified, then run all non-Orders demos.
+	if len(modules) == 0 {
+		for k := range demos {
+			if k != "orders" {
+				modules = append(modules, k)
+			}
+		}
+	}
+
+	for _, d := range modules {
 		demo, ok := demos[d]
 		if !ok {
 			fmt.Fprintf(os.Stderr, "Invalid service: %s\n\n", d)
@@ -105,5 +115,6 @@ func main() {
 		fmt.Printf("Running demo %s...\n", d)
 		demo(ctx, contentService, &samplesConfig)
 		fmt.Printf("Finished running demo %s.\n", d)
+		fmt.Println("-------------------------")
 	}
 }

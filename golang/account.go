@@ -11,7 +11,9 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/api/content/v2"
@@ -130,6 +132,29 @@ func multiClientAccountDemo(ctx context.Context, service *content.APIService, co
 		dumpAPIErrorAndStop(err, "Adding subaccount failed")
 	}
 	fmt.Printf("Subaccount added with ID %d.\n", account.Id)
+
+	fmt.Printf("Retrieving subaccount with ID %d.\n", account.Id)
+	// Since accounts may not be immediately available after creation, perform
+	// a simplistic back-off algorithm to retry a few times.
+	operation := func() error {
+		account, err := accounts.Get(config.MerchantID, account.Id).Do()
+		if err != nil {
+			return err
+		}
+		printAccount(account)
+		fmt.Println("")
+		return nil
+	}
+	notify := func(err error, d time.Duration) {
+		fmt.Printf("Failed to retrieve subaccount, will retry after %s.\n", d)
+	}
+	backoffSettings := backoff.NewExponentialBackOff()
+	backoffSettings.InitialInterval = 5 * time.Second
+	backoffSettings.MaxInterval = 30 * time.Second
+	backoffSettings.MaxElapsedTime = 60 * time.Second
+	if err := backoff.RetryNotify(operation, backoffSettings, notify); err != nil {
+		dumpAPIErrorAndStop(err, "Retrieving new subaccount failed")
+	}
 
 	fmt.Printf("Printing subaccounts of %d:\n", config.MerchantID)
 	if err := accounts.List(config.MerchantID).Pages(ctx, printAccountsPage); err != nil {
