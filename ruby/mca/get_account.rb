@@ -27,7 +27,7 @@ def get_account(content_api, merchant_id, account_id)
       exit
     end
 
-    puts "Retrieved account ID #{res.id} for MCA #{merchant_id}"
+    puts "Retrieved account ID #{res.id} for merchant #{merchant_id}"
   end
 end
 
@@ -35,21 +35,26 @@ end
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
 
-  unless ARGV.size == 1
-    puts "Usage: #{$0} ACCOUNT_ID"
+  unless ARGV.size <= 1
+    puts "Usage: #{$0} [ACCOUNT_ID]"
     exit
   end
-  account_id = ARGV[0]
 
   config, content_api = service_setup(options)
+  if ARGV.empty?
+    account_id = config.merchant_id
+  else
+    account_id = ARGV[0].to_i
+  end
+
   # Account.get can be used in one of two cases:
   # - The requested MCID is the same as the MCID we're using for the call.
   # - The merchant center account is an MCA.
   # The Merchant ID from JSON could be a number instead of a string, but here
   # we check against the string from the command line, so convert
   # the config version to a string for the equality check.
-  unless account_id == config.merchant_id.to_s or config.is_mca
-    puts "Merchant in configuration is not described as an MCA."
+  unless account_id == config.merchant_id or config.is_mca
+    puts "Non-MCA merchants cannot retrieve information about other accounts."
     exit
   end
   get_account(content_api, config.merchant_id, account_id)

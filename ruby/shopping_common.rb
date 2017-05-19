@@ -147,11 +147,13 @@ def retrieve_mca_account(service, config)
       exit
     end
 
-    res.account_identifiers.each do |account_id|
-      # The configuration stores the merchant_id as a number, so
-      # make sure to compare to the numerical value of these fields.
-      return true if account_id.aggregator_id.to_i == config.merchant_id
-      return false if account_id.merchant_id.to_i == config.merchant_id
+    unless res.account_identifiers.nil?
+      res.account_identifiers.each do |account_id|
+        # The configuration stores the merchant_id as a number, so
+        # make sure to compare to the numerical value of these fields.
+        return true if account_id.aggregator_id.to_i == config.merchant_id
+        return false if account_id.merchant_id.to_i == config.merchant_id
+      end
     end
 
     # If the configured account wasn't explicitly listed, then either it's
