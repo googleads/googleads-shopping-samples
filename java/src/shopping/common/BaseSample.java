@@ -17,11 +17,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 /** Base class for both sets of API samples. */
 public abstract class BaseSample {
@@ -34,30 +29,11 @@ public abstract class BaseSample {
   protected final CommandLine parsedArgs;
 
   public BaseSample(String[] args) throws IOException {
-    Options options = BaseOption.createCommandLineOptions();
-    parsedArgs = parseCommandLineArguments(options, args);
-    if (parsedArgs.hasOption("h")) {
-      printHelpAndExit(options);
-    }
+    parsedArgs = BaseOption.parseOptions(args);
     loadConfig(convertConfigPath());
     httpTransport = createHttpTransport();
     authenticator = loadAuthentication();
     credential = createCredential();
-  }
-
-  protected CommandLine parseCommandLineArguments(Options options, String[] args) {
-    CommandLineParser parser = new DefaultParser();
-    try {
-      return parser.parse(options, args);
-    } catch (ParseException e) {
-      throw new IllegalArgumentException(e);
-    }
-  }
-
-  protected void printHelpAndExit(Options options) {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp("samples", options, true);
-    System.exit(0);
   }
 
   protected File convertConfigPath() throws IOException {
@@ -117,7 +93,9 @@ public abstract class BaseSample {
         throw new RuntimeException(e);
       }
     }
-    return (T) builder.build();
+    @SuppressWarnings({"unchecked"})
+    T built = (T) builder.build();
+    return built;
   }
 
   protected abstract void loadConfig(File configPath) throws IOException;

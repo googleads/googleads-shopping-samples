@@ -2,8 +2,12 @@ package shopping.common;
 
 import java.io.File;
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /** Base command line options supported by all samples. */
 public enum BaseOption {
@@ -74,5 +78,31 @@ public enum BaseOption {
     }
 
     return options;
+  }
+
+  public static CommandLine parseOptions(String[] args) {
+    Options options = createCommandLineOptions();
+    CommandLineParser parser = new DefaultParser();
+    try {
+      CommandLine parsedArgs = parser.parse(options, args);
+      if (parsedArgs.hasOption("h")) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("samples", options, true);
+        System.exit(0);
+      }
+      return parsedArgs;
+    } catch (ParseException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
+
+  public static File checkedConfigPath(CommandLine parsedArgs) {
+    String pathString = CONFIG_PATH.getOptionValue(parsedArgs);
+    File path = new File(pathString);
+    if (!path.exists()) {
+      throw new IllegalArgumentException(
+          "Configuration directory '" + pathString + "' does not exist");
+    }
+    return path;
   }
 }

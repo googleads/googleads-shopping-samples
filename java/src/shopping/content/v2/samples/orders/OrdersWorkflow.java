@@ -15,23 +15,27 @@ import com.google.api.services.content.model.OrdersUpdateShipmentRequest;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.Random;
-import shopping.content.v2.samples.ContentSample;
+import shopping.common.BaseOption;
+import shopping.content.v2.samples.ContentConfig;
+import shopping.content.v2.samples.ContentWorkflowSample;
 
 /**
  * Sample that runs through an entire test order workflow. We run this sample on the sandbox API
  * endpoint, so that we have access to test order creation and don't accidentally mutate real
  * orders.
  */
-public class OrdersWorkflow extends ContentSample {
+public class OrdersWorkflow extends ContentWorkflowSample {
   private int nonce = 0;
   private final Random random = new Random();
 
-  private OrdersWorkflow(String[] args) throws IOException {
-    super(args);
+  private OrdersWorkflow(ShoppingContent content, ShoppingContent sandbox, ContentConfig config) {
+    super(content, sandbox, config);
   }
 
   @Override
   public void execute() throws IOException {
+    checkNonMCA();
+
     // Create a new test order using the template1 template. Normally orders would be
     // automatically populated by Google in the non-sandbox version, and we'd skip
     // to finding out what orders are currently waiting for us.
@@ -275,7 +279,17 @@ public class OrdersWorkflow extends ContentSample {
     return ret;
   }
 
+
+
   public static void main(String[] args) throws IOException {
-    new OrdersWorkflow(args).execute();
+    ContentConfig config =
+        ContentConfig.load(BaseOption.checkedConfigPath(BaseOption.parseOptions(args)));
+
+    ShoppingContent.Builder builder = createStandardBuilder(config);
+    ShoppingContent content = createService(builder);
+    ShoppingContent sandbox = createSandboxContentService(builder);
+    retrieveMCAStatus(content, config);
+
+    new OrdersWorkflow(content, sandbox, config).execute();
   }
 }
