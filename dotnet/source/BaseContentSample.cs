@@ -36,25 +36,29 @@ namespace ShoppingSamples.Content
         internal override string ApiName { get { return "Content API for Shopping"; } }
         internal override IClientService Service { get { return service; } }
 
-        internal override void initializeConfig()
+        internal override void initializeConfig(bool noConfig)
         {
-            config = MerchantConfig.Load(CliOptions.ConfigPath);
+            if (noConfig)
+            {
+                config = new MerchantConfig();
+            }
+            else
+            {
+                config = MerchantConfig.Load(CliOptions.ConfigPath);
+            }
         }
 
         internal override void initializeService(BaseClientService.Initializer init)
         {
             service = new ShoppingContentService(init);
-            // Retrieve whether the configured MC account is an MCA via the API.
-            // The sandbox service only has access to Orders methods, so can't
-            // use it for this.
-            config.IsMCA = retrieveMCAStatus(service, config);
+            retrieveConfiguration(service, config);
             createSandbox(init, new Uri(service.BaseUri));
         }
 
         internal override void initializeService(BaseClientService.Initializer init, Uri u)
         {
             service = new ShoppingContentServiceWithBaseUri(init, u);
-            config.IsMCA = retrieveMCAStatus(service, config);
+            retrieveConfiguration(service, config);
             createSandbox(init, u);
         }
 
@@ -76,34 +80,70 @@ namespace ShoppingSamples.Content
             }
         }
 
-        internal bool retrieveMCAStatus(ShoppingContentService service, MerchantConfig config)
+        // Retrieve the following configuration fields using the Content API:
+        // - IsMCA
+        // - WebsiteUrl
+        // Also use the first Merchant Center account to which the authenticated user has access
+        // if no Merchant Center ID was provided.
+        internal void retrieveConfiguration(ShoppingContentService service, MerchantConfig config)
         {
-            Console.WriteLine("Retrieving MCA status for configured account.");
-            // The resource returned by Accounts.get() does not have the MCA status, but if
-            // the authenticated user is directly listed as a user of the Merchant Center account
-            // in question, we can see whether it is an MCA or not by calling Accounts.authinfo().
+            Console.WriteLine("Retrieving information for authenticated user.");
             var authinfo = service.Accounts.Authinfo().Execute();
+
+            if (authinfo.AccountIdentifiers.Count == 0)
+            {
+                throw new ArgumentException(
+                    "Authenticated user has no access to any Merchant Center accounts.");
+            }
+            if (config.MerchantId == null)
+            {
+                var firstAccount = authinfo.AccountIdentifiers[0];
+                if (firstAccount.MerchantId == null)
+                {
+                    config.MerchantId = firstAccount.AggregatorId;
+                }
+                else
+                {
+                    config.MerchantId = firstAccount.MerchantId;
+                }
+                Console.WriteLine(
+                    "Using Merchant Center {0} for running samples.", config.MerchantId.Value);
+            }
+            ulong merchantId = config.MerchantId.Value;
+
+            // We detect whether the requested Merchant Center ID is an MCA by checking
+            // Accounts.authinfo(). If it is an MCA, then the authenticated user must be
+            // a user of that account, which means it'll be listed here, and it must
+            // appear in the AggregatorId field of one of the AccountIdentifier entries.
+            config.IsMCA = false;
             foreach (var accountId in authinfo.AccountIdentifiers) {
-                if (config.MerchantId == accountId.AggregatorId)
+                if (merchantId == accountId.AggregatorId)
                 {
-                    return true;
+                    config.IsMCA = true;
+                    break;
                 }
-                if (config.MerchantId == accountId.MerchantId)
+                if (merchantId == accountId.MerchantId)
                 {
-                    return false;
+                    break;
                 }
             }
-            // If the configured account wasn't listed in the authinfo response, then either
-            // it is a sub-account of an MCA that was listed, or the authenticated user does
-            // not have access. Check this by trying to call Accounts.get().
-            try {
-                service.Accounts.Get(config.MerchantId, config.MerchantId).Execute();
-            } catch (Google.GoogleApiException) {
-                throw new ArgumentException(String.Format(
-                    "Authenticated user does not have access to account {0}.", config.MerchantId));
+            Console.WriteLine("Merchant Center {0} is{1} an MCA.",
+                merchantId,
+                config.IsMCA ? "" : " not");
+
+            var account = service.Accounts.Get(merchantId, merchantId).Execute();
+            if (!String.IsNullOrEmpty(account.WebsiteUrl))
+            {
+                config.WebsiteURL = account.WebsiteUrl;
+                Console.WriteLine(
+                    "Website for Merchant Center {0}: {1}",
+                    merchantId,
+                    config.WebsiteURL);
             }
-            // Sub-accounts cannot be MCAs.
-            return false;
+            else
+            {
+                Console.WriteLine("Merchant Center {0} has no configured website.", merchantId);
+            }
         }
     }
 }

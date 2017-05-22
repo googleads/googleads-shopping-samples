@@ -35,7 +35,7 @@ namespace ShoppingSamples.Content
 
         internal override void runCalls()
         {
-            var merchantId = config.MerchantId;
+            var merchantId = config.MerchantId.Value;
 
             // First, we create a new test order using the template1 template.  Normally, orders
             // would be automatically populated by Google in the non-sandbox version, and we'd

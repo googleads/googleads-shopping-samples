@@ -11,24 +11,22 @@ namespace ShoppingSamples.Content
     /// </summary>
     internal class MerchantConfig : BaseConfig
     {
-        public override String ConfigDir { get; set; }
-        internal override String ConfigFile { get; set; }
+        public override string ConfigDir { get; set; }
+        internal override string ConfigFile { get; set; }
 
         [Newtonsoft.Json.JsonPropertyAttribute("merchantId")]
-        public ulong MerchantId { get; set; }
-
-        [Newtonsoft.Json.JsonPropertyAttribute("websiteUrl")]
-        public string WebsiteURL { get; set; }
+        public ulong? MerchantId { get; set; }
 
         [Newtonsoft.Json.JsonPropertyAttribute("accountSampleUser")]
         public string AccountSampleUser { get; set; }
 
         [Newtonsoft.Json.JsonPropertyAttribute("accountSampleAdWordsCID")]
-        public ulong AccountSampleAdWordsCID { get; set; }
+        public ulong? AccountSampleAdWordsCID { get; set; }
 
-        // Set by retrieving MCA status via the API after service setup in
+        // The following fields are retrieved via the API after service setup in
         // BaseContentSample#initializeService().
         public bool IsMCA { get; set; }
+        public string WebsiteURL { get; set; }
 
         public static MerchantConfig Load(String configPath)
         {
@@ -44,9 +42,11 @@ namespace ShoppingSamples.Content
             var contentFile = Path.Combine(contentPath, "merchant-info.json");
             if (!File.Exists(contentFile))
             {
-                Console.WriteLine("Could not find configuration file at " + contentFile);
-                Console.WriteLine("Please read the included README for instructions.");
-                throw new FileNotFoundException("Missing configuration file");
+                Console.WriteLine("No configuration file at " + contentFile);
+                Console.WriteLine("Assuming default configuration for authenticated user.");
+                config = new MerchantConfig();
+                config.ConfigDir = contentPath;
+                return config;
             }
             using (StreamReader reader = File.OpenText(contentFile))
             {

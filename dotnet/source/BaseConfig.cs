@@ -10,17 +10,14 @@ namespace ShoppingSamples
     /// </summary>
     abstract class BaseConfig
     {
-        public abstract String ConfigDir { get; set; }
-        internal abstract String ConfigFile { get; set; }
-    
+        public abstract string ConfigDir { get; set; }
+        internal abstract string ConfigFile { get; set; }
+
         [Newtonsoft.Json.JsonPropertyAttribute("emailAddress")]
         public string EmailAddress { get; set; }
 
         [Newtonsoft.Json.JsonPropertyAttribute("token")]
         public TokenResponse Token { get; set; }
-
-        [Newtonsoft.Json.JsonPropertyAttribute("applicationName")]
-        public string ApplicationName { get; set; }
 
         public void Save()
         {

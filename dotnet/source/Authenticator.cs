@@ -14,8 +14,6 @@ namespace ShoppingSamples
 
         public static IConfigurableHttpClientInitializer authenticate(BaseConfig config, string scope)
         {
-            String oauthFilePath = Path.Combine(config.ConfigDir, "client-secrets.json");
-            String serviceAccountPath = Path.Combine(config.ConfigDir, "service-account.json");
             String[] scopes = new[] { scope };
 
             try
@@ -28,6 +26,16 @@ namespace ShoppingSamples
             {
                 // Do nothing, we'll just let it slide and check the others.
             }
+
+            if (config.ConfigDir == null)
+            {
+                throw new ArgumentException(
+                    "Must use Google Application Default Credentials when running without a "
+                    + "configuration directory");
+            }
+
+            String oauthFilePath = Path.Combine(config.ConfigDir, "client-secrets.json");
+            String serviceAccountPath = Path.Combine(config.ConfigDir, "service-account.json");
             if (File.Exists(serviceAccountPath))
             {
                 Console.WriteLine("Loading service account credentials from " + serviceAccountPath);

@@ -28,23 +28,24 @@ namespace ShoppingSamples.Content
         }
 
         /// <summary>Runs multiple requests against the Content API for Shopping.</summary>
-        internal void RunCalls(ulong merchantId, String emailAddress = "", ulong adWordsAccountId = 0)
+        internal void RunCalls(
+            ulong merchantId, string emailAddress = null, ulong? adWordsAccountId = null)
         {
             // Can get information about your own account if non-MCA.
             GetAccount(merchantId);
 
             // Primary account, user management
-            if (emailAddress != null && emailAddress != "")
+            if (!String.IsNullOrEmpty(emailAddress))
             {
                 AccountUser user = AddUser(merchantId, merchantId, emailAddress);
                 RemoveUser(merchantId, merchantId, user.EmailAddress);
             }
 
             // Primary account, AdWords account link
-            if (adWordsAccountId != 0)
+            if (adWordsAccountId != null)
             {
-                LinkAdWordsAccount(merchantId, adWordsAccountId);
-                UnlinkAdWordsAccount(merchantId, adWordsAccountId);
+                LinkAdWordsAccount(merchantId, adWordsAccountId.Value);
+                UnlinkAdWordsAccount(merchantId, adWordsAccountId.Value);
             }
 
         }

@@ -33,7 +33,7 @@ namespace ShoppingSamples
         internal string DefaultPath { get { return defaultPath; } }
         internal Options CliOptions { get; set; }
 
-        internal abstract void initializeConfig();
+        internal abstract void initializeConfig(bool noConfig);
         internal abstract void initializeService(BaseClientService.Initializer init);
         internal abstract void initializeService(BaseClientService.Initializer init, Uri u);
         internal abstract void runCalls();
@@ -45,6 +45,9 @@ namespace ShoppingSamples
             [Option('p', "config_path",
                 HelpText = "Configuration directory for Shopping samples.")]
             public string ConfigPath { get; set; }
+            [Option('n', "noconfig", DefaultValue = false,
+                HelpText = "Run samples without a configuration directory.")]
+            public bool NoConfig { get; set; }
         }
 
         internal void startSamples(string[] args)
@@ -60,7 +63,7 @@ namespace ShoppingSamples
                 CliOptions.ConfigPath = DefaultPath;
             }
 
-            initializeConfig();
+            initializeConfig(CliOptions.NoConfig);
 
             var initializer = Authenticator.authenticate(Config, Scope);
             if (initializer == null)
@@ -72,7 +75,7 @@ namespace ShoppingSamples
             var init = new BaseClientService.Initializer()
             {
                 HttpClientInitializer = initializer,
-                ApplicationName = Config.ApplicationName,
+                ApplicationName = ApiName + " Samples",
             };
 
             if (Environment.GetEnvironmentVariable(endpointEnvVar) == null)

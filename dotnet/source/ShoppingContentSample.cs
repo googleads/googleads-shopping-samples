@@ -26,23 +26,25 @@ namespace ShoppingSamples.Content
             MultiClientAccountSample multiClientAccountSample =
                 new MultiClientAccountSample(service);
 
+            ulong merchantId = config.MerchantId.Value;
+
             if (!config.IsMCA)
             {
                 // Non-MCA calls
-                productsSample.RunCalls(config.MerchantId, config.WebsiteURL);
-                productstatusesSample.RunCalls(config.MerchantId);
-                datafeedsSample.RunCalls(config.MerchantId);
-                accountstatusesSample.RunCalls(config.MerchantId);
-                accountsSample.RunCalls(config.MerchantId, config.AccountSampleUser,
-                    config.AccountSampleAdWordsCID);
-                accounttaxSample.RunCalls(config.MerchantId);
-                shippingsettingsSample.RunCalls(config.MerchantId);
+                productsSample.RunCalls(merchantId, config.WebsiteURL);
+                productstatusesSample.RunCalls(merchantId);
+                datafeedsSample.RunCalls(merchantId);
+                accountstatusesSample.RunCalls(merchantId);
+                accountsSample.RunCalls(
+                    merchantId, config.AccountSampleUser, config.AccountSampleAdWordsCID);
+                accounttaxSample.RunCalls(merchantId);
+                shippingsettingsSample.RunCalls(merchantId);
             }
             else
             {
                 // MCA calls
-                accountstatusesSample.RunMultiCalls(config.MerchantId);
-                multiClientAccountSample.RunCalls(config.MerchantId);
+                accountstatusesSample.RunMultiCalls(merchantId);
+                multiClientAccountSample.RunCalls(merchantId);
             }
         }
     }

@@ -47,8 +47,13 @@ namespace ShoppingSamples.Content
         }
 
         /// <summary>Runs multiple requests against the Products service.</summary>
-        internal void RunCalls(ulong merchantId, string websiteUrl)
+        internal void RunCalls(ulong merchantId, string websiteUrl = null)
         {
+            if (websiteUrl == null)
+            {
+                Console.WriteLine("Cannot run Products workflow without a configured website URL.");
+                return;
+            }
             // Product insertion
             Product newProduct = InsertProduct(merchantId, websiteUrl);
             List<String> productList = InsertProductCustombatch(merchantId, websiteUrl);
