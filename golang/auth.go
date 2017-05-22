@@ -26,6 +26,11 @@ func authWithGoogle(ctx context.Context, samplesConfig merchantInfo) *http.Clien
 		fmt.Println("Using Application Default Credentials.")
 		return client
 	}
+	// Other authentication options require there to be a configuration directory
+	// that contains the credentials.
+	if samplesConfig.Path == "" {
+		log.Fatal("Must use Application Default Credentials with no configuration directory.")
+	}
 	// Second, check for service account info, since it's the easier auth flow.
 	serviceAccountPath := path.Join(samplesConfig.Path, "service-account.json")
 	if _, err := os.Stat(serviceAccountPath); err == nil {

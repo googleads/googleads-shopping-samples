@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"strings"
 	"time"
 
 	"golang.org/x/net/context"
@@ -56,18 +57,21 @@ func main() {
 	}
 	defaultPath := path.Join(usr.HomeDir, "shopping-samples")
 	configPath := flag.String("config_path", defaultPath, "configuration directory for Shopping samples")
+	noConfig := flag.Bool("noconfig", false, "run samples with no configuration directory")
 
 	flag.Usage = usage
 	flag.Parse()
-	if _, err := os.Stat(*configPath); os.IsNotExist(err) {
-		log.Fatalf("Configuration directory %s does not exist", *configPath)
+	samplesConfig := merchantInfo{}
+	if !*noConfig {
+		if _, err := os.Stat(*configPath); os.IsNotExist(err) {
+			log.Fatalf("Configuration directory %s does not exist", *configPath)
+		}
+		samplesConfig.Path = path.Join(*configPath, "content")
+		if _, err := os.Stat(samplesConfig.Path); os.IsNotExist(err) {
+			log.Fatalf("Content API configuration directory %s does not exist", samplesConfig.Path)
+		}
+		samplesConfig.read()
 	}
-
-	samplesConfig := merchantInfo{Path: path.Join(*configPath, "content")}
-	if _, err := os.Stat(samplesConfig.Path); os.IsNotExist(err) {
-		log.Fatalf("Content API configuration directory %s does not exist", samplesConfig.Path)
-	}
-	samplesConfig.read()
 
 	// Set up random seed so we get different offer IDs
 	rand.Seed(time.Now().Unix())
@@ -78,6 +82,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	contentService.UserAgent = "Content API for Shopping Samples"
 	baseURL := os.Getenv(endpointEnvVar)
 	if baseURL != "" {
 		// There may be other issues with the base URL that show up during calls,
@@ -90,10 +95,10 @@ func main() {
 			log.Fatal("Expected absolute URL for " + endpointEnvVar + " value: " + baseURL)
 		}
 		// The API client expects the contents of BasePath will have a trailing /.
-		contentService.BasePath = u.String() + "/"
+		contentService.BasePath = strings.TrimSuffix(u.String(), "/") + "/"
 		fmt.Println("Using non-standard API endpoint URL: " + contentService.BasePath)
 	}
-	samplesConfig.IsMCA = checkMCAStatus(ctx, contentService, &samplesConfig)
+	samplesConfig.retrieve(ctx, contentService)
 
 	modules := flag.Args()
 	// If no modules were specified, then run all non-Orders demos.

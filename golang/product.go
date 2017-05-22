@@ -17,6 +17,10 @@ func productDemo(ctx context.Context, service *content.APIService, config *merch
 		fmt.Println("This demo cannot be run on a multi-client account.")
 		return
 	}
+	if config.WebsiteURL == "" {
+		fmt.Println("This demo requires the account to have a configured website.")
+		return
+	}
 	offerID := fmt.Sprintf("book#test%d", rand.Int())
 	product := createSampleProduct(config, offerID)
 

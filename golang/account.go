@@ -9,7 +9,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"time"
 
@@ -205,29 +204,4 @@ func printAccount(account *content.Account) {
 			fmt.Printf("  - %d: %s\n", link.AdwordsId, link.Status)
 		}
 	}
-}
-
-func checkMCAStatus(ctx context.Context, service *content.APIService, config *merchantInfo) bool {
-	accounts := content.NewAccountsService(service)
-	fmt.Println("Getting authenticated account information.")
-	authinfo, err := accounts.Authinfo().Do()
-	if err != nil {
-		dumpAPIErrorAndStop(err, "Getting authenticated account information failed")
-	}
-	for _, i := range authinfo.AccountIdentifiers {
-		switch config.MerchantID {
-		case i.MerchantId:
-			return false
-		case i.AggregatorId:
-			return true
-		}
-	}
-	// If we didn't find it in the AccountIdentifiers, then the configured MC must either be a
-	// subaccount of an MCA we are authenticated as, or the samples have been misconfigured
-	// with an MC that we don't have access to.
-	if _, err := accounts.Get(config.MerchantID, config.MerchantID).Do(); err != nil {
-		log.Fatalf("Currently authenticated user does not have access to Merchant Center %d", config.MerchantID)
-	}
-	// A subaccount of an MCA cannot be an MCA itself.
-	return false
 }
