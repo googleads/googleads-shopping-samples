@@ -32,6 +32,11 @@ class ProductsSample extends BaseSample {
   const BATCH_SIZE = 10;
 
   public function run() {
+    if (is_null($this->websiteUrl)) {
+      throw InvalidArgumentException(
+          'Cannot run Products workflow on a Merchant Center account without '
+          . 'a configured website URL.');
+    }
     $exampleProductId = 'book123';
     $exampleProduct = $this->createExampleProduct($exampleProductId);
 

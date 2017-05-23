@@ -39,38 +39,40 @@ abstract class BaseSample {
   // Constructor that sets up configuration and authentication for all
   // the samples.
   public function __construct () {
-    $options = getopt('', ['config_path:']);
-    if (!array_key_exists('config_path', $options)) {
-      $options['config_path'] = join(DIRECTORY_SEPARATOR,
-          [$this->getHome(), 'shopping-samples']);
-    }
-    $this->configDir = join(DIRECTORY_SEPARATOR,
-        [$options['config_path'], 'content']);
-    $this->configFile = join(DIRECTORY_SEPARATOR,
-        [$this->configDir, self::CONFIGFILE_NAME]);
-    if (file_exists($this->configFile)) {
-      $this->config = json_decode(file_get_contents($this->configFile));
+    $options = getopt('', ['config_path:', 'noconfig']);
+    if (array_key_exists('noconfig', $options)) {
+      $this->config = [];
     } else {
-      throw new InvalidArgumentException(sprintf('Could not find or read the '
-          . 'config file at %s. You can use the merchant-info.json file in the '
-          . 'samples root as a template.', $this->configFile));
-    }
-
-    if (!$this->config) {
-      throw new InvalidArgumentException(sprintf('The config file at %s is not '
-          . 'valid JSON format. You can use the merchant-info.json file in the '
-          . 'samples root as a template.', $this->configFile));
+      if (!array_key_exists('config_path', $options)) {
+        $options['config_path'] = join(DIRECTORY_SEPARATOR,
+            [$this->getHome(), 'shopping-samples']);
+      }
+      $this->configDir = join(DIRECTORY_SEPARATOR,
+          [$options['config_path'], 'content']);
+      $this->configFile = join(DIRECTORY_SEPARATOR,
+          [$this->configDir, self::CONFIGFILE_NAME]);
+      if (file_exists($this->configFile)) {
+        $this->config = json_decode(
+            file_get_contents($this->configFile), true);
+        if (is_null($this->config)) {
+          throw new InvalidArgumentException(sprintf('The config file at %s '
+              . 'is not valid JSON. You can use the merchant-info.json file '
+              . 'in the samples root as a template.', $this->configFile));
+        }
+      } else {
+        printf("No configuration file found at %s\n", $this->configFile);
+        print "Falling back on configuration based on authenticated user.\n";
+        $this->config = [];
+      }
     }
 
     $client = new Google_Client();
-    $client->setApplicationName($this->config->applicationName);
+    $client->setApplicationName('Content API for Shopping Samples');
     $client->setScopes(Google_Service_ShoppingContent::CONTENT);
     $this->authenticate($client);
 
-    $this->merchantId = $this->config->merchantId;
-    $this->websiteUrl = $this->config->websiteUrl;
     $this->prepareServices($client);
-    $this->mcaStatus = $this->retrieveMCAStatus();
+    $this->retrieveConfig();
   }
 
   /**
@@ -164,38 +166,69 @@ abstract class BaseSample {
   abstract public function run();
 
   /**
-   * Retrieves whether the configured account is an MCA using the
-   * Accounts.authinfo method.
+   * Retrieves information that can be determined via API calls, including
+   * configuration fields that were not provided.
+   *
+   * <p>Retrieves the following fields if missing:
+   * <ul>
+   * <li>merchantId
+   * </ul>
+   *
+   * <p>Retrieves the following fields, ignoring any existing configuration:
+   * <ul>
+   * <li>isMCA
+   * <li>websiteUrl
+   * </ul>
    */
-  public function retrieveMCAStatus() {
-    print ("Retrieving MCA status of configured account.\n");
+  public function retrieveConfig() {
+    print "Retrieving account access information for authenticated user.\n";
     $response = $this->service->accounts->authinfo();
 
-    // First check to see if the configured account is listed in
-    // authinfo explicitly.
+    if (is_null($response->getAccountIdentifiers())) {
+      throw new InvalidArgumentException(
+          'Authenticated user has no access to any Merchant Center accounts');
+    }
+    // If there is no configured Merchant Center account ID, use the first one
+    // that this user has access to.
+    if (array_key_exists('merchantId', $this->config)) {
+      $this->merchantId = $this->config['merchantId'];
+    } else {
+      $firstAccount = $response->getAccountIdentifiers()[0];
+      if (!is_null($firstAccount->getMerchantId())) {
+        $this->merchantId = $firstAccount->getMerchantId();
+      } else {
+        $this->merchantId = $firstAccount->getAggregatorId();
+      }
+      printf("Running samples on Merchant Center %d.\n", $this->merchantId);
+    }
+
+    // The current account can only be an aggregator if the authenticated
+    // account has access to it (is a user) and it's listed in authinfo as
+    // an aggregator.
+    $this->mcaStatus = false;
     foreach ($response->getAccountIdentifiers() as $accountId) {
       if (!is_null($accountId->getAggregatorId()) &&
           ($accountId->getAggregatorId() === $this->merchantId)) {
-        return true;
+        $this->mcaStatus = true;
+        break;
       }
       if (!is_null($accountId->getMerchantId()) &&
           ($accountId->getMerchantId() === $this->merchantId)) {
-        return false;
+        break;
       }
     }
-    // If it isn't, then either it's a subaccount of an MCA which did
-    // appear, or we don't have access to it at all. Test for access by
-    // calling Accounts.get.
-    try {
-      $account = $this->service->accounts->get(
-          $this->merchantId, $this->merchantId);
-    } catch (Google_Service_Exception $exception) {
-      throw new InvalidArgumentException(sprintf(
-          'Authenticated user cannot access account ID %d', $this->merchantId));
-    }
-    // Subaccounts cannot be MCAs.
-    return false;
+    printf("Merchant Center %d is%s an MCA.\n",
+        $this->merchantId, $this->mcaStatus ? '' : ' not');
 
+    $account = $this->service->accounts->get(
+      $this->merchantId, $this->merchantId);
+    $this->websiteUrl = $account->getWebsiteUrl();
+    if (is_null($this->websiteUrl)) {
+      printf("No website listed for Merchant Center %d.\n", $this->merchantId);
+    } else {
+      printf("Website for Merchant Center %d: %s\n",
+          $this->merchantId, $this->websiteUrl);
+    }
   }
 
   /**
@@ -295,7 +328,13 @@ abstract class BaseSample {
       $client->useApplicationDefaultCredentials();
       print "Using Google Application Default Credentials.\n";
     } catch (DomainException $exception) {
-      // Safe to ignore this error, since we'll fall back on other creds.
+      // Safe to ignore this error, since we'll fall back on other creds unless
+      // we are not using a configuration directory.
+      if (!$this->configDir) {
+        throw new InvalidArgumentException(
+            'Must use Google Application Default Credentials if running '
+            . 'without a configuration directory');
+      }
       $this->authenticateFromConfig($client);
     }
   }
