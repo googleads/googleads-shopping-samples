@@ -26,8 +26,17 @@ MultiJson.dump_options = { pretty: true }
 class Config
   def self.load(base_path)
     path = File.join(base_path, 'content')
+    unless File.exist?(path)
+      raise "Content API configuration path does not exist: #{path}"
+    end
     file = File.join(path, 'merchant-info.json')
-    new(path, file, MultiJson.load(IO.read(file)))
+    if File.exist?(file)
+      new(path, file, MultiJson.load(IO.read(file)))
+    else
+      puts "No configuration file found at #{file}."
+      puts "Assuming configuration defaults for authenticated user."
+      new(path)
+    end
   end
 
   attr_accessor :path
@@ -53,16 +62,18 @@ class Config
     return @is_mca
   end
 
-  def initialize(path, file, options)
+  def initialize(path = nil, file = nil, options = nil)
     @path = path
     @file = file
-    @merchant_id = options["merchantId"]
-    @application_name = options["applicationName"]
-    @email_address = options["emailAddress"]
-    @website_url = options["websiteUrl"]
-    @account_sample_user = options["accountSampleUser"]
-    @account_sample_adwords_cid = options["accountSampleAdWordsCID"]
-    @token = options["token"]
+    unless options.nil?
+      @merchant_id = options["merchantId"]
+      @application_name = options["applicationName"]
+      @email_address = options["emailAddress"]
+      @website_url = options["websiteUrl"]
+      @account_sample_user = options["accountSampleUser"]
+      @account_sample_adwords_cid = options["accountSampleAdWordsCID"]
+      @token = options["token"]
+    end
   end
 
   def write()

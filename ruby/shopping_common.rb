@@ -57,6 +57,9 @@ def authenticate(config)
     # just ignore any error here, and assume it means that the ADC
     # couldn't be loaded.
   end
+  if config.path.nil?
+    raise "Must use Application Default Credentials with no configuration."
+  end
   # Check for both kinds of authentication. Let service accounts win, as
   # they're an easier flow to authenticate.
   service_account_file = File.join(config.path, "service-account.json")
@@ -99,7 +102,11 @@ end
 #
 # It returns both the configuration and the API service object.
 def service_setup(options, use_sandbox = false)
-  config = Config.load(options.path)
+  if options.noconfig
+    config = Config.new()
+  else
+    config = Config.load(options.path)
+  end
   credentials = authenticate(config)
 
   # Initialize API Service.
@@ -118,11 +125,12 @@ def service_setup(options, use_sandbox = false)
     service.base_path = uri.path
     puts ("Using non-standard API endpoint: #{uri}")
   end
+  service.client_options.application_name = "Content API for Shopping Samples"
 
   # Whether sandbox was requested or not, we need to make the calls
   # here against the normal service, since the sandbox only has access
   # to the methods in the Orders service.
-  config.is_mca = retrieve_mca_account(service, config)
+  retrieve_configuration(service, config)
 
   if use_sandbox
     # Since there are no other needs for the regular service, we'll just
@@ -139,34 +147,60 @@ def service_setup(options, use_sandbox = false)
   return config, service
 end
 
-# Check whether the configured account is an MCA via the API.
-def retrieve_mca_account(service, config)
+# Fill in configuration fields using information from the Content API.
+# If we have not yet received a merchant ID, we will also get that information.
+def retrieve_configuration(service, config)
   service.get_account_authinfo() do |res, err|
     if err
       handle_errors(err)
       exit
     end
 
-    unless res.account_identifiers.nil?
-      res.account_identifiers.each do |account_id|
-        # The configuration stores the merchant_id as a number, so
-        # make sure to compare to the numerical value of these fields.
-        return true if account_id.aggregator_id.to_i == config.merchant_id
-        return false if account_id.merchant_id.to_i == config.merchant_id
-      end
+    if res.account_identifiers.nil?
+      puts "Authenticated user has no access to any Merchant Center accounts."
+      exit
     end
 
-    # If the configured account wasn't explicitly listed, then either it's
-    # a subaccount of an MCA we are authenticated for, or we don't have access
-    # to the given account.
+    if config.merchant_id.nil?
+      first_account = res.account_identifiers[0]
+      if first_account.merchant_id.nil?
+        config.merchant_id = first_account.aggregator_id.to_i
+      else
+        config.merchant_id = first_account.merchant_id.to_i
+      end
+      puts "Running samples with Merchant Center #{config.merchant_id}."
+    end
+
+    config.is_mca = false
+    res.account_identifiers.each do |account_id|
+      # The configuration stores the merchant_id as a number, so
+      # make sure to compare to the numerical value of these fields.
+      break if account_id.merchant_id.to_i == config.merchant_id
+      if account_id.aggregator_id.to_i == config.merchant_id
+        config.is_mca = true
+        break
+      end
+    end
+    if config.is_mca
+      puts "Merchant Center #{config.merchant_id} is an MCA."
+    else
+      puts "Merchant Center #{config.merchant_id} is not an MCA."
+    end
+
     service.get_account(config.merchant_id, config.merchant_id) do |res, err|
       if err
         puts "The authenticated user cannot access MC #{config.merchant_id}."
         exit
       end
 
-      # Subaccounts cannot be MCAs.
-      return false
+      config.website_url = res.website_url
+
+      if config.website_url.nil?
+        puts "Merchant Center #{config.merchant_id} has no website configured."
+      else
+        print "Website for Merchant Center #{config.merchant_id}: "
+        puts config.website_url
+      end
     end
   end
 end

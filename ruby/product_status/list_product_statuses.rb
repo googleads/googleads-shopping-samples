@@ -33,6 +33,10 @@ def list_product_statuses(content_api, merchant_id, next_page = nil)
       handle_errors(err)
       exit
     end
+    if res.resources.nil?
+      puts "No products found."
+      return
+    end
     res.resources.each do |status|
       print_product_status(status)
     end

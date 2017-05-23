@@ -26,6 +26,7 @@ class ArgParser
   def self.parse(args)
     options = OpenStruct.new
     options.path = File.join(Dir.home(), 'shopping-samples')
+    options.noconfig = false
 
     opt_parser = OptionParser.new do |opts|
       opts.banner = "Usage: #{$0} [options]"
@@ -40,6 +41,11 @@ class ArgParser
           raise OptionParser::InvalidArgument, path
         end
         options.path = path
+      end
+
+      opts.on('-n', '--noconfig',
+          'Run samples without a configuration') do
+        options.noconfig = true
       end
     end
 
