@@ -55,8 +55,13 @@ namespace ShoppingSamples.Manufacturers
         internal override string ApiName { get { return "Manufacturer Center API"; } }
         internal override IClientService Service { get { return service; } }
 
-        internal override void initializeConfig()
+        internal override void initializeConfig(bool noconfig)
         {
+            if (noconfig == true)
+            {
+                throw new ArgumentException(
+                    "Cannot run Manufacturer Center API Samples without a configuration.");
+            }
             config = ManufacturerConfig.Load(CliOptions.ConfigPath);
         }
 
