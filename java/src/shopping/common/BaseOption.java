@@ -17,6 +17,7 @@ public enum BaseOption {
       "PATH",
       "Configuration directory for Shopping samples",
       new File(System.getProperty("user.home"), "shopping-samples").getAbsolutePath()),
+  NO_CONFIG("n", "noconfig", "Run samples without a configuration directory"),
   HELP("h", "help", "print this message");
 
   private final String option;
@@ -56,6 +57,10 @@ public enum BaseOption {
     } else {
       return this.defaultArg;
     }
+  }
+
+  public boolean isSet(CommandLine cmdLine) {
+    return cmdLine.hasOption(option);
   }
 
   /**

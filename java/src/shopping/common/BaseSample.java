@@ -1,6 +1,6 @@
 package shopping.common;
 
-import static shopping.common.BaseOption.CONFIG_PATH;
+import static shopping.common.BaseOption.NO_CONFIG;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -30,19 +30,14 @@ public abstract class BaseSample {
 
   public BaseSample(String[] args) throws IOException {
     parsedArgs = BaseOption.parseOptions(args);
-    loadConfig(convertConfigPath());
+    if (NO_CONFIG.isSet(parsedArgs)) {
+      loadConfig(null);
+    } else {
+      loadConfig(BaseOption.checkedConfigPath(parsedArgs));
+    }
     httpTransport = createHttpTransport();
     authenticator = loadAuthentication();
     credential = createCredential();
-  }
-
-  protected File convertConfigPath() throws IOException {
-    String pathString = CONFIG_PATH.getOptionValue(parsedArgs);
-    File path = new File(pathString);
-    if (!path.exists()) {
-      throw new IOException("Configuration directory '" + pathString + "' does not exist");
-    }
-    return path;
   }
 
   protected HttpTransport createHttpTransport() throws IOException {

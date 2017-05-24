@@ -1,5 +1,7 @@
 package shopping.content.v2.samples.orders;
 
+import static shopping.common.BaseOption.NO_CONFIG;
+
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.model.Order;
 import com.google.api.services.content.model.OrderLineItem;
@@ -13,8 +15,10 @@ import com.google.api.services.content.model.OrdersShipLineItemsRequest;
 import com.google.api.services.content.model.OrdersUpdateMerchantOrderIdRequest;
 import com.google.api.services.content.model.OrdersUpdateShipmentRequest;
 import com.google.common.collect.ImmutableList;
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
+import org.apache.commons.cli.CommandLine;
 import shopping.common.BaseOption;
 import shopping.content.v2.samples.ContentConfig;
 import shopping.content.v2.samples.ContentWorkflowSample;
@@ -282,13 +286,17 @@ public class OrdersWorkflow extends ContentWorkflowSample {
 
 
   public static void main(String[] args) throws IOException {
-    ContentConfig config =
-        ContentConfig.load(BaseOption.checkedConfigPath(BaseOption.parseOptions(args)));
+    CommandLine parsedArgs = BaseOption.parseOptions(args);
+    File configPath = null;
+    if (!NO_CONFIG.isSet(parsedArgs)) {
+      configPath = BaseOption.checkedConfigPath(parsedArgs);
+    }
+    ContentConfig config = ContentConfig.load(configPath);
 
     ShoppingContent.Builder builder = createStandardBuilder(config);
     ShoppingContent content = createService(builder);
     ShoppingContent sandbox = createSandboxContentService(builder);
-    retrieveMCAStatus(content, config);
+    retrieveConfiguration(content, config);
 
     new OrdersWorkflow(content, sandbox, config).execute();
   }

@@ -2,12 +2,12 @@ package shopping.content.v2.samples;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.ShoppingContentScopes;
+import com.google.api.services.content.model.Account;
 import com.google.api.services.content.model.AccountIdentifier;
 import com.google.api.services.content.model.AccountsAuthInfoResponse;
 import java.io.IOException;
@@ -45,7 +45,7 @@ public abstract class ContentWorkflowSample extends BaseWorkflowSample {
     Credential credential = authenticator.authenticate();
 
     return new ShoppingContent.Builder(httpTransport, jsonFactory, credential)
-        .setApplicationName(config.getApplicationName());
+        .setApplicationName("Content API for Shopping Samples");
   }
 
   // This method assumes a builder that's already been used to create the standard
@@ -70,33 +70,48 @@ public abstract class ContentWorkflowSample extends BaseWorkflowSample {
     return builder.build();
   }
 
-  protected static void retrieveMCAStatus(ShoppingContent content, ContentConfig config)
+  protected static void retrieveConfiguration(ShoppingContent content, ContentConfig config)
       throws IOException {
-    System.out.printf("Retrieving MCA status for account %d.%n", config.getMerchantId());
+    System.out.println("Retrieving information for authenticated account.");
     AccountsAuthInfoResponse resp = content.accounts().authinfo().execute();
+    if (resp.getAccountIdentifiers() == null) {
+      throw new IllegalArgumentException(
+          "Authenticated user has no access to any Merchant Center accounts.");
+    }
+    if (config.getMerchantId() == null) {
+      AccountIdentifier firstAccount = resp.getAccountIdentifiers().get(0);
+      if (firstAccount.getMerchantId() == null) {
+        config.setMerchantId(firstAccount.getAggregatorId());
+      } else {
+        config.setMerchantId(firstAccount.getMerchantId());
+      }
+      System.out.printf("Running samples with Merchant Center %s.%n", config.getMerchantId());
+    }
+    config.setIsMCA(false);
     for (AccountIdentifier ids : resp.getAccountIdentifiers()) {
       if (ids.getAggregatorId() == config.getMerchantId()) {
         config.setIsMCA(true);
-        return;
+        break;
       }
       if (ids.getMerchantId() == config.getMerchantId()) {
-        config.setIsMCA(false);
-        return;
+        break;
       }
     }
-    // If we are not explicitly authenticated as a user of the configured account,
-    // then it should be a subaccount of an MCA we are authenticated for. Check to
-    // see if we have access by calling Accounts.get().
-    try {
-      content.accounts().get(config.getMerchantId(), config.getMerchantId()).execute();
-    } catch (GoogleJsonResponseException e) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Authenticated user does not have access to account %d", config.getMerchantId()),
-          e);
+    if (config.getIsMCA()) {
+      System.out.printf("Merchant Center %s is an MCA.%n", config.getMerchantId());
+    } else {
+      System.out.printf("Merchant Center %s is not an MCA.%n", config.getMerchantId());
     }
-    // Sub-accounts cannot be MCAs.
-    config.setIsMCA(false);
+    Account account =
+        content.accounts().get(config.getMerchantId(), config.getMerchantId()).execute();
+    config.setWebsiteUrl(account.getWebsiteUrl());
+    if (config.getWebsiteUrl() == null) {
+      System.out.printf(
+          "Merchant Center %s does not have a configured website.%n", config.getMerchantId());
+    } else {
+      System.out.printf(
+          "Website for Merchant Center %s: %s%n", config.getMerchantId(), config.getWebsiteUrl());
+    }
   }
 
   protected void checkMCA() {

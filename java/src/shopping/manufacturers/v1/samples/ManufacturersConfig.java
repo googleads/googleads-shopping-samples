@@ -23,11 +23,13 @@ public class ManufacturersConfig extends Config {
 
   @Key private BigInteger manufacturerId;
 
-  @Key private String applicationName;
-
   @Key private String websiteUrl;
 
   public static ManufacturersConfig load(File basePath) throws IOException {
+    if (basePath == null) {
+      throw new IllegalArgumentException(
+          "Manufacturer Center API samples cannot be run without a configuration directory.");
+    }
     InputStream inputStream = null;
     File configPath = new File(basePath, MANUFACTURERS_DIR);
     if (!configPath.exists()) {
@@ -82,14 +84,6 @@ public class ManufacturersConfig extends Config {
 
   public void setManufacturerId(BigInteger manufacturerId) {
     this.manufacturerId = manufacturerId;
-  }
-
-  public String getApplicationName() {
-    return applicationName;
-  }
-
-  public void setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
   }
 
   public String getWebsiteUrl() {

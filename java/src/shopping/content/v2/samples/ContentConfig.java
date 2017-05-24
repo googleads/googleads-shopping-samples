@@ -23,18 +23,18 @@ public class ContentConfig extends Config {
 
   @Key private BigInteger merchantId;
 
-  @Key private String applicationName;
-
-  @Key private String websiteUrl;
-
   @Key private String accountSampleUser;
 
   @Key private BigInteger accountSampleAdWordsCID;
 
-  // This is no longer done via configuration, but instead by querying the API.
+  // These are no longer set via configuration, but instead by querying the API.
   private boolean isMCA;
+  private String websiteUrl;
 
   public static ContentConfig load(File basePath) throws IOException {
+    if (basePath == null) {
+      return new ContentConfig();
+    }
     InputStream inputStream = null;
     File configPath = new File(basePath, CONTENT_DIR);
     if (!configPath.exists()) {
@@ -87,14 +87,6 @@ public class ContentConfig extends Config {
 
   public void setMerchantId(BigInteger merchantId) {
     this.merchantId = merchantId;
-  }
-
-  public String getApplicationName() {
-    return applicationName;
-  }
-
-  public void setApplicationName(String applicationName) {
-    this.applicationName = applicationName;
   }
 
   public String getWebsiteUrl() {

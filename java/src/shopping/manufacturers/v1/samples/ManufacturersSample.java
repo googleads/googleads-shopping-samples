@@ -21,7 +21,7 @@ public abstract class ManufacturersSample extends BaseSample {
     super(args);
     ManufacturerCenter.Builder builder =
         new ManufacturerCenter.Builder(httpTransport, jsonFactory, credential)
-            .setApplicationName(config.getApplicationName());
+            .setApplicationName("Manufacturer Center API Samples");
     manufacturers = createService(builder);
   }
 

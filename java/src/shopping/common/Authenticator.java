@@ -52,6 +52,10 @@ public class Authenticator {
     } catch (IOException e) {
       // No need to do anything, we'll fall back on other credentials.
     }
+    if (config.getPath() == null) {
+      throw new IllegalArgumentException(
+          "Must use Application Default Credentials with no configuration directory.");
+    }
     if (serviceAccountFile.exists()) {
       System.out.println("Loading service account credentials.");
       try {
