@@ -345,8 +345,7 @@ abstract class BaseSample {
         [$this->configDir, self::SERVICE_ACCOUNT_FILE_NAME]);
     if (file_exists($accountFile)) {
       print 'Loading service account credentials from ' . $accountFile . ".\n";
-      $accountConfig = json_decode(file_get_contents($accountFile), true);
-      $client->setAuthConfig($accountConfig);
+      $client->setAuthConfig($accountFile);
       $client->setScopes(Google_Service_ShoppingContent::CONTENT);
       return;
     }
@@ -354,8 +353,7 @@ abstract class BaseSample {
         [$this->configDir, self::OAUTH_CLIENT_FILE_NAME]);
     if (file_exists($oauthFile)) {
       print 'Loading OAuth2 credentials from ' . $oauthFile . ".\n";
-      $oauthConfig = json_decode(file_get_contents($oauthFile), true);
-      $client->setAuthConfig($oauthConfig);
+      $client->setAuthConfig($oauthFile);
       if($this->config->token == null) {
         $this->cacheToken($client);
       } else {
