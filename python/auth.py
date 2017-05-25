@@ -50,6 +50,9 @@ def authorize(config, flags):
     return credentials.create_scoped(_constants.API_SCOPE)
   except client.ApplicationDefaultCredentialsError:
     pass  # Can safely ignore this error, since it just means none were found.
+  if 'path' not in config:
+    print('Must use Application Default Credentials with no configuration.')
+    sys.exit(1)
   service_account_path = os.path.join(config['path'],
                                       _constants.SERVICE_ACCOUNT_FILE)
   client_secrets_path = os.path.join(config['path'],

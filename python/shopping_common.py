@@ -26,7 +26,7 @@ import urlparse
 import _constants
 import auth
 from googleapiclient import discovery
-from googleapiclient import errors
+from googleapiclient import http
 import httplib2
 from oauth2client import client
 from oauth2client import tools
@@ -64,33 +64,40 @@ def init(argv, doc, parents=None, sandbox=False):
       metavar='PATH',
       default=os.path.expanduser('~/shopping-samples'),
       help='configuration directory for the Shopping samples')
+  parser.add_argument(
+      '--noconfig',
+      action='store_true',
+      help='run samples with no configuration directory')
   flags = parser.parse_args(argv[1:])
 
-  if not os.path.isdir(flags.config_path):
-    print(
-        'Configuration directory "%s" does not exist.' % flags.config_path,
-        file=sys.stderr)
-    sys.exit(1)
+  config = {}
+  if not flags.noconfig:
+    if not os.path.isdir(flags.config_path):
+      print(
+          'Configuration directory "%s" does not exist.' % flags.config_path,
+          file=sys.stderr)
+      sys.exit(1)
 
-  content_path = os.path.join(flags.config_path, 'content')
-  if not os.path.isdir(content_path):
-    print(
-        'Content API configuration directory "%s" does not exist.' %
-        content_path,
-        file=sys.stderr)
-    sys.exit(1)
+    content_path = os.path.join(flags.config_path, 'content')
+    if not os.path.isdir(content_path):
+      print(
+          'Content API configuration directory "%s" does not exist.' %
+          content_path,
+          file=sys.stderr)
+      sys.exit(1)
 
-  config_file = os.path.join(content_path, 'merchant-info.json')
-  if not os.path.isfile(config_file):
-    print('No sample configuration file found. Checked:', file=sys.stderr)
-    print(' - %s' % config_file, file=sys.stderr)
-    print('Please read the accompanying documentation.', file=sys.stderr)
-    sys.exit(1)
+    config_file = os.path.join(content_path, 'merchant-info.json')
+    if not os.path.isfile(config_file):
+      print('Configuration file %s does not exist.' % config_file)
+      print('Falling back to configuration based on authenticated user.')
+    else:
+      config = json.load(open(config_file, 'r'))
+    config['path'] = content_path
 
-  config = json.load(open(config_file, 'r'))
-  config['path'] = content_path
   credentials = auth.authorize(config, flags)
-  http = credentials.authorize(http=httplib2.Http())
+  auth_http = credentials.authorize(
+      http=http.set_user_agent(
+          httplib2.Http(), 'Content API for Shopping Samples'))
   if _constants.ENDPOINT_ENV_VAR in os.environ:
     # Strip off everything after the host/port in the URL.
     root_url = urlparse.urljoin(os.environ[_constants.ENDPOINT_ENV_VAR], '/')
@@ -100,26 +107,25 @@ def init(argv, doc, parents=None, sandbox=False):
         _constants.SERVICE_NAME,
         _constants.SERVICE_VERSION,
         discoveryServiceUrl=discovery_url,
-        http=http)
+        http=auth_http)
     if sandbox:
       sandbox_service = discovery.build(
           _constants.SERVICE_NAME,
           _constants.SANDBOX_SERVICE_VERSION,
           discoveryServiceUrl=discovery_url,
-          http=http)
+          http=auth_http)
   else:
     service = discovery.build(
-        _constants.SERVICE_NAME, _constants.SERVICE_VERSION, http=http)
+        _constants.SERVICE_NAME, _constants.SERVICE_VERSION, http=auth_http)
     if sandbox:
       sandbox_service = discovery.build(
           _constants.SERVICE_NAME,
           _constants.SANDBOX_SERVICE_VERSION,
-          http=http)
+          http=auth_http)
 
-  # The sandbox service object only has access to the Orders service, so
-  # we'll need to use the regular service object for this whether sandbox
-  # is set or not.
-  config['isMCA'] = retrieve_mca_status(service, config)
+  # Now that we have a service object, fill in anything missing from the
+  # configuration using API calls.
+  retrieve_remaining_config_from_api(service, config)
 
   return (sandbox_service if sandbox else service, config, flags)
 
@@ -142,39 +148,62 @@ def get_unique_id():
   return '%d%d' % (int(time.time()), unique_id_increment)
 
 
-def retrieve_mca_status(service, config):
-  """Retrieves whether or not the configured account is an MCA from the API.
+def retrieve_remaining_config_from_api(service, config):
+  """Retrieves any missing configuration information using API calls.
+
+  This function can fill in the following configuration fields:
+  * merchantId
+
+  It will also remove or overwrite existing values for the following fields:
+  * isMCA
+  * websiteUrl
 
   Args:
     service: Content API service object
     config: dictionary, Python representation of config JSON.
-
-  Returns:
-    Whether or not the configured account is an MCA.
   """
-  merchant_id = config['merchantId']
   try:
     authinfo = service.accounts().authinfo().execute()
+    if json_absent_or_false(authinfo, 'accountIdentifiers'):
+      print('The currently authenticated user does not have access to '
+            'any Merchant Center accounts.')
+      sys.exit(1)
+    if 'merchantId' not in config:
+      first_account = authinfo['accountIdentifiers'][0]
+      if int(first_account['merchantId']) == 0:
+        config['merchantId'] = int(first_account['aggregatorId'])
+      else:
+        config['merchantId'] = int(first_account['merchantId'])
+      print('Using Merchant Center %d for running samples.' %
+            config['merchantId'])
+    merchant_id = config['merchantId']
+    config['isMCA'] = False
+    # The requested Merchant Center can only be an MCA if we are a
+    # user of it (and thus have access) and it is listed as an
+    # aggregator in authinfo.
     for account_id in authinfo['accountIdentifiers']:
       if ('aggregatorId' in account_id and
           int(account_id['aggregatorId']) == merchant_id):
-        return True
+        config['isMCA'] = True
+        break
       if ('merchantId' in account_id and
           int(account_id['merchantId']) == merchant_id):
-        return False
-    # If we get here and we don't have a value yet, then either:
-    #  * The configured Merchant Center is a subaccount of an accessible MCA.
-    #    (Subaccounts cannot be MCAs.)
-    #  * We do not have access to the Merchant Center in the configuration.
-    # To see which, try to access the Merchant Center account information.
-    try:
-      service.accounts().get(
-          merchantId=merchant_id, accountId=merchant_id).execute()
-      return False
-    except errors.HttpError:
-      print('The currently authenticated user does not have access to '
-            'MC %d.' % merchant_id)
-      sys.exit(1)
+        break
+    if config['isMCA']:
+      print('Merchant Center %d is an MCA.' % (config['merchantId']))
+    else:
+      print('Merchant Center %d is not an MCA.' % (config['merchantId']))
+    account = service.accounts().get(
+        merchantId=merchant_id, accountId=merchant_id).execute()
+    if not json_absent_or_false(account, 'websiteUrl'):
+      config['websiteUrl'] = account['websiteUrl']
+    elif 'websiteUrl' in config:
+      del config['websiteUrl']
+    if 'websiteUrl' not in config:
+      print('No website for Merchant Center %d.' % config['merchantId'])
+    else:
+      print('Website for Merchant Center %d: %s' % (config['merchantId'],
+                                                    config['websiteUrl']))
   except client.AccessTokenRefreshError:
     print('The credentials have been revoked or expired, please re-run the '
           'application to re-authorize.')
