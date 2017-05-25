@@ -1,8 +1,6 @@
 {
   "merchantId": 12345,
-  "applicationName": "Google Content API for Shopping Samples",
   "emailAddress": "merchant_user@example.com",
-  "websiteUrl": "http://my-book-shop.com",
   "accountSampleUser": "",
   "accountSampleAdWordsCID": 0
 }
