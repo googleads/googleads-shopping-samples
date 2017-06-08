@@ -97,7 +97,7 @@ def init(argv, doc, parents=None, sandbox=False):
   credentials = auth.authorize(config, flags)
   auth_http = credentials.authorize(
       http=http.set_user_agent(
-          httplib2.Http(), 'Content API for Shopping Samples'))
+          httplib2.Http(), _constants.APPLICATION_NAME))
   if _constants.ENDPOINT_ENV_VAR in os.environ:
     # Strip off everything after the host/port in the URL.
     root_url = urlparse.urljoin(os.environ[_constants.ENDPOINT_ENV_VAR], '/')

@@ -64,7 +64,7 @@ class Storage(oauth2client.client.Storage):
             self._config['token']['refresh_token'],
             datetime.utcnow(),
             oauth2client.GOOGLE_AUTH_URI,
-            'Google Content API for Shopping Samples',
+            _constants.APPLICATION_NAME,
             id_token=self._config['emailAddress'],
             scopes=_constants.API_SCOPE)
         credentials.set_store(self)

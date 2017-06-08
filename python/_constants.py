@@ -17,6 +17,7 @@
 
 # Constants for configuration
 CONFIG_FILE = 'merchant-info.json'
+APPLICATION_NAME = 'Content API for Shopping Samples'
 
 # Constants for authentication
 CLIENT_SECRETS_FILE = 'client-secrets.json'
