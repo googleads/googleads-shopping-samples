@@ -7,12 +7,33 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
+func shippingSettingsDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	if config.IsMCA {
+		multiClientShippingSettingsDemo(ctx, service, config)
+	} else {
+		primaryShippingSettingsDemo(service, config)
+	}
+}
+
+func multiClientShippingSettingsDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	if !config.IsMCA {
+		fmt.Println("This demo must be run on a multi-client account.")
+		return
+	}
+	shippingSettings := content.NewShippingsettingsService(service)
+
+	fmt.Printf("Printing shipping settings of subaccounts of %d:\n", config.MerchantID)
+	if err := shippingSettings.List(config.MerchantID).Pages(ctx, printShippingSettingsPage); err != nil {
+		dumpAPIErrorAndStop(err, "Listing subaccount shipping settings failed")
+	}
+}
+
 // This function runs a demo of using the Shippingsettings service by
 // retrieving the current shipping settings for the account,
 // setting the shipping settings with a specific example, and then
 // replacing the old settings afterwards, printing out the current
 // settings at each step.
-func shippingSettingsDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+func primaryShippingSettingsDemo(service *content.APIService, config *merchantInfo) {
 	if config.IsMCA {
 		fmt.Println("This demo cannot be run on a multi-client account.")
 		return
@@ -37,45 +58,30 @@ func shippingSettingsDemo(ctx context.Context, service *content.APIService, conf
 
 	fmt.Print("Setting new example shipping settings... ")
 	newSettings := createSimpleSampleShippingSettings()
-	if _, err := shippingSettings.Update(config.MerchantID, config.MerchantID, newSettings).Do(); err != nil {
+	settings, err := shippingSettings.Update(config.MerchantID, config.MerchantID, newSettings).Do()
+	if err != nil {
 		dumpAPIErrorAndStop(err, "Updating shipping settings failed")
 	}
 	fmt.Println("done.")
-
-	fmt.Println("Retrieving current shipping settings:")
-	settings, err := shippingSettings.Get(config.MerchantID, config.MerchantID).Do()
-	if err != nil {
-		dumpAPIErrorAndStop(err, "Retrieving current shipping settings failed")
-	}
 	printShippingSettings(settings)
 	fmt.Println()
 
 	fmt.Print("Patching new example shipping settings to add postal code groups... ")
 	settingsPatch := createSimpleShippingSettingsPatch()
-	if _, err := shippingSettings.Patch(config.MerchantID, config.MerchantID, settingsPatch).Do(); err != nil {
+	settings, err = shippingSettings.Patch(config.MerchantID, config.MerchantID, settingsPatch).Do()
+	if err != nil {
 		dumpAPIErrorAndStop(err, "Patching shipping settings failed")
 	}
 	fmt.Println("done.")
-
-	fmt.Println("Retrieving current shipping settings:")
-	settings, err = shippingSettings.Get(config.MerchantID, config.MerchantID).Do()
-	if err != nil {
-		dumpAPIErrorAndStop(err, "Retrieving current shipping settings failed")
-	}
 	printShippingSettings(settings)
 	fmt.Println()
 
 	fmt.Print("Replacing original shipping settings... ")
-	if _, err := shippingSettings.Update(config.MerchantID, config.MerchantID, oldSettings).Do(); err != nil {
+	settings, err = shippingSettings.Update(config.MerchantID, config.MerchantID, oldSettings).Do()
+	if err != nil {
 		dumpAPIErrorAndStop(err, "Replacing original shipping settings failed")
 	}
 	fmt.Println("done.")
-
-	fmt.Println("Retrieving current shipping settings:")
-	settings, err = shippingSettings.Get(config.MerchantID, config.MerchantID).Do()
-	if err != nil {
-		dumpAPIErrorAndStop(err, "Retrieving current shipping settings failed")
-	}
 	printShippingSettings(settings)
 	fmt.Println()
 }
@@ -126,6 +132,13 @@ func createSimpleShippingSettingsPatch() *content.ShippingSettings {
 			&northeasternUS,
 		},
 	}
+}
+
+func printShippingSettingsPage(res *content.ShippingsettingsListResponse) error {
+	for _, ss := range res.Resources {
+		printShippingSettings(ss)
+	}
+	return nil
 }
 
 func printShippingSettings(res *content.ShippingSettings) {

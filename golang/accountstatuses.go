@@ -13,10 +13,6 @@ import (
 )
 
 func accountstatusesDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
-	if !config.IsMCA {
-		fmt.Println("This demo requires a multi-client account.")
-		return
-	}
 	accountstatuses := content.NewAccountstatusesService(service)
 
 	fmt.Printf("Getting account status:\n")
@@ -25,6 +21,23 @@ func accountstatusesDemo(ctx context.Context, service *content.APIService, confi
 		dumpAPIErrorAndStop(err, "Getting account status failed")
 	}
 	printAccountStatus(accountStatus)
+
+	if !config.IsMCA {
+		return
+	}
+
+	fmt.Printf("Printing statuses of subaccounts of %d:\n", config.MerchantID)
+	if err := accountstatuses.List(config.MerchantID).Pages(ctx, printAccountStatusesPage); err != nil {
+		dumpAPIErrorAndStop(err, "Listing subaccount statuses failed")
+	}
+	fmt.Println("")
+}
+
+func printAccountStatusesPage(res *content.AccountstatusesListResponse) error {
+	for _, as := range res.Resources {
+		printAccountStatus(as)
+	}
+	return nil
 }
 
 func printAccountStatus(accountStatus *content.AccountStatus) {

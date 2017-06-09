@@ -20,17 +20,16 @@ import (
 const endpointEnvVar = "GOOGLE_SHOPPING_SAMPLES_ENDPOINT"
 
 var demos = map[string](func(context.Context, *content.APIService, *merchantInfo)){
-	"products":           productDemo,
-	"datafeeds":          datafeedDemo,
-	"inventory":          inventoryDemo,
-	"productsBatch":      productsBatchDemo,
-	"accountstatuses":    accountstatusesDemo,
-	"productstatuses":    productstatusesDemo,
-	"primaryAccount":     primaryAccountDemo,
-	"multiClientAccount": multiClientAccountDemo,
-	"shippingSettings":   shippingSettingsDemo,
-	"accountTax":         accountTaxDemo,
-	"orders":             ordersDemo,
+	"products":         productDemo,
+	"datafeeds":        datafeedDemo,
+	"inventory":        inventoryDemo,
+	"productsBatch":    productsBatchDemo,
+	"accountstatuses":  accountstatusesDemo,
+	"productstatuses":  productstatusesDemo,
+	"accounts":         accountDemo,
+	"shippingSettings": shippingSettingsDemo,
+	"accountTax":       accountTaxDemo,
+	"orders":           ordersDemo,
 }
 
 func printDemos(w io.Writer) {

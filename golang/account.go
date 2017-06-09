@@ -1,6 +1,7 @@
 package main
 
-// This file contains two demos of using the Accounts service:
+// This file contains a demo of using the Accounts service that
+// has two parts:
 // * Getting information about the current MC account as well as
 //   adding/removing users and Adwords links, which can
 //   be done by both multi-client and non-multi-client accounts.
@@ -18,11 +19,18 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
+func accountDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+	primaryAccountDemo(service, config)
+	if config.IsMCA {
+		multiClientAccountDemo(ctx, service, config)
+	}
+}
+
 // primaryAccountDemo gets the account information for the currently
 // configured Merchant Center account, and then adds/removes a new
 // user and/or new AdWords account link, if those fields in the
 // configuration are not the default value.
-func primaryAccountDemo(ctx context.Context, service *content.APIService, config *merchantInfo) {
+func primaryAccountDemo(service *content.APIService, config *merchantInfo) {
 	changed := false
 	accounts := content.NewAccountsService(service)
 
@@ -56,15 +64,15 @@ func primaryAccountDemo(ctx context.Context, service *content.APIService, config
 		return
 	}
 
-	fmt.Println("Patching account information.")
-	account, err = accounts.Patch(config.MerchantID, config.MerchantID, account).Do()
+	fmt.Println("Updating account information.")
+	account, err = accounts.Update(config.MerchantID, config.MerchantID, account).Do()
 	if err != nil {
 		dumpAPIErrorAndStop(err, "Patching account information failed")
 	}
 	printAccount(account)
 
 	fmt.Println("Rolling back changes.")
-	// Here, we do this on a fresh Account instance, to show the flexibility of patching.
+	// Here, we do this via Patch instead of Update.
 	accountPatch := content.Account{}
 
 	if config.AccountSampleUser != "" {
