@@ -16,41 +16,46 @@
 #           limitations under the License.
 #
 # Creates a TokenStore useable by the Google authentication library that uses
-# the configuration file as a token store like other samples.
-#
-# We keep the token in "native" format inside the Config class, since
-# other samples expect it to be the native format in the JSON file, so we'll
-# need to load it from the string version passed in via store and to
-# dump it from the native version that load is supposed to return.
+# a single file in the configuration directory as a token store like other
+# samples. Because we're only storing one token, we just ignore the id argument.
 
 require 'googleauth/token_store'
 require 'multi_json'
 
 class TokenStore < Google::Auth::TokenStore
   def initialize(options = {})
-    @config = options[:config]
+    @filename = File.join(options[:config].path, 'stored-token.json')
   end
 
   def load(id)
-    if not @config.token.nil? and @config.email_address == id
-      return MultiJson.dump(@config.token)
-    else
+    puts "Attempting to load stored OAuth2 token from #{@filename}."
+    begin
+      token = File.read(@filename)
+    rescue
+      # Any failure to retrieve the token will just mean that we
+      # re-authenticate, so we can ignore any exceptions.
       return nil
     end
   end
 
-  # Store the email address as well, since the token should be keyed to that.
-  # This means that only one authentication token can be stored at a
-  # time, instead of being able to store one per auth ID, but it makes
-  # life easier for trying out the samples quickly.
   def store(id, token)
-    @config.email_address = id
-    @config.token = MultiJson.load(token)
-    @config.write()
+    begin
+      File.open(@filename, "w") { |file| file << token }
+    rescue
+      # Similarly, failure to store the token just means that the
+      # user will have to re-authenticate next time, so just let them
+      # know we failed.
+      puts "Failed to store the OAuth2 token, continuing."
+    end
   end
 
   def delete(id)
-    @config.token = nil if @config.email_address == id
-    @config.write()
+    begin
+      File.delete(@filename)
+    rescue
+      # Last, but not least, if the user of the TokenStore requests that
+      # we delete the token but for some reason we fail, just note that.
+      puts "Token deletion requested, but couldn't delete #{@filename}."
+    end
   end
 end

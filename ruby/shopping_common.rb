@@ -21,11 +21,9 @@
 require 'addressable/uri'
 require 'google/apis/content_v2'
 require 'google/api_client/client_secrets'
-require 'googleauth'
-require 'googleauth/stores/file_token_store'
-require 'multi_json'
 
 require_relative 'arg_parser'
+require_relative 'auth'
 require_relative 'config'
 require_relative 'token_store'
 
@@ -33,7 +31,6 @@ ENDPOINT_ENV_VAR = 'GOOGLE_SHOPPING_SAMPLES_ENDPOINT'
 
 API_NAME = 'content'
 API_VERSION = 'v2'
-API_SCOPE = 'https://www.googleapis.com/auth/content'
 
 # These constants define the identifiers for all of our example products/feeds.
 #
@@ -43,57 +40,6 @@ CHANNEL = 'online'
 CONTENT_LANGUAGE = 'en'
 # The products are sold in the USA.
 TARGET_COUNTRY = 'US';
-
-OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'
-
-def authenticate(config)
-  # First try the Application Default Credentials before continuing.
-  begin
-    credentials = Google::Auth::get_application_default(scope=API_SCOPE)
-    puts "Loaded Application Default Credentials."
-    return credentials
-  rescue
-    # Unfortunately the ADC loader raises StandardError. Thus, we'll
-    # just ignore any error here, and assume it means that the ADC
-    # couldn't be loaded.
-  end
-  if config.path.nil?
-    raise "Must use Application Default Credentials with no configuration."
-  end
-  # Check for both kinds of authentication. Let service accounts win, as
-  # they're an easier flow to authenticate.
-  service_account_file = File.join(config.path, "service-account.json")
-  client_id_file = File.join(config.path, "client-secrets.json")
-  if File.exist?(service_account_file)
-    puts "Loading service account credentials from #{service_account_file}."
-    return Google::Auth::DefaultCredentials.make_creds(
-        scope: API_SCOPE,
-        json_key_io: File.open(service_account_file))
-  elsif File.exist?(client_id_file)
-    puts "Loading OAuth2 client from #{client_id_file}."
-    client_id = Google::Auth::ClientId.from_file(client_id_file)
-    token_store = TokenStore.new(config: config)
-    authorizer = Google::Auth::UserAuthorizer.new(
-        client_id, API_SCOPE, token_store)
-    user_id = config.email_address
-
-    credentials = authorizer.get_credentials(user_id)
-    unless credentials.nil?
-      return credentials
-    end
-    url = authorizer.get_authorization_url(base_url: OOB_URI)
-    puts "Open #{url} in your browser and enter the resulting code:"
-    code = STDIN.gets
-    return authorizer.get_and_store_credentials_from_code(
-        user_id: user_id, code: code, base_url: OOB_URI)
-  end
-  puts "No OAuth2 authentication credentials found. Checked:"
-  puts "- Google Application Default Credentials"
-  puts "- #{service_account_file}"
-  puts "- #{client_id_file}"
-  puts "Please read the accompanying README.md for instructions."
-  exit
-end
 
 # Handles configuration loading, authentication, and loading of the API.
 #
