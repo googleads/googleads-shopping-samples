@@ -9,7 +9,6 @@ import (
 	"path"
 
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2"
 	"google.golang.org/api/content/v2"
 	"google.golang.org/api/googleapi"
 )
@@ -20,13 +19,12 @@ const merchantInfoFilename = "merchant-info.json"
 
 // Information stored for merchants for use by the Shopping samples
 type merchantInfo struct {
-	MerchantID             uint64        `json:"merchantId,omitempty"`
-	WebsiteURL             string        `json:"-"`
-	AccountSampleUser      string        `json:"accountSampleUser,omitempty"`
-	AccountSampleAdwordsID uint64        `json:"accountSampleAdWordsCID,omitempty"`
-	IsMCA                  bool          `json:"-"`
-	Token                  *oauth2.Token `json:"token,omitempty"`
-	Path                   string        `json:"-"`
+	MerchantID             uint64 `json:"merchantId,omitempty"`
+	WebsiteURL             string `json:"-"`
+	AccountSampleUser      string `json:"accountSampleUser,omitempty"`
+	AccountSampleAdwordsID uint64 `json:"accountSampleAdWordsCID,omitempty"`
+	IsMCA                  bool   `json:"-"`
+	Path                   string `json:"-"`
 }
 
 // Reads the contents of merchant-info.json and replaces the current values of JSON-exported fields.
@@ -41,18 +39,6 @@ func (samplesConfig *merchantInfo) read() {
 	}
 	if err := json.Unmarshal(jsonBlob, &samplesConfig); err != nil {
 		log.Fatalf("Failed to decode JSON file %s: %v", samplesConfigFile, err)
-	}
-}
-
-// Write the config to merchant-info.json. (Mostly used to store refresh token.)
-// This function assumes that the Path value has been appropriately set before calling.
-func (samplesConfig *merchantInfo) write() {
-	jsonBlob, err := json.MarshalIndent(samplesConfig, "", "  ")
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := ioutil.WriteFile(path.Join(samplesConfig.Path, merchantInfoFilename), jsonBlob, 0660); err != nil {
-		log.Fatal(err)
 	}
 }
 

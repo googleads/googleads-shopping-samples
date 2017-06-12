@@ -4,6 +4,7 @@ package main
 // The only function used in other files is authWithGoogle().
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -20,6 +21,12 @@ import (
 	"google.golang.org/api/content/v2"
 )
 
+const (
+	serviceAccountFile = "service-account.json"
+	oauth2ClientFile   = "client-secrets.json"
+	storedTokenFile    = "stored-token.json"
+)
+
 func authWithGoogle(ctx context.Context, samplesConfig merchantInfo) *http.Client {
 	// First, check for the Application Default Credentials.
 	if client, err := google.DefaultClient(ctx, content.ContentScope); err == nil {
@@ -32,7 +39,7 @@ func authWithGoogle(ctx context.Context, samplesConfig merchantInfo) *http.Clien
 		log.Fatal("Must use Application Default Credentials with no configuration directory.")
 	}
 	// Second, check for service account info, since it's the easier auth flow.
-	serviceAccountPath := path.Join(samplesConfig.Path, "service-account.json")
+	serviceAccountPath := path.Join(samplesConfig.Path, serviceAccountFile)
 	if _, err := os.Stat(serviceAccountPath); err == nil {
 		fmt.Printf("Loading service account from %s.\n", serviceAccountPath)
 		json, err := ioutil.ReadFile(serviceAccountPath)
@@ -47,7 +54,7 @@ func authWithGoogle(ctx context.Context, samplesConfig merchantInfo) *http.Clien
 		return config.Client(ctx)
 	}
 	// Last chance for authentication, check for OAuth2 client secrets.
-	oauth2ClientPath := path.Join(samplesConfig.Path, "client-secrets.json")
+	oauth2ClientPath := path.Join(samplesConfig.Path, oauth2ClientFile)
 	if _, err := os.Stat(oauth2ClientPath); err == nil {
 		fmt.Printf("Loading OAuth2 client from %s.\n", oauth2ClientPath)
 		json, err := ioutil.ReadFile(oauth2ClientPath)
@@ -70,13 +77,39 @@ func authWithGoogle(ctx context.Context, samplesConfig merchantInfo) *http.Clien
 	return nil
 }
 
-func newOAuthClient(ctx context.Context, config *oauth2.Config, samplesConfig merchantInfo) *http.Client {
-	if samplesConfig.Token == nil {
-		samplesConfig.Token = tokenFromWeb(ctx, config)
-		samplesConfig.write()
+func loadToken(tokenPath string) (*oauth2.Token, error) {
+	var token oauth2.Token
+	jsonBlob, err := ioutil.ReadFile(tokenPath)
+	if err != nil {
+		return nil, err
 	}
+	if err := json.Unmarshal(jsonBlob, &token); err != nil {
+		return nil, err
+	}
+	return &token, nil
+}
 
-	return config.Client(ctx, samplesConfig.Token)
+func storeToken(tokenPath string, token *oauth2.Token) error {
+	jsonBlob, err := json.MarshalIndent(token, "", "  ")
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(tokenPath, jsonBlob, 0660)
+}
+
+func newOAuthClient(ctx context.Context, config *oauth2.Config, samplesConfig merchantInfo) *http.Client {
+	tokenPath := path.Join(samplesConfig.Path, storedTokenFile)
+	token, err := loadToken(tokenPath)
+	if err != nil {
+		fmt.Printf("No stored token found in %s, re-authenticating.\n", tokenPath)
+		token = tokenFromWeb(ctx, config)
+		if err := storeToken(tokenPath, token); err != nil {
+			fmt.Println("Error storing OAuth2 token, continuing.")
+		}
+	} else {
+		fmt.Printf("Using token stored in %v for authentication.\n", tokenPath)
+	}
+	return config.Client(ctx, token)
 }
 
 func tokenFromWeb(ctx context.Context, config *oauth2.Config) *oauth2.Token {
