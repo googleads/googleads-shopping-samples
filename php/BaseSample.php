@@ -29,11 +29,11 @@ abstract class BaseSample {
   protected $service;
   protected $sandboxService;
   protected $websiteUrl;
-  protected $configFile;
 
   const CONFIGFILE_NAME = 'merchant-info.json';
   const SERVICE_ACCOUNT_FILE_NAME = 'service-account.json';
   const OAUTH_CLIENT_FILE_NAME = 'client-secrets.json';
+  const OAUTH_TOKEN_FILE_NAME = 'stored-token.json';
   const ENDPOINT_ENV_VAR = 'GOOGLE_SHOPPING_SAMPLES_ENDPOINT';
 
   // Constructor that sets up configuration and authentication for all
@@ -49,18 +49,17 @@ abstract class BaseSample {
       }
       $this->configDir = join(DIRECTORY_SEPARATOR,
           [$options['config_path'], 'content']);
-      $this->configFile = join(DIRECTORY_SEPARATOR,
+      $configFile = join(DIRECTORY_SEPARATOR,
           [$this->configDir, self::CONFIGFILE_NAME]);
-      if (file_exists($this->configFile)) {
-        $this->config = json_decode(
-            file_get_contents($this->configFile), true);
+      if (file_exists($configFile)) {
+        $this->config = json_decode(file_get_contents($configFile), true);
         if (is_null($this->config)) {
           throw new InvalidArgumentException(sprintf('The config file at %s '
               . 'is not valid JSON. You can use the merchant-info.json file '
-              . 'in the samples root as a template.', $this->configFile));
+              . 'in the samples root as a template.', $configFile));
         }
       } else {
-        printf("No configuration file found at %s\n", $this->configFile);
+        printf("No configuration file found at %s\n", $configFile);
         print "Falling back on configuration based on authenticated user.\n";
         $this->config = [];
       }
@@ -304,13 +303,14 @@ abstract class BaseSample {
   }
 
   protected function cacheToken(Google_Client $client) {
-    print (str_repeat('*', 40));
+    print (str_repeat('*', 40) . "\n");
     print ("Your token was missing or invalid, fetching a new one\n");
-    $this->config->token = $this->getToken($client);
-    file_put_contents($this->configFile,
-        json_encode($this->config, JSON_PRETTY_PRINT));
-    print ("Token saved to your config file\n");
-    print (str_repeat('*', 40));
+    $token = $this->getToken($client);
+    $tokenFile = join(DIRECTORY_SEPARATOR,
+        [$this->configDir, self::OAUTH_TOKEN_FILE_NAME]);
+    file_put_contents($tokenFile, json_encode($token, JSON_PRETTY_PRINT));
+    printf("Token saved to %s\n", $tokenFile);
+    print (str_repeat('*', 40) . "\n");
   }
 
   /**
@@ -354,11 +354,19 @@ abstract class BaseSample {
     if (file_exists($oauthFile)) {
       print 'Loading OAuth2 credentials from ' . $oauthFile . ".\n";
       $client->setAuthConfig($oauthFile);
-      if($this->config->token == null) {
+      $tokenFile = join(DIRECTORY_SEPARATOR,
+          [$this->configDir, self::OAUTH_TOKEN_FILE_NAME]);
+      $token = null;
+      if (file_exists($tokenFile)) {
+        printf("Loading stored token from '%s'.\n", $tokenFile);
+        $token = json_decode(file_get_contents($tokenFile), true);
+      }
+      if (is_null($token) || !array_key_exists('refresh_token', $token)) {
         $this->cacheToken($client);
       } else {
         try {
-          $client->refreshToken($this->config->token->refresh_token);
+          $client->refreshToken($token['refresh_token']);
+          printf("Successfully loaded token from '%s'.\n", $tokenFile);
         } catch (Google_Auth_Exception $exception) {
           $this->cacheToken($client);
         }
