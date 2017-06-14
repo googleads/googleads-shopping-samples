@@ -15,10 +15,10 @@
 # limitations under the License.
 """Gets the status of the specified account."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -42,27 +42,22 @@ def main(argv):
         True,
         msg='Non-multi-client accounts can only get their own information.')
 
-  try:
-    status = service.accountstatuses().get(
-        merchantId=merchant_id, accountId=merchant_id).execute()
-    print 'Account %s:' % status['accountId']
-    if shopping_common.json_absent_or_false(status, 'dataQualityIssues'):
-      print '- No data quality issues.'
-    else:
-      print(
-          '- Found %d data quality issues:' % len(status['dataQualityIssues']))
-      for issue in status['dataQualityIssues']:
-        print '  - (%s) [%s]' % (issue['severity'], issue['id'])
-        if shopping_common.json_absent_or_false(issue, 'exampleItems'):
-          print '  - No example items.'
-        else:
-          print('  - Have %d examples from %d affected items:' %
-                (len(issue['exampleItems']), issue['numItems']))
-          for example in issue['exampleItems']:
-            print '    - %s: %s' % (example['itemId'], example['title'])
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  status = service.accountstatuses().get(
+      merchantId=merchant_id, accountId=merchant_id).execute()
+  print('Account %s:' % status['accountId'])
+  if shopping_common.json_absent_or_false(status, 'dataQualityIssues'):
+    print('- No data quality issues.')
+  else:
+    print('- Found %d data quality issues:' % len(status['dataQualityIssues']))
+    for issue in status['dataQualityIssues']:
+      print('  - (%s) [%s]' % (issue['severity'], issue['id']))
+      if shopping_common.json_absent_or_false(issue, 'exampleItems'):
+        print('  - No example items.')
+      else:
+        print('  - Have %d examples from %d affected items:' %
+              (len(issue['exampleItems']), issue['numItems']))
+        for example in issue['exampleItems']:
+          print('    - %s: %s' % (example['itemId'], example['title']))
 
 
 if __name__ == '__main__':

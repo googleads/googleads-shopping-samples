@@ -15,10 +15,10 @@
 # limitations under the License.
 """Gets the tax settings of the specified account."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -42,26 +42,22 @@ def main(argv):
         True,
         msg='Non-multi-client accounts can only get their own information.')
 
-  try:
-    status = service.accounttax().get(
-        merchantId=merchant_id, accountId=merchant_id).execute()
-    print 'Account %s:' % status['accountId']
-    if shopping_common.json_absent_or_false(status, 'rules'):
-      print '- No tax settings, so no tax is charged.'
-    else:
-      print '- Found %d tax rules:' % len(status['rules'])
-      for issue in status['rules']:
-        if not shopping_common.json_absent_or_false(issue, 'ratePercent'):
-          print('  - For %s in %s: %s%%' %
-                (issue['locationId'], issue['country'], issue['ratePercent']))
-        if not shopping_common.json_absent_or_false(issue, 'useGlobalRate'):
-          print('  - For %s in %s: using the global tax table rate.' %
-                (issue['locationId'], issue['country']))
-        if not shopping_common.json_absent_or_false(issue, 'shippingTaxed'):
-          print '   NOTE: Shipping charges are also taxed.'
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  status = service.accounttax().get(
+      merchantId=merchant_id, accountId=merchant_id).execute()
+  print('Account %s:' % status['accountId'])
+  if shopping_common.json_absent_or_false(status, 'rules'):
+    print('- No tax settings, so no tax is charged.')
+  else:
+    print('- Found %d tax rules:' % len(status['rules']))
+    for issue in status['rules']:
+      if not shopping_common.json_absent_or_false(issue, 'ratePercent'):
+        print('  - For %s in %s: %s%%' %
+              (issue['locationId'], issue['country'], issue['ratePercent']))
+      if not shopping_common.json_absent_or_false(issue, 'useGlobalRate'):
+        print('  - For %s in %s: using the global tax table rate.' %
+              (issue['locationId'], issue['country']))
+      if not shopping_common.json_absent_or_false(issue, 'shippingTaxed'):
+        print('   NOTE: Shipping charges are also taxed.')
 
 
 if __name__ == '__main__':

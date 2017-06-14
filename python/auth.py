@@ -14,18 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Authentication-related info for the Content API for Shopping samples."""
+
 from __future__ import print_function
 import os
 import sys
 
 import _constants
-from oauth2client import client
-from oauth2client import tools
-from oauth2client.service_account import ServiceAccountCredentials
+from google_auth_oauthlib import flow
 import token_storage
+import google.auth
+from google.oauth2 import service_account
 
 
-def authorize(config, flags):
+def authorize(config):
   """Authorization for the Content API Samples.
 
   This function uses common idioms found across all the included
@@ -38,17 +39,16 @@ def authorize(config, flags):
 
   Args:
       config: dictionary, Python representation of config JSON.
-      flags: the parsed commandline flags.
 
   Returns:
-      An oauth2lib.Credential object suitable for using to authenticate
-      to the Content API.
+      An google.auth.credentials.Credentials object suitable for
+      accessing the Content API.
   """
   try:
-    credentials = client.GoogleCredentials.get_application_default()
+    credentials, _ = google.auth.default(scopes=[_constants.CONTENT_API_SCOPE])
     print('Using application default credentials.')
-    return credentials.create_scoped(_constants.API_SCOPE)
-  except client.ApplicationDefaultCredentialsError:
+    return credentials
+  except google.auth.exceptions.DefaultCredentialsError:
     pass  # Can safely ignore this error, since it just means none were found.
   if 'path' not in config:
     print('Must use Application Default Credentials with no configuration.')
@@ -59,21 +59,21 @@ def authorize(config, flags):
                                      _constants.CLIENT_SECRETS_FILE)
   if os.path.isfile(service_account_path):
     print('Using service account credentials from %s.' % service_account_path)
-    return ServiceAccountCredentials.from_json_keyfile_name(
-        service_account_path, scopes=_constants.API_SCOPE)
+    return service_account.Credentials.from_service_account_file(
+        service_account_path,
+        scopes=[_constants.CONTENT_API_SCOPE])
   elif os.path.isfile(client_secrets_path):
     print('Using OAuth2 client secrets from %s.' % client_secrets_path)
     storage = token_storage.Storage(config)
     credentials = storage.get()
-    if credentials is not None and not credentials.invalid:
+    if credentials and credentials.valid:
       return credentials
-    message = tools.message_if_missing(client_secrets_path)
-    flow = client.flow_from_clientsecrets(
-        client_secrets_path,
-        scope=_constants.API_SCOPE,
-        message=message,
-        login_hint=config['emailAddress'])
-    return tools.run_flow(flow, storage, flags)
+    client_config = token_storage.retrieve_client_config(config)
+    auth_flow = flow.InstalledAppFlow.from_client_config(
+        client_config, scopes=[_constants.CONTENT_API_SCOPE])
+    credentials = auth_flow.run_local_server(authorization_prompt_message='')
+    storage.put(credentials)
+    return credentials
   print('No OAuth2 authentication files found. Checked:', file=sys.stderr)
   print('- Google Application Default Credentials', file=sys.stderr)
   print('- %s' % service_account_path, file=sys.stderr)

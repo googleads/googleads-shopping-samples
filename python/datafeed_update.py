@@ -15,10 +15,10 @@
 # limitations under the License.
 """Updates the specified datafeed on the specified account."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -33,20 +33,15 @@ def main(argv):
   merchant_id = config['merchantId']
   datafeed_id = flags.datafeed_id
 
-  try:
-    # Changing the scheduled fetch time to 7:00.
-    request = service.datafeeds().patch(
-        merchantId=merchant_id,
-        datafeedId=datafeed_id,
-        body={'fetchSchedule': {'hour': 7}})
+  # Changing the scheduled fetch time to 7:00.
+  request = service.datafeeds().patch(
+      merchantId=merchant_id,
+      datafeedId=datafeed_id,
+      body={'fetchSchedule': {'hour': 7}})
 
-    result = request.execute()
-    print('Datafeed with ID "%s" and fetchSchedule %s was updated.' %
-          (result['id'], str(result['fetchSchedule'])))
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  result = request.execute()
+  print('Datafeed with ID %s and fetchSchedule %s was updated.' %
+        (result['id'], str(result['fetchSchedule'])))
 
 
 if __name__ == '__main__':

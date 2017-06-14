@@ -20,25 +20,17 @@ the supported properties in a product, be sure to use the inventory.set
 method, for performance reasons.
 """
 
+from __future__ import print_function
 import argparse
+import json
 import sys
 
-from apiclient.http import BatchHttpRequest
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
     'product_ids', nargs='*', help='The IDs of the products to update.')
-
-
-def product_updated(request_id, unused_response, exception):
-  if exception is not None:
-    # Do something with the exception.
-    print 'There was an error: ' + str(exception)
-  else:
-    print 'Request ID: %s - Product was updated.' % (str(request_id),)
 
 
 def main(argv):
@@ -48,29 +40,39 @@ def main(argv):
   merchant_id = config['merchantId']
   product_ids = flags.product_ids
 
-  batch = BatchHttpRequest(callback=product_updated)
+  new_status = {
+      'availability': 'out of stock',
+      'price': {
+          'value': 3.14,
+          'currency': 'USD'
+      }
+  }
 
-  for product_id in product_ids:
-    new_status = {
-        'availability': 'out of stock',
-        'price': {
-            'value': 3.14,
-            'currency': 'USD'
-        }
-    }
+  batch = {
+      'entries': [{
+          'batchId': i,
+          'merchantId': merchant_id,
+          'storeCode': v.split(':')[0],
+          'productId': v,
+          'inventory': new_status,
+      } for i, v in enumerate(product_ids)],
+  }
 
-    # Add product update to the batch.
-    batch.add(service.inventory().set(
-        merchantId=merchant_id,
-        storeCode=product_id.split(':')[0],
-        productId=product_id,
-        body=new_status))
-  try:
-    batch.execute()
+  request = service.inventory().custombatch(body=batch)
+  result = request.execute()
 
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  if result['kind'] == 'content#inventoryCustomBatchResponse':
+    entries = result['entries']
+    for entry in entries:
+      if not shopping_common.json_absent_or_false(entry, 'errors'):
+        print('Errors for batch entry %d:' % entry['batchId'])
+        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+                         separators=(',', ': ')))
+      else:
+        print('Successfully performed inventory update for product "%s".' %
+              (product_ids[entry['batchId']]))
+  else:
+    print('There was an error. Response: %s' % result)
 
 
 if __name__ == '__main__':

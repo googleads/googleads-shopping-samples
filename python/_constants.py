@@ -17,6 +17,7 @@
 
 # Constants for configuration
 CONFIG_FILE = 'merchant-info.json'
+TOKEN_FILE = 'stored-token.json'
 APPLICATION_NAME = 'Content API for Shopping Samples'
 
 # Constants for authentication
@@ -27,7 +28,7 @@ SERVICE_ACCOUNT_FILE = 'service-account.json'
 SERVICE_NAME = 'content'
 SERVICE_VERSION = 'v2'
 SANDBOX_SERVICE_VERSION = 'v2sandbox'
-API_SCOPE = 'https://www.googleapis.com/auth/' + SERVICE_NAME
+CONTENT_API_SCOPE = 'https://www.googleapis.com/auth/' + SERVICE_NAME
 
 # These constants define the identifiers for all of our example products/feeds.
 #

@@ -15,25 +15,17 @@
 # limitations under the License.
 """Deletes several datafeeds from the specified account, in a single batch."""
 
+from __future__ import print_function
 import argparse
+import json
 import sys
 
-from apiclient.http import BatchHttpRequest
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
     'datafeed_ids', nargs='*', help='The IDs of the datafeeds to delete.')
-
-
-def datafeed_deleted(request_id, unused_response, exception):
-  if exception is not None:
-    # Do something with the exception.
-    print 'There was an error: ' + str(exception)
-  else:
-    print 'Datafeed for request %s was deleted.' % request_id
 
 
 def main(argv):
@@ -43,17 +35,29 @@ def main(argv):
   merchant_id = config['merchantId']
   datafeed_ids = flags.datafeed_ids
 
-  batch = BatchHttpRequest(callback=datafeed_deleted)
+  batch = {
+      'entries': [{
+          'batchId': i,
+          'merchantId': merchant_id,
+          'method': 'delete',
+          'datafeedId': v,
+      } for i, v in enumerate(datafeed_ids)],
+  }
 
-  for datafeed_id in datafeed_ids:
-    # Add datafeed deletion to the batch.
-    batch.add(service.datafeeds().delete(
-        merchantId=merchant_id, datafeedId=datafeed_id))
-  try:
-    batch.execute()
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  request = service.datafeeds().custombatch(body=batch)
+  result = request.execute()
+
+  if result['kind'] == 'content#datafeedsCustomBatchResponse':
+    for entry in result['entries']:
+      if not shopping_common.json_absent_or_false(entry, 'errors'):
+        print('Errors for batch entry %d:' % entry['batchId'])
+        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+                         separators=(',', ': ')))
+      else:
+        print('Successfully deleted datafeed %s (batch entry %d).' %
+              (datafeed_ids.get(entry['batchId']), entry['batchId']))
+  else:
+    print('There was an error. Response: %s' % result)
 
 
 if __name__ == '__main__':

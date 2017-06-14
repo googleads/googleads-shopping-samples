@@ -15,9 +15,9 @@
 # limitations under the License.
 """Adds a user to the primary account."""
 
+from __future__ import print_function
 import sys
 
-from oauth2client import client
 import shopping_common
 
 
@@ -27,31 +27,26 @@ def main(argv):
   merchant_id = config['merchantId']
   email = None
   if shopping_common.json_absent_or_false(config, 'accountSampleUser'):
-    print 'Must specify the user email to add in the samples configuration.'
+    print('Must specify the user email to add in the samples configuration.')
     sys.exit(1)
   email = config['accountSampleUser']
 
-  try:
-    # First we need to retrieve the existing set of users.
-    response = service.accounts().get(
-        merchantId=merchant_id, accountId=merchant_id,
-        fields='users').execute()
+  # First we need to retrieve the existing set of users.
+  response = service.accounts().get(
+      merchantId=merchant_id, accountId=merchant_id,
+      fields='users').execute()
 
-    account = response
+  account = response
 
-    # Add new user to existing user list.
-    new_user = {'emailAddress': email, 'admin': False}
-    account['users'].append(new_user)
+  # Add new user to existing user list.
+  new_user = {'emailAddress': email, 'admin': False}
+  account['users'].append(new_user)
 
-    # Patch account with new user list.
-    response = service.accounts().patch(
-        merchantId=merchant_id, accountId=merchant_id, body=account).execute()
+  # Patch account with new user list.
+  response = service.accounts().patch(
+      merchantId=merchant_id, accountId=merchant_id, body=account).execute()
 
-    print 'Account %s was added to merchant ID %s' % (email, merchant_id)
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  print('Account %s was added to merchant ID %d' % (email, merchant_id))
 
 
 if __name__ == '__main__':

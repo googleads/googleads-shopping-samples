@@ -15,9 +15,9 @@
 # limitations under the License.
 """Gets all accounts on the specified multi-client account."""
 
+from __future__ import print_function
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # The maximum number of results to be returned in a page.
@@ -30,26 +30,20 @@ def main(argv):
   merchant_id = config['merchantId']
   shopping_common.check_mca(config, True)
 
-  try:
-    request = service.accounts().list(
-        merchantId=merchant_id, maxResults=MAX_PAGE_SIZE)
+  request = service.accounts().list(
+      merchantId=merchant_id, maxResults=MAX_PAGE_SIZE)
 
-    while request is not None:
-      result = request.execute()
-      if shopping_common.json_absent_or_false(result, 'resources'):
-        print 'No accounts were found.'
-        break
-      else:
-        accounts = result['resources']
-        for account in accounts:
-          print('Account "%s" with name "%s" was found.' % (account['id'],
-                                                            account['name']))
-
-        request = service.accounts().list_next(request, result)
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  while request is not None:
+    result = request.execute()
+    if shopping_common.json_absent_or_false(result, 'resources'):
+      print('No accounts were found.')
+      break
+    else:
+      accounts = result['resources']
+      for account in accounts:
+        print('Account %s with name "%s" was found.' %
+              (account['id'], account['name']))
+      request = service.accounts().list_next(request, result)
 
 
 if __name__ == '__main__':

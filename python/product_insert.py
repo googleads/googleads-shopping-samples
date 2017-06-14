@@ -15,9 +15,9 @@
 # limitations under the License.
 """This example adds a product to a specified account."""
 
+from __future__ import print_function
 import sys
 
-from oauth2client import client
 import product_sample
 import shopping_common
 
@@ -27,20 +27,15 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
 
-  try:
-    offer_id = 'book#%s' % shopping_common.get_unique_id()
-    product = product_sample.create_product_sample(config, offer_id)
+  offer_id = 'book#%s' % shopping_common.get_unique_id()
+  product = product_sample.create_product_sample(config, offer_id)
 
-    # Add product.
-    request = service.products().insert(merchantId=merchant_id, body=product)
+  # Add product.
+  request = service.products().insert(merchantId=merchant_id, body=product)
 
-    result = request.execute()
-    print('Product with offerId "%s" and title "%s" was created.' %
-          (result['offerId'], result['title']))
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  result = request.execute()
+  print('Product with offerId "%s" and title "%s" was created.' %
+        (result['offerId'], result['title']))
 
 
 if __name__ == '__main__':

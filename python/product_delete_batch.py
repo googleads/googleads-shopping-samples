@@ -15,25 +15,17 @@
 # limitations under the License.
 """Deletes several products from the specified account, in a single batch."""
 
+from __future__ import print_function
 import argparse
+import json
 import sys
 
-from apiclient.http import BatchHttpRequest
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
     'product_ids', nargs='*', help='The IDs of the products to delete.')
-
-
-def product_deleted(request_id, unused_response, exception):
-  if exception is not None:
-    # Do something with the exception.
-    print 'There was an error: ' + str(exception)
-  else:
-    print 'Requested product %s was deleted.' % request_id
 
 
 def main(argv):
@@ -43,17 +35,31 @@ def main(argv):
   merchant_id = config['merchantId']
   product_ids = flags.product_ids
 
-  batch = BatchHttpRequest(callback=product_deleted)
+  batch = {
+      'entries': [{
+          'batchId': i,
+          'merchantId': merchant_id,
+          'method': 'delete',
+          'productId': v,
+      } for i, v in enumerate(product_ids)],
+  }
 
-  for product_id in product_ids:
-    # Add product deletion to the batch.
-    batch.add(
-        service.products().delete(merchantId=merchant_id, productId=product_id))
-  try:
-    batch.execute()
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  request = service.products().custombatch(body=batch)
+  result = request.execute()
+
+  if result['kind'] == 'content#productsCustomBatchResponse':
+    for entry in result['entries']:
+      if shopping_common.json_absent_or_false(entry, 'errors'):
+        print('Deletion of product %s (batch entry %d) successful.' %
+              (batch['entries'][entry['batchId']]['productId'],
+               entry['batchId']))
+      else:
+        print('Errors for batch entry %d:' % entry['batchId'])
+        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+                         separators=(',', ': ')))
+
+  else:
+    print('There was an error. Response: %s' % result)
 
 
 if __name__ == '__main__':

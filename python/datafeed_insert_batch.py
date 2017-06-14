@@ -15,24 +15,15 @@
 # limitations under the License.
 """Adds several datafeeds to the specified account, in a single batch."""
 
+from __future__ import print_function
+import json
 import sys
 
-from apiclient.http import BatchHttpRequest
 import datafeed_sample
-from oauth2client import client
 import shopping_common
 
 # Number of datafeeds to insert.
 BATCH_SIZE = 5
-
-
-def datafeed_inserted(unused_request_id, response, exception):
-  if exception is not None:
-    # Do something with the exception.
-    print 'There was an error: ' + str(exception)
-  else:
-    print('Datafeed with name "%s" and ID "%s" was created.' %
-          (response['name'], response['id']))
 
 
 def main(argv):
@@ -40,19 +31,31 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
 
-  batch = BatchHttpRequest(callback=datafeed_inserted)
+  batch = {
+      'entries': [{
+          'batchId': i,
+          'merchantId': merchant_id,
+          'method': 'insert',
+          'datafeed': datafeed_sample.create_datafeed_sample(
+              config, 'feed%s' % shopping_common.get_unique_id()),
+      } for i in range(BATCH_SIZE)],
+  }
 
-  for _ in range(BATCH_SIZE):
-    name = 'feed%s' % shopping_common.get_unique_id()
-    datafeed = datafeed_sample.create_datafeed_sample(config, name)
+  request = service.datafeeds().custombatch(body=batch)
+  result = request.execute()
 
-    # Add datafeed to the batch.
-    batch.add(service.datafeeds().insert(merchantId=merchant_id, body=datafeed))
-  try:
-    batch.execute()
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  if result['kind'] == 'content#datafeedsCustomBatchResponse':
+    entries = result['entries']
+    for entry in entries:
+      if not shopping_common.json_absent_or_false(entry, 'datafeed'):
+        print('Datafeed %s with name "%s" created.' %
+              (entry['datafeed']['id'], entry['datafeed']['name']))
+      elif not shopping_common.json_absent_or_false(entry, 'errors'):
+        print('Errors for batch entry %d:' % entry['batchId'])
+        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+                         separators=(',', ': ')))
+  else:
+    print('There was an error. Response: %s' % result)
 
 
 if __name__ == '__main__':

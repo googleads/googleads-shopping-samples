@@ -15,10 +15,10 @@
 # limitations under the License.
 """Gets the status of the specified product."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -34,25 +34,21 @@ def main(argv):
   product_id = flags.product_id
   shopping_common.check_mca(config, False)
 
-  try:
-    status = service.productstatuses().get(
-        merchantId=merchant_id, productId=product_id).execute()
+  status = service.productstatuses().get(
+      merchantId=merchant_id, productId=product_id).execute()
 
-    print('- Product "%s" with title "%s":' % (status['productId'],
-                                               status['title']))
-    if shopping_common.json_absent_or_false(status, 'dataQualityIssues'):
-      print '  No data quality issues.'
-    else:
-      print '  Found %d data quality issues:' % len(status['dataQualityIssues'])
-      for issue in status['dataQualityIssues']:
-        if shopping_common.json_absent_or_false(issue, 'detail'):
-          print '  - (%s) [%s]' % (issue['severity'], issue['id'])
-        else:
-          print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
-                                      issue['detail']))
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  print('- Product "%s" with title "%s":' % (status['productId'],
+                                             status['title']))
+  if shopping_common.json_absent_or_false(status, 'dataQualityIssues'):
+    print('  No data quality issues.')
+  else:
+    print('  Found %d data quality issues:' % len(status['dataQualityIssues']))
+    for issue in status['dataQualityIssues']:
+      if shopping_common.json_absent_or_false(issue, 'detail'):
+        print('  - (%s) [%s]' % (issue['severity'], issue['id']))
+      else:
+        print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
+                                    issue['detail']))
 
 
 if __name__ == '__main__':

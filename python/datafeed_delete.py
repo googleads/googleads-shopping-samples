@@ -15,10 +15,10 @@
 # limitations under the License.
 """Deletes a datafeed from the specified account."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -35,12 +35,8 @@ def main(argv):
 
   request = service.datafeeds().delete(
       merchantId=merchant_id, datafeedId=datafeed_id)
-  try:
-    request.execute()
-    print 'Datafeed was deleted.'
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  request.execute()
+  print('Datafeed %s was deleted.' % datafeed_id)
 
 
 if __name__ == '__main__':

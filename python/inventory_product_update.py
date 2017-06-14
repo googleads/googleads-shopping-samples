@@ -20,10 +20,10 @@ properties in a product, be sure to use the inventory.set method
 for performance reasons.
 """
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -52,14 +52,8 @@ def main(argv):
       productId=product_id,
       body=new_status)
 
-  try:
-    unused_result = request.execute()
-
-    print 'Product with ID "%s" was updated.' % (product_id,)
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  request.execute()
+  print('Product with ID "%s" was updated.' % product_id)
 
 
 if __name__ == '__main__':

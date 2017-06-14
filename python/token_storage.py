@@ -14,74 +14,78 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Backing store implementation for OAuth2 clients based on config data."""
-import copy
-from datetime import datetime
+
+from __future__ import print_function
 import json
 import os
-import threading
+import sys
 
 import _constants
-import oauth2client
+import google.auth
+import google.oauth2
 
 
-class Storage(oauth2client.client.Storage):
-  """Backing store for refresh token-based clients.
-
-  Unlike the normal file-baked store, this one stores the needed information
-  (client_id, access_token, refresh_token) in the Content API sample
-  configuration.
-  """
+class Storage(object):
+  """Simple store for refresh token-based clients."""
 
   def __init__(self, config):
-    super(Storage, self).__init__(lock=threading.Lock())
     self._config = config
 
-  def dump_json(self):
-    output_file = os.path.join(self._config['path'], _constants.CONFIG_FILE)
-    # Calculated configuration contents should not be written back to the file.
-    to_strip = ['path', 'isMCA']
-    to_dump = copy.deepcopy(self._config)
-    for key in to_strip:
-      to_dump.pop(key)
-    with open(output_file, 'w') as outfile:
-      json.dump(
-          to_dump, outfile, sort_keys=True, indent=2, separators=(',', ': '))
+  def _token_path(self):
+    return os.path.join(self._config['path'], _constants.TOKEN_FILE)
 
-  def locked_delete(self):
-    del self._config['token']
-    self.dump_json()
+  def get(self):
+    """Attempt to retrieve the currently stored token.
 
-  def locked_get(self):
-    credentials = None
+    Returns:
+      An instance of google.oauth2.credentials.Credentials if token
+      retrieval succeeds, or None if it fails for any reason.
+    """
     try:
-      _, client_info = oauth2client.clientsecrets.loadfile(
-          os.path.join(self._config['path'], _constants.CLIENT_SECRETS_FILE))
-      if client_info['client_id'] == self._config['token']['client_id']:
-        credentials = oauth2client.client.OAuth2Credentials(
-            self._config['token']['access_token'],
-            client_info['client_id'],
-            client_info['client_secret'],
-            self._config['token']['refresh_token'],
-            datetime.utcnow(),
-            oauth2client.GOOGLE_AUTH_URI,
-            _constants.APPLICATION_NAME,
-            id_token=self._config['emailAddress'],
-            scopes=_constants.API_SCOPE)
-        credentials.set_store(self)
-    except ValueError:
-      pass
-    except KeyError:
-      pass
-    return credentials
+      with open(self._token_path(), 'r') as infile:
+        token = json.load(infile)
+      client_info = retrieve_client_config(self._config)['installed']
+      credentials = google.oauth2.credentials.Credentials(
+          None,
+          client_id=client_info['client_id'],
+          client_secret=client_info['client_secret'],
+          refresh_token=token['refresh_token'],
+          token_uri=client_info['token_uri'],
+          scopes=[_constants.CONTENT_API_SCOPE])
+      # Access tokens aren't stored (and may be expired even if we did), so
+      # we'll need to refresh to ensure we have valid credentials.
+      try:
+        credentials.refresh(google.auth.transport.requests.Request())
+        print('Using stored credentials from %s.' % self._token_path())
+        return credentials
+      except google.auth.exceptions.RefreshError:
+        print('The stored credentials in the file %s cannot be refreshed, '
+              're-requesting access.' % self._token_path())
+        return None
+    except (IOError, ValueError, KeyError):
+      return None
 
-  def locked_put(self, credentials):
-    # Also set the emailAddress based off of the credentials.
-    self._config['emailAddress'] = credentials.id_token
-    self._config['token'] = {
-        'client_id': credentials.client_id,
-        'access_token': credentials.access_token,
+  def put(self, credentials):
+    """Store the provided credentials into the appropriate file.
+
+    Args:
+      credentials: an instance of google.oauth2.credentials.Credentials.
+    """
+    token = {
         'refresh_token': credentials.refresh_token,
-        'scope': [_constants.API_SCOPE],
-        'expiration_time_millis': 0,
     }
-    self.dump_json()
+    with open(self._token_path(), 'w') as outfile:
+      json.dump(token, outfile, sort_keys=True, indent=2,
+                separators=(',', ': '))
+
+
+def retrieve_client_config(config):
+  client_secrets_path = os.path.join(
+      config['path'], _constants.CLIENT_SECRETS_FILE)
+  with open(client_secrets_path, 'r') as json_file:
+    client_config_json = json.load(json_file)
+  if 'installed' not in client_config_json:
+    print('Please read the note about OAuth2 client IDs in the '
+          'top-level README.')
+    sys.exit(1)
+  return client_config_json

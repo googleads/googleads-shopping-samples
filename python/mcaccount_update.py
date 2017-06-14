@@ -15,10 +15,10 @@
 # limitations under the License.
 """Updates the specified account on the specified account."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -34,18 +34,13 @@ def main(argv):
   account_id = flags.account_id
   shopping_common.check_mca(config, True)
 
-  try:
-    new_name = 'updated-account%s' % (shopping_common.get_unique_id(),)
-    request = service.accounts().patch(
-        merchantId=merchant_id, accountId=account_id, body={'name': new_name})
+  new_name = 'updated-account%s' % shopping_common.get_unique_id()
+  request = service.accounts().patch(
+      merchantId=merchant_id, accountId=account_id, body={'name': new_name})
 
-    result = request.execute()
-    print('Account with id "%s" was updated with new name "%s".' %
-          (account_id, result['name']))
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  result = request.execute()
+  print('Account with id %s was updated with new name "%s".' %
+        (account_id, result['name']))
 
 
 if __name__ == '__main__':

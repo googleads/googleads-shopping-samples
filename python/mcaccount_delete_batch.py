@@ -15,25 +15,17 @@
 # limitations under the License.
 """Deletes several accounts from the specified account, in a single batch."""
 
+from __future__ import print_function
 import argparse
+import json
 import sys
 
-from apiclient.http import BatchHttpRequest
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
     'account_ids', nargs='*', help='The IDs of the accounts to delete.')
-
-
-def account_deleted(unused_request_id, unused_response, exception):
-  if exception is not None:
-    # Do something with the exception.
-    print 'There was an error: ' + str(exception)
-  else:
-    print 'Account was deleted.'
 
 
 def main(argv):
@@ -44,17 +36,30 @@ def main(argv):
   account_ids = flags.account_ids
   shopping_common.check_mca(config, True)
 
-  batch = BatchHttpRequest(callback=account_deleted)
+  batch = {
+      'entries': [{
+          'batchId': i,
+          'merchantId': merchant_id,
+          'method': 'delete',
+          'accountId': v,
+      } for i, v in enumerate(account_ids)],
+  }
 
-  for account_id in account_ids:
-    # Add account deletion to the batch.
-    batch.add(
-        service.accounts().delete(merchantId=merchant_id, accountId=account_id))
-  try:
-    batch.execute()
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  request = service.accounts().custombatch(body=batch)
+  result = request.execute()
+
+  if result['kind'] == 'content#accountsCustomBatchResponse':
+    entries = result['entries']
+    for entry in entries:
+      if not shopping_common.json_absent_or_false(entry, 'errors'):
+        print('Errors for batch entry %d:' % entry['batchId'])
+        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+                         separators=(',', ': ')))
+      else:
+        print('Account %s deleted (batch entry %d).' %
+              (account_ids[entry['batchId']], entry['batchId']))
+  else:
+    print('There was an error. Response: %s' % result)
 
 
 if __name__ == '__main__':

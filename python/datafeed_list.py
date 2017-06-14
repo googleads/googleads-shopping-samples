@@ -15,9 +15,9 @@
 # limitations under the License.
 """Gets all datafeeds on the specified account."""
 
+from __future__ import print_function
 import sys
 
-from oauth2client import client
 import shopping_common
 
 
@@ -26,24 +26,19 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
 
-  try:
-    request = service.datafeeds().list(merchantId=merchant_id)
+  request = service.datafeeds().list(merchantId=merchant_id)
 
-    while request is not None:
-      result = request.execute()
-      if shopping_common.json_absent_or_false(result, 'resources'):
-        print 'No datafeeds were found.'
-        break
-      else:
-        datafeeds = result['resources']
-        for datafeed in datafeeds:
-          print('Datafeed "%s" with name "%s" was found.' % (datafeed['id'],
-                                                             datafeed['name']))
-        request = service.datafeeds().list_next(request, result)
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  while request is not None:
+    result = request.execute()
+    if shopping_common.json_absent_or_false(result, 'resources'):
+      print('No datafeeds were found.')
+      break
+    else:
+      datafeeds = result['resources']
+      for datafeed in datafeeds:
+        print('Datafeed %s with name "%s" was found.' %
+              (datafeed['id'], datafeed['name']))
+    request = service.datafeeds().list_next(request, result)
 
 
 if __name__ == '__main__':

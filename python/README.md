@@ -9,13 +9,11 @@ the Google Content API for Shopping.
 ## Prerequisites
 
 Please make sure that you've installed the
-[Google APIs Client Library for Python](https://developers.google.com/api-client-library/python/start/installation).
-After installing, make sure you can import the client library:
-
-  ```
-  $ python
-  >>> import googleapiclient
-  ```
+[Google APIs Client Library for Python](https://developers.google.com/api-client-library/python/start/installation)
+the [Google Auth Python Library]
+(https://github.com/GoogleCloudPlatform/google-auth-library-python),
+[google-auth-oauthlib](https://pypi.python.org/pypi/google-auth-oauthlib),
+and [google-auth-httplib2](https://pypi.python.org/pypi/google-auth-httplib2).
 
 ## Setup Authentication and Sample Configuration
 

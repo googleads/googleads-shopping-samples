@@ -15,9 +15,9 @@
 # limitations under the License.
 """Gets the status of all products on the specified account."""
 
+from __future__ import print_function
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # The maximum number of results to be returned in a page.
@@ -30,36 +30,31 @@ def main(argv):
   merchant_id = config['merchantId']
   shopping_common.check_mca(config, False)
 
-  try:
-    request = service.productstatuses().list(
-        merchantId=merchant_id, maxResults=MAX_PAGE_SIZE)
+  request = service.productstatuses().list(
+      merchantId=merchant_id, maxResults=MAX_PAGE_SIZE)
 
-    while request is not None:
-      result = request.execute()
-      if shopping_common.json_absent_or_false(result, 'resources'):
-        print 'No products were found.'
-        break
-      else:
-        statuses = result['resources']
-        for status in statuses:
-          print('- Product "%s" with title "%s":' % (status['productId'],
-                                                     status['title']))
-          if shopping_common.json_absent_or_false(status, 'dataQualityIssues'):
-            print '  No data quality issues.'
-          else:
-            print('  Found %d data quality issues:' %
-                  len(status['dataQualityIssues']))
-            for issue in status['dataQualityIssues']:
-              if shopping_common.json_absent_or_false(issue, 'detail'):
-                print '  - (%s) [%s]' % (issue['severity'], issue['id'])
-              else:
-                print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
-                                            issue['detail']))
-        request = service.productstatuses().list_next(request, result)
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  while request is not None:
+    result = request.execute()
+    if shopping_common.json_absent_or_false(result, 'resources'):
+      print('No products were found.')
+      break
+    else:
+      statuses = result['resources']
+      for status in statuses:
+        print('- Product "%s" with title "%s":' % (status['productId'],
+                                                   status['title']))
+        if shopping_common.json_absent_or_false(status, 'dataQualityIssues'):
+          print('  No data quality issues.')
+        else:
+          print('  Found %d data quality issues:' %
+                len(status['dataQualityIssues']))
+          for issue in status['dataQualityIssues']:
+            if shopping_common.json_absent_or_false(issue, 'detail'):
+              print('  - (%s) [%s]' % (issue['severity'], issue['id']))
+            else:
+              print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
+                                          issue['detail']))
+      request = service.productstatuses().list_next(request, result)
 
 
 if __name__ == '__main__':

@@ -15,23 +15,14 @@
 # limitations under the License.
 """Adds accounts to the specified multi-client account, in a single batch."""
 
+from __future__ import print_function
+import json
 import sys
 
-from apiclient.http import BatchHttpRequest
-from oauth2client import client
 import shopping_common
 
 # Number of accounts to insert.
 BATCH_SIZE = 5
-
-
-def account_inserted(unused_request_id, response, exception):
-  if exception is not None:
-    # Do something with the exception.
-    print 'There was an error: ' + str(exception)
-  else:
-    print('Account with ID "%s" and name "%s" was created.' %
-          (response['id'], response['name']))
 
 
 def main(argv):
@@ -40,18 +31,36 @@ def main(argv):
   merchant_id = config['merchantId']
   shopping_common.check_mca(config, True)
 
-  batch = BatchHttpRequest(callback=account_inserted)
+  account_names = [
+      'account%s' % shopping_common.get_unique_id() for i in range(BATCH_SIZE)
+  ]
+  batch = {
+      'entries': [{
+          'batchId': i,
+          'merchantId': merchant_id,
+          'method': 'insert',
+          'account': {
+              'name': v,
+              'websiteUrl': 'https://%s.example.com/' % v,
+          },
+      } for i, v in enumerate(account_names)],
+  }
 
-  for _ in range(BATCH_SIZE):
-    name = 'account%s' % shopping_common.get_unique_id()
-    account = {'name': name, 'websiteUrl': 'https://%s.example.com/' % (name,)}
-    # Add account to the batch.
-    batch.add(service.accounts().insert(merchantId=merchant_id, body=account))
-  try:
-    batch.execute()
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  request = service.accounts().custombatch(body=batch)
+  result = request.execute()
+
+  if result['kind'] == 'content#accountsCustomBatchResponse':
+    for entry in result['entries']:
+      if not shopping_common.json_absent_or_false(entry, 'account'):
+        account = entry['account']
+        print('Account %s with name "%s" was created.' %
+              (account['id'], account['name']))
+      elif not shopping_common.json_absent_or_false(entry, 'errors'):
+        print('Errors for batch entry %d:' % entry['batchId'])
+        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+                         separators=(',', ': ')))
+  else:
+    print('There was an error. Response: %s' % result)
 
 
 if __name__ == '__main__':

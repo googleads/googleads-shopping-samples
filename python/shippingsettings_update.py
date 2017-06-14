@@ -15,10 +15,10 @@
 # limitations under the License.
 """Gets the shipping settings of the specified account."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shippingsettings_sample
 import shopping_common
 
@@ -43,36 +43,32 @@ def main(argv):
         True,
         msg='Non-multi-client accounts can only get their own information.')
 
-  try:
-    settings = shippingsettings_sample.create_shippingsettings_sample()
-    service.shippingsettings().update(
-        merchantId=merchant_id, accountId=merchant_id, body=settings).execute()
-    status = service.shippingsettings().get(
-        merchantId=merchant_id, accountId=merchant_id).execute()
-    print 'Account %s:' % status['accountId']
-    if shopping_common.json_absent_or_false(status, 'postalCodeGroups'):
-      print '- No postal code groups.'
-    else:
-      print '- %d postal code group(s):' % len(status['postalCodeGroups'])
-    if shopping_common.json_absent_or_false(status, 'services'):
-      print '- No services.'
-    else:
-      print '- %d service(s):' % len(status['services'])
-      for service in status['services']:
-        print '  Service "%s":' % service['name']
-        print '  - Delivery country: %s' % service['deliveryCountry']
-        print '  - Currency: %s' % service['currency']
-        print '  - Active: %s' % service['active']
-        print('  - Delivery time: %d - %d days' %
-              (service['deliveryTime']['minTransitTimeInDays'],
-               service['deliveryTime']['maxTransitTimeInDays']))
-        if shopping_common.json_absent_or_false(service, 'rateGroups'):
-          print '  - No rate groups.'
-        else:
-          print '  - %d rate groups.' % len(service['rateGroups'])
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  settings = shippingsettings_sample.create_shippingsettings_sample()
+  service.shippingsettings().update(
+      merchantId=merchant_id, accountId=merchant_id, body=settings).execute()
+  status = service.shippingsettings().get(
+      merchantId=merchant_id, accountId=merchant_id).execute()
+  print('Account %s:' % status['accountId'])
+  if shopping_common.json_absent_or_false(status, 'postalCodeGroups'):
+    print('- No postal code groups.')
+  else:
+    print('- %d postal code group(s):' % len(status['postalCodeGroups']))
+  if shopping_common.json_absent_or_false(status, 'services'):
+    print('- No services.')
+  else:
+    print('- %d service(s):' % len(status['services']))
+    for service in status['services']:
+      print('  Service "%s":' % service['name'])
+      print('  - Delivery country: %s' % service['deliveryCountry'])
+      print('  - Currency: %s' % service['currency'])
+      print('  - Active: %s' % service['active'])
+      print('  - Delivery time: %d - %d days' %
+            (service['deliveryTime']['minTransitTimeInDays'],
+             service['deliveryTime']['maxTransitTimeInDays']))
+      if shopping_common.json_absent_or_false(service, 'rateGroups'):
+        print('  - No rate groups.')
+      else:
+        print('  - %d rate groups.' % len(service['rateGroups']))
 
 
 if __name__ == '__main__':

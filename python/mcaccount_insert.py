@@ -15,9 +15,9 @@
 # limitations under the License.
 """This example adds an account to a specified multi-client account."""
 
+from __future__ import print_function
 import sys
 
-from oauth2client import client
 import shopping_common
 
 
@@ -27,20 +27,15 @@ def main(argv):
   merchant_id = config['merchantId']
   shopping_common.check_mca(config, True)
 
-  try:
-    name = 'account%s' % shopping_common.get_unique_id()
-    account = {'name': name, 'websiteUrl': 'https://%s.example.com/' % (name,)}
+  name = 'account%s' % shopping_common.get_unique_id()
+  account = {'name': name, 'websiteUrl': 'https://%s.example.com/' % name}
 
-    # Add account.
-    request = service.accounts().insert(merchantId=merchant_id, body=account)
+  # Add account.
+  request = service.accounts().insert(merchantId=merchant_id, body=account)
 
-    result = request.execute()
+  result = request.execute()
 
-    print 'Created account ID "%s" for MCA "%s".' % (result['id'], merchant_id)
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  print('Created sub-account ID %s for MCA %d.' % (result['id'], merchant_id))
 
 
 if __name__ == '__main__':

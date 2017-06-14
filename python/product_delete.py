@@ -15,10 +15,10 @@
 # limitations under the License.
 """Deletes a product from the specified account."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -35,12 +35,8 @@ def main(argv):
 
   request = service.products().delete(
       merchantId=merchant_id, productId=product_id)
-  try:
-    request.execute()
-    print 'Product was deleted.'
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  request.execute()
+  print('Product %s was deleted.' % product_id)
 
 
 if __name__ == '__main__':

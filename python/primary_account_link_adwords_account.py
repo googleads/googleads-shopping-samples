@@ -16,9 +16,9 @@
 """Links the specified AdWords account to the specified merchant center account.
 """
 
+from __future__ import print_function
 import sys
 
-from oauth2client import client
 import shopping_common
 
 
@@ -28,32 +28,26 @@ def main(argv):
   merchant_id = config['merchantId']
   adwords_id = None
   if shopping_common.json_absent_or_false(config, 'accountSampleAdWordsCID'):
-    print 'Must specify the AdWords CID to link in the samples configuration.'
+    print('Must specify the AdWords CID to link in the samples configuration.')
     sys.exit(1)
   adwords_id = config['accountSampleAdWordsCID']
 
-  try:
-    # First we need to retrieve the existing set of users.
-    response = service.accounts().get(
-        merchantId=merchant_id, accountId=merchant_id,
-        fields='adwordsLinks').execute()
+  # First we need to retrieve the existing set of users.
+  response = service.accounts().get(
+      merchantId=merchant_id, accountId=merchant_id,
+      fields='adwordsLinks').execute()
 
-    account = response
+  account = response
 
-    # Add new user to existing user list.
-    adwords_link = {'adwordsId': adwords_id, 'status': 'active'}
-    account.setdefault('adwordsLinks', []).append(adwords_link)
+  # Add new user to existing user list.
+  adwords_link = {'adwordsId': adwords_id, 'status': 'active'}
+  account.setdefault('adwordsLinks', []).append(adwords_link)
 
-    # Patch account with new user list.
-    response = service.accounts().patch(
-        merchantId=merchant_id, accountId=merchant_id, body=account).execute()
+  # Patch account with new user list.
+  response = service.accounts().patch(
+      merchantId=merchant_id, accountId=merchant_id, body=account).execute()
 
-    print 'AdWords ID %s was added to merchant ID %s' % (adwords_id,
-                                                         merchant_id)
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  print('AdWords ID %d was added to merchant ID %d' % (adwords_id, merchant_id))
 
 
 if __name__ == '__main__':

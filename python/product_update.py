@@ -20,10 +20,10 @@ collection. If you're updating any of the supported properties in a product,
 be sure to use the inventory.set method, for performance reasons.
 """
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -38,28 +38,22 @@ def main(argv):
   merchant_id = config['merchantId']
   product_id = flags.product_id
 
-  try:
+  # First we need to retrieve the full object, since there are no partial
+  # updates for the products collection in Content API v2.
+  product = service.products().get(
+      merchantId=merchant_id, productId=product_id).execute()
 
-    # First we need to retrieve the full object, since there are no partial
-    # updates for the products collection in Content API v2.
-    product = service.products().get(
-        merchantId=merchant_id, productId=product_id).execute()
+  # Let's fix the warning about product_type and update the product.
+  product['productType'] = 'English/Classics'
 
-    # Let's fix the warning about product_type and update the product.
-    product['productType'] = 'English/Classics'
+  # Notice that we use insert. The products service does not have an update
+  # method. Inserting a product with an ID that already exists means the same
+  # as doing an update.
+  request = service.products().insert(merchantId=merchant_id, body=product)
 
-    # Notice that we use insert. The products service does not have an update
-    # method. Inserting a product with an ID that already exists means the same
-    # as doing an update.
-    request = service.products().insert(merchantId=merchant_id, body=product)
-
-    result = request.execute()
-    print('Product with offerId "%s" and productType "%s" was updated.' %
-          (result['offerId'], result['productType']))
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  result = request.execute()
+  print('Product with offerId "%s" and productType "%s" was updated.' %
+        (result['offerId'], result['productType']))
 
 
 if __name__ == '__main__':

@@ -15,10 +15,10 @@
 # limitations under the License.
 """Deletes an account from the specified multi-client account."""
 
+from __future__ import print_function
 import argparse
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # Declare command-line flags.
@@ -36,12 +36,8 @@ def main(argv):
 
   request = service.accounts().delete(
       merchantId=merchant_id, accountId=account_id)
-  try:
-    request.execute()
-    print 'Account was deleted.'
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  request.execute()
+  print('Account %s was deleted.' % account_id)
 
 
 if __name__ == '__main__':

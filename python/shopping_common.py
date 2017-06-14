@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common utils for the Content API for Shopping samples."""
-from __future__ import print_function
 
+from __future__ import print_function
 import argparse
 import json
 import os
@@ -25,11 +25,9 @@ import urlparse
 
 import _constants
 import auth
+import google_auth_httplib2
 from googleapiclient import discovery
 from googleapiclient import http
-import httplib2
-from oauth2client import client
-from oauth2client import tools
 
 
 # Authenticate and return the Content API service along with any command-line
@@ -51,7 +49,7 @@ def init(argv, doc, parents=None, sandbox=False):
   service = None
   sandbox_service = None
   flags = None
-  parent_parsers = [tools.argparser]
+  parent_parsers = []
   if parents is not None:
     parent_parsers.extend(parents)
 
@@ -94,14 +92,14 @@ def init(argv, doc, parents=None, sandbox=False):
       config = json.load(open(config_file, 'r'))
     config['path'] = content_path
 
-  credentials = auth.authorize(config, flags)
-  auth_http = credentials.authorize(
-      http=http.set_user_agent(
-          httplib2.Http(), _constants.APPLICATION_NAME))
+  credentials = auth.authorize(config)
+  auth_http = google_auth_httplib2.AuthorizedHttp(
+      credentials, http=http.set_user_agent(
+          http.build_http(), _constants.APPLICATION_NAME))
   if _constants.ENDPOINT_ENV_VAR in os.environ:
     # Strip off everything after the host/port in the URL.
     root_url = urlparse.urljoin(os.environ[_constants.ENDPOINT_ENV_VAR], '/')
-    print('Using non-standard root for API endpoint: %s' % root_url)
+    print('Using non-standard root for API discovery: %s' % root_url)
     discovery_url = root_url + '/discovery/v1/apis/{api}/{apiVersion}/rest'
     service = discovery.build(
         _constants.SERVICE_NAME,
@@ -162,52 +160,47 @@ def retrieve_remaining_config_from_api(service, config):
     service: Content API service object
     config: dictionary, Python representation of config JSON.
   """
-  try:
-    authinfo = service.accounts().authinfo().execute()
-    if json_absent_or_false(authinfo, 'accountIdentifiers'):
-      print('The currently authenticated user does not have access to '
-            'any Merchant Center accounts.')
-      sys.exit(1)
-    if 'merchantId' not in config:
-      first_account = authinfo['accountIdentifiers'][0]
-      if int(first_account['merchantId']) == 0:
-        config['merchantId'] = int(first_account['aggregatorId'])
-      else:
-        config['merchantId'] = int(first_account['merchantId'])
-      print('Using Merchant Center %d for running samples.' %
-            config['merchantId'])
-    merchant_id = config['merchantId']
-    config['isMCA'] = False
-    # The requested Merchant Center can only be an MCA if we are a
-    # user of it (and thus have access) and it is listed as an
-    # aggregator in authinfo.
-    for account_id in authinfo['accountIdentifiers']:
-      if ('aggregatorId' in account_id and
-          int(account_id['aggregatorId']) == merchant_id):
-        config['isMCA'] = True
-        break
-      if ('merchantId' in account_id and
-          int(account_id['merchantId']) == merchant_id):
-        break
-    if config['isMCA']:
-      print('Merchant Center %d is an MCA.' % (config['merchantId']))
-    else:
-      print('Merchant Center %d is not an MCA.' % (config['merchantId']))
-    account = service.accounts().get(
-        merchantId=merchant_id, accountId=merchant_id).execute()
-    if not json_absent_or_false(account, 'websiteUrl'):
-      config['websiteUrl'] = account['websiteUrl']
-    elif 'websiteUrl' in config:
-      del config['websiteUrl']
-    if 'websiteUrl' not in config:
-      print('No website for Merchant Center %d.' % config['merchantId'])
-    else:
-      print('Website for Merchant Center %d: %s' % (config['merchantId'],
-                                                    config['websiteUrl']))
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize.')
+  authinfo = service.accounts().authinfo().execute()
+  if json_absent_or_false(authinfo, 'accountIdentifiers'):
+    print('The currently authenticated user does not have access to '
+          'any Merchant Center accounts.')
     sys.exit(1)
+  if 'merchantId' not in config:
+    first_account = authinfo['accountIdentifiers'][0]
+    if json_absent_or_false(first_account, 'merchantId'):
+      config['merchantId'] = int(first_account['aggregatorId'])
+    else:
+      config['merchantId'] = int(first_account['merchantId'])
+    print('Using Merchant Center %d for running samples.' %
+          config['merchantId'])
+  merchant_id = config['merchantId']
+  config['isMCA'] = False
+  # The requested Merchant Center can only be an MCA if we are a
+  # user of it (and thus have access) and it is listed as an
+  # aggregator in authinfo.
+  for account_id in authinfo['accountIdentifiers']:
+    if ('aggregatorId' in account_id and
+        int(account_id['aggregatorId']) == merchant_id):
+      config['isMCA'] = True
+      break
+    if ('merchantId' in account_id and
+        int(account_id['merchantId']) == merchant_id):
+      break
+  if config['isMCA']:
+    print('Merchant Center %d is an MCA.' % config['merchantId'])
+  else:
+    print('Merchant Center %d is not an MCA.' % config['merchantId'])
+  account = service.accounts().get(
+      merchantId=merchant_id, accountId=merchant_id).execute()
+  if not json_absent_or_false(account, 'websiteUrl'):
+    config['websiteUrl'] = account['websiteUrl']
+  elif 'websiteUrl' in config:
+    del config['websiteUrl']
+  if 'websiteUrl' not in config:
+    print('No website for Merchant Center %d.' % config['merchantId'])
+  else:
+    print('Website for Merchant Center %d: %s' % (config['merchantId'],
+                                                  config['websiteUrl']))
 
 
 def check_mca(config, should_be_mca, msg=None):
@@ -227,7 +220,7 @@ def check_mca(config, should_be_mca, msg=None):
       print(msg)
     else:
       print('For this sample, you must%s use a multi-client account.' %
-            (' not' if is_mca else ''))
+            ' not' if is_mca else '')
     sys.exit(1)
 
 

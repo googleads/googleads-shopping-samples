@@ -15,9 +15,9 @@
 # limitations under the License.
 """Gets all products on the specified account."""
 
+from __future__ import print_function
 import sys
 
-from oauth2client import client
 import shopping_common
 
 # The maximum number of results to be returned in a page.
@@ -29,26 +29,21 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
 
-  try:
-    request = service.products().list(
-        merchantId=merchant_id, maxResults=MAX_PAGE_SIZE)
+  request = service.products().list(
+      merchantId=merchant_id, maxResults=MAX_PAGE_SIZE)
 
-    while request is not None:
-      result = request.execute()
-      if shopping_common.json_absent_or_false(result, 'resources'):
-        print 'No products were found.'
-        break
-      else:
-        products = result['resources']
-        for product in products:
-          print('Product "%s" with title "%s" was found.' % (product['id'],
-                                                             product['title']))
+  while request is not None:
+    result = request.execute()
+    if shopping_common.json_absent_or_false(result, 'resources'):
+      print('No products were found.')
+      break
+    else:
+      products = result['resources']
+      for product in products:
+        print('Product "%s" with title "%s" was found.' % (product['id'],
+                                                           product['title']))
 
-        request = service.products().list_next(request, result)
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+      request = service.products().list_next(request, result)
 
 
 if __name__ == '__main__':

@@ -15,10 +15,10 @@
 # limitations under the License.
 """This example adds a datafeed to a specified account."""
 
+from __future__ import print_function
 import sys
 
 import datafeed_sample
-from oauth2client import client
 import shopping_common
 
 
@@ -27,21 +27,16 @@ def main(argv):
   service, config, _ = shopping_common.init(argv, __doc__)
   merchant_id = config['merchantId']
 
-  try:
-    name = 'feed%s' % shopping_common.get_unique_id()
-    datafeed = datafeed_sample.create_datafeed_sample(config, name)
+  name = 'feed%s' % shopping_common.get_unique_id()
+  datafeed = datafeed_sample.create_datafeed_sample(config, name)
 
-    # Add datafeed.
-    request = service.datafeeds().insert(merchantId=merchant_id, body=datafeed)
+  # Add datafeed.
+  request = service.datafeeds().insert(merchantId=merchant_id, body=datafeed)
 
-    result = request.execute()
+  result = request.execute()
 
-    print('Datafeed with name "%s" and ID "%s" was created.' % (result['name'],
-                                                                result['id']))
-
-  except client.AccessTokenRefreshError:
-    print('The credentials have been revoked or expired, please re-run the '
-          'application to re-authorize')
+  print('Datafeed with name "%s" and ID %s was created.' %
+        (result['name'], result['id']))
 
 
 if __name__ == '__main__':
