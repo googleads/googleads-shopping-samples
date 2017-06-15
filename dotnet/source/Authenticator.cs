@@ -5,6 +5,8 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ShoppingSamples
 {
@@ -12,7 +14,10 @@ namespace ShoppingSamples
     {
         private Authenticator() { }
 
-        public static IConfigurableHttpClientInitializer authenticate(BaseConfig config, string scope)
+        private static readonly string TOKEN_FILE = "stored-token.json";
+
+        public static IConfigurableHttpClientInitializer authenticate(
+            BaseConfig config, string scope)
         {
             String[] scopes = new[] { scope };
 
@@ -39,7 +44,8 @@ namespace ShoppingSamples
             if (File.Exists(serviceAccountPath))
             {
                 Console.WriteLine("Loading service account credentials from " + serviceAccountPath);
-                using (FileStream stream = new FileStream(serviceAccountPath, FileMode.Open, FileAccess.Read))
+                using (FileStream stream = new FileStream(
+                    serviceAccountPath, FileMode.Open, FileAccess.Read))
                 {
                     GoogleCredential credential = GoogleCredential.FromStream(stream);
                     return credential.CreateScoped(scopes);
@@ -48,13 +54,15 @@ namespace ShoppingSamples
             else if (File.Exists(oauthFilePath))
             {
                 Console.WriteLine("Loading OAuth2 credentials from " + oauthFilePath);
-                using (FileStream oauthFile = File.Open(oauthFilePath, FileMode.Open, FileAccess.Read))
+                using (FileStream oauthFile =
+                    File.Open(oauthFilePath, FileMode.Open, FileAccess.Read))
                 {
                     var clientSecrets = GoogleClientSecrets.Load(oauthFile).Secrets;
-                    if (config.Token != null)
+                    var userId = "unused";
+                    TokenResponse token = LoadToken(config, scope);
+                    if (token != null)
                     {
                         Console.WriteLine("Loading old access token.");
-                        config.Token.Scope = scope;
                         try
                         {
                             var init = new GoogleAuthorizationCodeFlow.Initializer()
@@ -63,8 +71,7 @@ namespace ShoppingSamples
                                 Scopes = scopes
                             };
                             var flow = new GoogleAuthorizationCodeFlow(init);
-                            UserCredential storedCred =
-                                new UserCredential(flow, config.EmailAddress, config.Token);
+                            UserCredential storedCred = new UserCredential(flow, userId, token);
                             // Want to try and test and make sure we'll actually be able to
                             // use these credentials.
                             if (!storedCred.RefreshTokenAsync(CancellationToken.None).Result)
@@ -80,13 +87,8 @@ namespace ShoppingSamples
                         }
                     }
                     UserCredential credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                        clientSecrets,
-                        scopes,
-                        config.EmailAddress,
-                        CancellationToken.None).Result;
-                    config.Token = credential.Token;
-                    config.Token.Scope = scope;
-                    config.Save();
+                        clientSecrets, scopes, userId, CancellationToken.None).Result;
+                    StoreToken(config, credential.Token);
                     return credential;
                 }
             }
@@ -96,6 +98,38 @@ namespace ShoppingSamples
             Console.WriteLine(" - " + oauthFilePath);
             Console.WriteLine("Please read the included README for instructions.");
             return null;
+        }
+
+        public static TokenResponse LoadToken(BaseConfig config, string scope)
+        {
+            var tokenFile = Path.Combine(config.ConfigDir, TOKEN_FILE);
+            if (!File.Exists(tokenFile))
+            {
+                return null;
+            }
+            using (StreamReader sr = File.OpenText(tokenFile))
+            using (JsonTextReader reader = new JsonTextReader(sr))
+            {
+                JObject json = (JObject)JToken.ReadFrom(reader);
+                // Some serializations put an array of scopes into the token, but
+                // TokenResponse expects a string, so change appropriately.
+                json["scope"] = scope;
+                return (TokenResponse)json.ToObject(typeof(TokenResponse));
+            }
+        }
+
+        public static void StoreToken(BaseConfig config, TokenResponse token)
+        {
+            var tokenFile = Path.Combine(config.ConfigDir, TOKEN_FILE);
+            JsonSerializer serializer = new JsonSerializer();
+            using (StreamWriter sw = new StreamWriter(tokenFile))
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            {
+                writer.Formatting = Formatting.Indented;
+                writer.IndentChar = ' ';
+                writer.Indentation = 2;
+                serializer.Serialize(writer, token);
+            }
         }
     }
 }

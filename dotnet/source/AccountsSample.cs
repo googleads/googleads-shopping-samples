@@ -42,7 +42,7 @@ namespace ShoppingSamples.Content
             }
 
             // Primary account, AdWords account link
-            if (adWordsAccountId != null)
+            if (adWordsAccountId != null && adWordsAccountId.Value != 0L)
             {
                 LinkAdWordsAccount(merchantId, adWordsAccountId.Value);
                 UnlinkAdWordsAccount(merchantId, adWordsAccountId.Value);
