@@ -1,6 +1,5 @@
 {
   "merchantId": 12345,
-  "emailAddress": "merchant_user@example.com",
   "accountSampleUser": "",
   "accountSampleAdWordsCID": 0
 }

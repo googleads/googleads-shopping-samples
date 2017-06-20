@@ -29,9 +29,4 @@ project appropriately for access to the Google APIs Client Library for Java.
 
 1. Build and run any of the included samples.
 
-   If using an OAuth2 client ID for the first time, the application will open a
-   browser so you can authorize it to access your account. The access token
-   will be stored in the sample configuration file, so if you have
-   authentication issues, delete the `token` field and reauthenticate.
-
 2. Examine your shell output, be inspired and start hacking an amazing new app!

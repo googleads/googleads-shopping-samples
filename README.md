@@ -92,7 +92,6 @@ Console. Both APIs can be selected if you wish to try samples for both APIs.
     | Field                     | Type   | Description                                    |
     |---------------------------|--------|------------------------------------------------|
     | `merchantId`              | number | The Merchant Center ID to run samples against. |
-    | `emailAddress`            | string | What email address should be used for authentication. Setting this is required only if using OAuth2 client credentials. |
     | `accountSampleUser`       | string | If non-empty, the email address for the user to add/remove in samples for the `Accounts` service. |
     | `accountSampleAdWordsCID` | number | If non-zero, the AdWords Customer ID to link/unlink in samples for the `Accounts` service. |
 
@@ -104,13 +103,12 @@ Console. Both APIs can be selected if you wish to try samples for both APIs.
     | Field                     | Type   | Description                                    |
     |---------------------------|--------|------------------------------------------------|
     | `manufacturerId`          | number | The Manufacturer Center ID to run samples against. |
-    | `emailAddress`            | string | What email address should be used for authentication. Setting this is required only if using OAuth2 client credentials. |
     | `websiteUrl`              | string | The URL (without trailing slash) associated with the Manufacturer Center account. |
 
-    If using OAuth2 client credentials, once you have authorized access your
-    token details will be stored in the `token` field of the appropriate API
-    configuration. If you have any issues authenticating, remove this field
-    and you will be asked to re-authorize access.
+    If using OAuth2 client credentials, once you have authorized access, your
+    token details will be stored in the `stored-token.json` file in the samples
+    configuration directory. If you have any issues authenticating, remove this
+    file and you will be asked to re-authorize access.
 
 ## Try Out the Samples
 

@@ -41,11 +41,4 @@ below assume that you are using Composer.
     $ php php/ProductsSample.php
     ```
 
-   If using an OAuth2 client ID for the first time, the application will
-   provide a URL for authentication. Load it in your browser, accept the
-   access, then paste the resulting code back to the application.
-   The resulting access token will be stored in your `merchant-info.json`
-   configuration, so if you have authentication issues, delete the `token`
-   field and reauthenticate.
-
 1. Examine your shell output, be inspired and start hacking an amazing new app!

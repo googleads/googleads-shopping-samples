@@ -52,11 +52,6 @@ directory. If not, check out the code to a local directory.
 
         $ ./content-api-demo products inventory
 
-   If using an OAuth2 client ID for the first time, the application will open a
-   browser automatically so you can agree to the OAuth2 access.  The access
-   token will be stored in the sample configuration file, so if you have
-   authentication issues, delete the `token` field and reauthenticate.
-
    If no demos are selected on the command line, then all demos except for the
    Orders demo will be run.
 

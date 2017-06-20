@@ -30,10 +30,4 @@ directory. If not, check out the code to a local directory.
 
         $ python product_list.py
 
-   If using an OAuth2 client ID for the first time, the application will
-   open a browser automatically so you can agree to the OAuth2 access.
-   The resulting access token will be stored in the sample configuration in
-   the `token` field, so if you run into authentication failures later, you
-   can remove that field to re-authorize access.
-
 3. Examine your shell output, be inspired and start hacking an amazing new app!

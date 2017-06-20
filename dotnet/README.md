@@ -38,11 +38,6 @@ as well to pull in the dependencies. (The IDEs listed above all support this.)
    * Samples4.5 - .NET Framework 4.5 compatible project for main Content API samples
    * Orders4.0 - .NET Framework 4.0 compatible project for Content API Orders service workflow sample
    * Orders4.5 - .NET Framework 4.5 compatible project for Content API Orders service workflow sample
-   * Manufacturers - .NET Framework 4.5 compatible project for the Manufacturer CenteR API
-
-   If using an OAuth2 client ID for the first time, the application will open a
-   browser so you can authorize it to access your account. The access token
-   will be stored in the sample configuration file, so if you have
-   authentication issues, delete the `token` field and reauthenticate.
+   * Manufacturers - .NET Framework 4.5 compatible project for the Manufacturer Center API
 
 2. Examine your shell output, be inspired and start hacking an amazing new app!

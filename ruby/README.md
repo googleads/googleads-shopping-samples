@@ -31,11 +31,4 @@ directory. If not, check out the code to a local directory.
 
         $ ruby product/list_products.rb
 
-   If using an OAuth2 client ID for the first time, you will need to access
-   the authorization URL printed on the terminal in your browser, authorize
-   the access, and then paste the resulting code back into the terminal.
-   The resulting access token will be stored in your `merchant-info.json`
-   configuration, so if you have authentication issues, delete the `token`
-   field and reauthenticate.
-
 2. Examine your shell output, be inspired and start hacking an amazing new app!
