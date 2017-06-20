@@ -1,16 +1,12 @@
 package shopping.content.v2.samples;
 
-import com.google.api.client.json.JsonGenerator;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Key;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import shopping.common.Config;
 
 /**
@@ -60,23 +56,6 @@ public class ContentConfig extends Config {
     } finally {
       if (inputStream != null) {
         inputStream.close();
-      }
-    }
-  }
-
-  public void save() throws IOException {
-    OutputStream outputStream = null;
-    File configFile = new File(getPath(), FILE_NAME);
-    try {
-      outputStream = new FileOutputStream(configFile);
-      JsonGenerator generator =
-          new JacksonFactory().createJsonGenerator(outputStream, Charset.defaultCharset());
-      generator.enablePrettyPrint();
-      generator.serialize(this);
-      generator.flush();
-    } finally {
-      if (outputStream != null) {
-        outputStream.close();
       }
     }
   }

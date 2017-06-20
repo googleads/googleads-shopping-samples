@@ -22,8 +22,6 @@ import java.util.Set;
  */
 public class Authenticator {
 
-  private File serviceAccountFile;
-  private File clientSecretsFile;
   private Set<String> scopes;
   private Config config;
   private HttpTransport httpTransport;
@@ -33,8 +31,6 @@ public class Authenticator {
   public Authenticator(
       HttpTransport httpTransport, JsonFactory jsonFactory, Set<String> scopes, Config config)
       throws IOException {
-    this.serviceAccountFile = new File(config.getPath(), "service-account.json");
-    this.clientSecretsFile = new File(config.getPath(), "client-secrets.json");
     this.scopes = scopes;
     this.httpTransport = httpTransport;
     this.jsonFactory = jsonFactory;
@@ -56,6 +52,7 @@ public class Authenticator {
       throw new IllegalArgumentException(
           "Must use Application Default Credentials with no configuration directory.");
     }
+    File serviceAccountFile = new File(config.getPath(), "service-account.json");
     if (serviceAccountFile.exists()) {
       System.out.println("Loading service account credentials.");
       try {
@@ -76,6 +73,7 @@ public class Authenticator {
         }
       }
     }
+    File clientSecretsFile = new File(config.getPath(), "client-secrets.json");
     if (clientSecretsFile.exists()) {
       System.out.println("Loading OAuth2 client credentials.");
       try {
@@ -89,17 +87,16 @@ public class Authenticator {
                 .setDataStoreFactory(dataStoreFactory)
                 .build();
         // authorize
-        String userID = config.getEmailAddress();
+        String userID = ConfigDataStoreFactory.UNUSED_ID;
         Credential storedCredential = flow.loadCredential(userID);
-        ;
         if (storedCredential != null) {
-          System.out.printf("Retrieved stored credential for user %s%n", userID);
+          System.out.printf("Retrieved stored credential%n", userID);
           return storedCredential;
         }
         LocalServerReceiver receiver =
             new LocalServerReceiver.Builder().setHost("localhost").setPort(9999).build();
         Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize(userID);
-        System.out.printf("Retrieved credential for user %s from web%n", userID);
+        System.out.printf("Retrieved credential from web%n", userID);
         return credential;
       } catch (IOException e) {
         throw new IOException(
