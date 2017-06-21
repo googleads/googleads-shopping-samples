@@ -85,7 +85,7 @@ namespace ShoppingSamples.Content
         private void PrintAccountTax(AccountTax settings)
         {
             Console.WriteLine("Tax settings for account {0}:", settings.AccountId);
-            if (settings.Rules.Count == 0)
+            if (settings.Rules == null || settings.Rules.Count == 0)
             {
                 Console.WriteLine("No tax rules.");
             }
