@@ -29,19 +29,19 @@ class PrimaryAccountsSample extends BaseSample {
     // call will always fail. If you wish to test it with a real account be
     // aware that a Google account can only be associated with one Merchant
     // Center account, so the call may still fail.
-    if($this->config->accountSampleUser) {
-      $this->addUser($account, $this->config->accountSampleUser);
-      $this->removeUser($account, $this->config->accountSampleUser);
+    if(array_key_exists('accountSampleUser', $this->config)) {
+      $this->addUser($account, $this->config['accountSampleUser']);
+      $this->removeUser($account, $this->config['accountSampleUser']);
     }
 
     // You may see an AdWords account ID written as '123-456-7890'. However, the
     // Content API expects to recive a long integer like 1234567890. Simply
     // remove the dashes and convert to an integer.
-    if($this->config->accountSampleAdWordsCID) {
+    if(array_key_exists('accountSampleAdWordsCID', $this->config)) {
       $this->linkAdWordsAccount($account,
-          $this->config->accountSampleAdWordsCID);
+          $this->config['accountSampleAdWordsCID']);
       $this->unlinkAdWordsAccount($account,
-          $this->config->accountSampleAdWordsCID);
+          $this->config['accountSampleAdWordsCID']);
     }
   }
 
@@ -102,45 +102,47 @@ class PrimaryAccountsSample extends BaseSample {
     }
   }
 
-  public function linkAdWordsAccount($account, $adwordsID) {
-    $adwordsLink = new Google_Service_ShoppingContent_AccountAdwordsLink();
-    $adwordsLink->setAdwordsId($adwordsID);
-    $adwordsLink->setStatus('active');
+  public function linkAdWordsAccount($account, $adWordsId) {
+    $adWordsLink = new Google_Service_ShoppingContent_AccountAdwordsLink();
+    $adWordsLink->setAdwordsId($adWordsId);
+    $adWordsLink->setStatus('active');
 
-    $adwordsLinks = $account->getAdwordsLinks();
-    $adwordsLinks[] = $adwordsLink;
-    $account->setAdwordsLinks($adwordsLinks);
+    $adWordsLinks = $account->getAdwordsLinks();
+    $adWordsLinks[] = $adWordsLink;
+    $account->setAdwordsLinks($adWordsLinks);
 
     try {
       $response = $this->service->accounts->update($this->merchantId,
           $this->merchantId, $account);
       printf("Linked AdWords account '%s' to Merchant Center account\n",
-          $adwordsID);
+          $adWordsId);
     } catch (Google_Service_Exception $exception) {
       print ("There were errors while trying to link an account:\n");
       foreach ($exception->getErrors() as $error) {
         printf("* %s\n", $error["message"]);
       }
-      $account->setAdwordLinks($adwordsLinks);
+      $account->setAdwordLinks($adWordsLinks);
     }
   }
 
   public function unlinkAdWordsAccount(
-    Google_Service_ShoppingContent_Account $account, $adwordsID) {
+    Google_Service_ShoppingContent_Account $account, $adWordsId) {
     $originalLinks = $account->getAdWordsLinks();
 
-    $adwordsLinks = array_filter($originalLinks(),
-        function ($link) { return $link->getAdWordsId() != $adwordsID; })
+    $adWordsLinks = array_filter($originalLinks(),
+        function ($link) {
+            return $link->getAdWordsId() !== $adWordsId;
+        });
 
     // Don't send an update request if the link we are trying to
     // remove was not found on the account.
-    if (count($adwordsLinks) != count($originalLinks())) {
-      $account->setAdwordsLinks($adwordsLinks);
+    if (count($adWordsLinks) != count($originalLinks())) {
+      $account->setAdwordsLinks($adWordsLinks);
 
       try {
         $response = $this->service->accounts->update($this->merchantId,
             $this->merchantId, $account);
-        printf("Unlinked AdWords account '%s' from account\n", $adwordsID);
+        printf("Unlinked AdWords account '%s' from account\n", $adWordsId);
       } catch (Google_Service_Exception $exception) {
         print ("There were errors while trying to unlink an account:\n");
         foreach ($exception->getErrors() as $error) {
