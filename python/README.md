@@ -15,6 +15,11 @@ the [Google Auth Python Library]
 [google-auth-oauthlib](https://pypi.python.org/pypi/google-auth-oauthlib),
 and [google-auth-httplib2](https://pypi.python.org/pypi/google-auth-httplib2).
 
+For your convenience, you can run the following command from this directory
+to install all needed dependencies via [pip](https://pip.pypa.io/):
+
+    $ pip install -r requirements.txt
+
 ## Setup Authentication and Sample Configuration
 
 If you have not already done so, please read the top-level `README` to discover
