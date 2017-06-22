@@ -9,12 +9,19 @@ the Google Content API for Shopping.
 ## Prerequisites
 
 Please make sure that you're running Ruby 2.0+ and you've installed the
-[Google APIs Client Library for Ruby]
-(https://developers.google.com/api-client-library/ruby/start/installation).
+[Google APIs Client Library for
+Ruby](https://developers.google.com/api-client-library/ruby/start/installation).
 
 The Ruby samples also use the
 [Launchy](https://github.com/copiousfreetime/launchy) gem to launch a browser
 when requesting authorization with an OAuth2 client ID.
+
+For your convenience, we've included a `Gemfile` for use with
+[Bundler](http://bundler.io/). To install all needed gems, you can just run the
+following commands:
+
+    $ gem install bundler
+    $ bundle install
 
 ## Setup Authentication and Sample Configuration
 
