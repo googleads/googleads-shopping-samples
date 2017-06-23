@@ -26,6 +26,8 @@ import shopping_common
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
     'account_id',
+    nargs='?',
+    default=0,
     type=int,
     help='The ID of the account for which to update information.')
 
@@ -37,6 +39,8 @@ def main(argv):
   merchant_id = config['merchantId']
   account_id = flags.account_id
 
+  if not account_id:
+    account_id = merchant_id
   if merchant_id != account_id:
     shopping_common.check_mca(
         config,
