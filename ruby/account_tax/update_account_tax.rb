@@ -36,16 +36,21 @@ end
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
 
-  unless ARGV.size == 1
-    puts "Usage: #{$0} ACCOUNT_ID"
+  if ARGV.size > 1
+    puts "Usage: #{$0} [ACCOUNT_ID]"
     exit
   end
-  account_id = ARGV[0]
 
   config, content_api = service_setup(options)
-  unless account_id == config.merchant_id.to_s or config.is_mca
-    puts "Non-MCA merchant center accounts can only set their own information."
-    exit
+
+  if ARGV.empty?
+    account_id = config.merchant_id
+  else
+    account_id = ARGV[0]
+
+    unless account_id == config.merchant_id.to_s or config.is_mca
+      raise "Non-MCA accounts can only set their own information."
+    end
   end
   update_account_tax(content_api, config.merchant_id, account_id)
 end
