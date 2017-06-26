@@ -24,7 +24,7 @@ require 'google/api_client/client_secrets'
 
 require_relative 'arg_parser'
 require_relative 'auth'
-require_relative 'config'
+require_relative 'content_config'
 require_relative 'token_store'
 
 ENDPOINT_ENV_VAR = 'GOOGLE_SHOPPING_SAMPLES_ENDPOINT'
@@ -49,9 +49,9 @@ TARGET_COUNTRY = 'US';
 # It returns both the configuration and the API service object.
 def service_setup(options, use_sandbox = false)
   if options.noconfig
-    config = Config.new()
+    config = ContentConfig.new()
   else
-    config = Config.load(options.path)
+    config = ContentConfig.load(options.path)
   end
   credentials = authenticate(config)
 

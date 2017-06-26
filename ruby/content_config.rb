@@ -23,7 +23,7 @@ require 'multi_json'
 
 MultiJson.dump_options = { pretty: true }
 
-class Config
+class ContentConfig
   def self.load(base_path)
     path = File.join(base_path, 'content')
     unless File.exist?(path)
