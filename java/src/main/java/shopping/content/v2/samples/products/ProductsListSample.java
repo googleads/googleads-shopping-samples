@@ -1,9 +1,12 @@
 package shopping.content.v2.samples.products;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductsListResponse;
 import java.io.IOException;
+import java.math.BigInteger;
+
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -15,12 +18,9 @@ public class ProductsListSample extends ContentSample {
     super(args);
   }
 
-  @Override
-  public void execute() throws IOException {
-    checkNonMCA();
-
-    ShoppingContent.Products.List productsList =
-        content.products().list(this.config.getMerchantId());
+  static void listProductsForMerchant(BigInteger merchantId, ShoppingContent content)
+      throws IOException {
+    ShoppingContent.Products.List productsList = content.products().list(merchantId);
     do {
       ProductsListResponse page = productsList.execute();
       if (page.getResources() == null) {
@@ -28,15 +28,24 @@ public class ProductsListSample extends ContentSample {
         return;
       }
       for (Product product : page.getResources()) {
-        System.out.printf("- %s %s%n", product.getId(), product.getTitle());
-
-        printWarnings(product.getWarnings(), "  ");
+        ProductUtils.printProduct(product);
       }
       if (page.getNextPageToken() == null) {
         break;
       }
       productsList.setPageToken(page.getNextPageToken());
     } while (true);
+  }
+
+  @Override
+  public void execute() throws IOException {
+    checkNonMCA();
+
+    try {
+      listProductsForMerchant(config.getMerchantId(), content);
+    } catch (GoogleJsonResponseException e) {
+      checkGoogleJsonResponseException(e);
+    }
   }
 
   public static void main(String[] args) throws IOException {

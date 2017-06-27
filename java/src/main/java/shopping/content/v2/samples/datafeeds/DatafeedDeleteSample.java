@@ -22,7 +22,7 @@ public class DatafeedDeleteSample extends ContentSample {
 
     // We can't know what ID the datafeed we created has, so first search for it using
     // the list method, then delete it.
-    String name = "sampleFeed123";
+    String name = ExampleDatafeedFactory.NAME;
     BigInteger id = null;
 
     List datafeedsList = content.datafeeds().list(this.config.getMerchantId());

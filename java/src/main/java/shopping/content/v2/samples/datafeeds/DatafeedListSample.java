@@ -1,9 +1,13 @@
 package shopping.content.v2.samples.datafeeds;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.ShoppingContent.Datafeeds.List;
 import com.google.api.services.content.model.Datafeed;
 import com.google.api.services.content.model.DatafeedsListResponse;
 import java.io.IOException;
+import java.math.BigInteger;
+
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -15,11 +19,9 @@ public class DatafeedListSample extends ContentSample {
     super(args);
   }
 
-  @Override
-  public void execute() throws IOException {
-    checkNonMCA();
-
-    List datafeedsList = content.datafeeds().list(this.config.getMerchantId());
+  static void listDatafeedsForMerchant(BigInteger merchantId, ShoppingContent content)
+      throws IOException {
+    List datafeedsList = content.datafeeds().list(merchantId);
     do {
       DatafeedsListResponse page = datafeedsList.execute();
       if (page.getResources() == null) {
@@ -27,14 +29,23 @@ public class DatafeedListSample extends ContentSample {
         return;
       }
       for (Datafeed datafeed : page.getResources()) {
-        System.out.printf(
-            "Datafeed with name %s and ID %d%n", datafeed.getName(), datafeed.getId());
+        DatafeedUtils.printDatafeed(datafeed);
       }
       if (page.getNextPageToken() == null) {
         break;
       }
       datafeedsList.setPageToken(page.getNextPageToken());
     } while (true);
+  }
+
+  @Override
+  public void execute() throws IOException {
+    checkNonMCA();
+    try {
+      listDatafeedsForMerchant(config.getMerchantId(), content);
+    } catch (GoogleJsonResponseException e) {
+      checkGoogleJsonResponseException(e);
+    }
   }
 
   public static void main(String[] args) throws IOException {

@@ -1,11 +1,12 @@
 package shopping.content.v2.samples.productstatuses;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.model.ProductStatus;
-import com.google.api.services.content.model.ProductStatusDataQualityIssue;
 import com.google.api.services.content.model.ProductstatusesListResponse;
 import java.io.IOException;
-import java.util.List;
+import java.math.BigInteger;
+
 import shopping.content.v2.samples.ContentSample;
 
 /**
@@ -17,10 +18,10 @@ public class ProductstatusesListSample extends ContentSample {
     super(args);
   }
 
-  @Override
-  public void execute() throws IOException {
+  static void listProductStatusesForMerchant(BigInteger merchantId, ShoppingContent content)
+      throws IOException {
     ShoppingContent.Productstatuses.List productStatusesList =
-        content.productstatuses().list(this.config.getMerchantId());
+        content.productstatuses().list(merchantId);
     do {
       ProductstatusesListResponse page = productStatusesList.execute();
       if (page.getResources() == null) {
@@ -28,26 +29,22 @@ public class ProductstatusesListSample extends ContentSample {
         return;
       }
       for (ProductStatus productStatus : page.getResources()) {
-        System.out.printf("- %s %s\n", productStatus.getProductId(), productStatus.getTitle());
-
-        List<ProductStatusDataQualityIssue> issues = productStatus.getDataQualityIssues();
-        if (issues != null) {
-          System.out.printf("  There are %d data quality issue(s)%n", issues.size());
-          for (ProductStatusDataQualityIssue issue : issues) {
-            if (issue.getDetail() != null) {
-              System.out.printf(
-                  "  - (%s) [%s] %s%n", issue.getSeverity(), issue.getId(), issue.getDetail());
-            } else {
-              System.out.printf("  - (%s) [%s]%n", issue.getSeverity(), issue.getId());
-            }
-          }
-        }
+        ProductstatusUtils.printProductStatus(productStatus);
       }
       if (page.getNextPageToken() == null) {
         break;
       }
       productStatusesList.setPageToken(page.getNextPageToken());
     } while (true);
+  }
+
+  @Override
+  public void execute() throws IOException {
+    try {
+      listProductStatusesForMerchant(config.getMerchantId(), content);
+    } catch (GoogleJsonResponseException e) {
+      checkGoogleJsonResponseException(e);
+    }
   }
 
   public static void main(String[] args) throws IOException {

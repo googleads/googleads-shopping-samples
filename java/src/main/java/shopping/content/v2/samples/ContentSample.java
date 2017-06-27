@@ -2,10 +2,8 @@ package shopping.content.v2.samples;
 
 import com.google.api.services.content.ShoppingContent;
 import com.google.api.services.content.ShoppingContentScopes;
-import com.google.api.services.content.model.Error;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import shopping.common.Authenticator;
 import shopping.common.BaseSample;
 
@@ -54,32 +52,6 @@ public abstract class ContentSample extends BaseSample {
     if (config.getIsMCA()) {
       throw new IllegalStateException(
           "Sample requires the authenticating account to be a non-multi-client account");
-    }
-  }
-
-  protected void printWarnings(List<Error> warnings) {
-    printWarnings(warnings, "");
-  }
-
-  protected void printWarnings(List<Error> warnings, String prefix) {
-    printErrors(warnings, prefix, "warning");
-  }
-
-  protected void printErrors(List<Error> errors) {
-    printErrors(errors, "");
-  }
-
-  protected void printErrors(List<Error> errors, String prefix) {
-    printErrors(errors, prefix, "error");
-  }
-
-  protected void printErrors(List<Error> errors, String prefix, String type) {
-    if (errors == null) {
-      return;
-    }
-    System.out.printf(prefix + "There are %d %s(s):%n", errors.size(), type);
-    for (Error err : errors) {
-      System.out.printf(prefix + "- [%s] %s%n", err.getReason(), err.getMessage());
     }
   }
 }

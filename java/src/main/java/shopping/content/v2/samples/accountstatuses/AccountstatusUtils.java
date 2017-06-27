@@ -5,7 +5,7 @@ import com.google.api.services.content.model.AccountStatusDataQualityIssue;
 import com.google.api.services.content.model.AccountStatusExampleItem;
 import java.util.List;
 
-/** Created by sstrickl on 11/2/16. */
+/** Utility class for methods like printing AccountStatus objects. */
 public class AccountstatusUtils {
   public static void printAccountStatus(AccountStatus accountStatus) {
     System.out.printf("- Account ID %s\n", accountStatus.getAccountId());

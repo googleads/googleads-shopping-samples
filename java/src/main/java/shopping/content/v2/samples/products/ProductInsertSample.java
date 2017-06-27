@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.Product;
 import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
+import shopping.content.v2.samples.ContentUtils;
 
 /** Sample that inserts a product. The product created here is used in other samples. */
 public class ProductInsertSample extends ContentSample {
@@ -16,11 +17,11 @@ public class ProductInsertSample extends ContentSample {
     checkNonMCA();
 
     // Create a product with ID 'online:en:GB:book123'
-    Product product = ExampleProductFactory.create(config, "online", "en", "GB", "book123");
+    Product product = ExampleProductFactory.create(config, "book123");
 
     try {
       Product result = content.products().insert(this.config.getMerchantId(), product).execute();
-      printWarnings(result.getWarnings());
+      ContentUtils.printWarnings(result.getWarnings());
     } catch (GoogleJsonResponseException e) {
       checkGoogleJsonResponseException(e);
     }

@@ -3,24 +3,28 @@ package shopping.content.v2.samples.products;
 import com.google.api.services.content.model.Price;
 import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductShipping;
+import com.google.api.services.content.model.ProductsCustomBatchRequest;
+import com.google.api.services.content.model.ProductsCustomBatchRequestEntry;
 import java.util.ArrayList;
+import java.util.List;
 import shopping.content.v2.samples.ContentConfig;
 
 /**
  * Factory for creating Products to be inserted by the ProductInsert and ProductBatchInsert samples.
  */
 public class ExampleProductFactory {
-  public static Product create(
-      ContentConfig config,
-      String channel,
-      String contentLanguage,
-      String targetCountry,
-      String offerId) {
+  private static final String CHANNEL = "online";
+  private static final String CONTENT_LANGUAGE = "en";
+  private static final String TARGET_COUNTRY = "GB";
+  private static final int PRODUCT_COUNT = 10;
+
+  public static Product create(ContentConfig config, String offerId) {
     Product product = new Product();
     String websiteUrl = config.getWebsiteUrl();
 
-    if (config.getWebsiteUrl() == null) {
-      websiteUrl = "http://my-book-shop.com";
+    if (websiteUrl == null || websiteUrl.equals("")) {
+      throw new IllegalStateException(
+          "Cannot create example products without a configured website");
     }
 
     product.setOfferId(offerId);
@@ -28,9 +32,9 @@ public class ExampleProductFactory {
     product.setDescription("A classic novel about the French Revolution");
     product.setLink(websiteUrl + "/tale-of-two-cities.html");
     product.setImageLink(websiteUrl + "/tale-of-two-cities.jpg");
-    product.setChannel(channel);
-    product.setContentLanguage(contentLanguage);
-    product.setTargetCountry(targetCountry);
+    product.setChannel(CHANNEL);
+    product.setContentLanguage(CONTENT_LANGUAGE);
+    product.setTargetCountry(TARGET_COUNTRY);
     product.setAvailability("in stock");
     product.setCondition("new");
     product.setGoogleProductCategory("Media > Books");
@@ -55,5 +59,22 @@ public class ExampleProductFactory {
     product.setShipping(shippingList);
 
     return product;
+  }
+
+  public static ProductsCustomBatchRequest createBatch(ContentConfig config, String prefix) {
+    List<ProductsCustomBatchRequestEntry> productsBatchRequestEntries =
+        new ArrayList<ProductsCustomBatchRequestEntry>();
+    for (int i = 0; i < PRODUCT_COUNT; i++) {
+      Product product = ExampleProductFactory.create(config, prefix + i);
+      productsBatchRequestEntries.add(
+          new ProductsCustomBatchRequestEntry()
+              .setBatchId((long) i)
+              .setMerchantId(config.getMerchantId())
+              .setProduct(product)
+              .setMethod("insert"));
+    }
+    ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
+    batchRequest.setEntries(productsBatchRequestEntries);
+    return batchRequest;
   }
 }

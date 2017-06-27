@@ -105,7 +105,7 @@ public abstract class ContentWorkflowSample extends BaseWorkflowSample {
     Account account =
         content.accounts().get(config.getMerchantId(), config.getMerchantId()).execute();
     config.setWebsiteUrl(account.getWebsiteUrl());
-    if (config.getWebsiteUrl() == null) {
+    if (config.getWebsiteUrl() == null || config.getWebsiteUrl().equals("")) {
       System.out.printf(
           "Merchant Center %s does not have a configured website.%n", config.getMerchantId());
     } else {

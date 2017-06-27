@@ -4,6 +4,11 @@ import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonError.ErrorInfo;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.googleapis.services.AbstractGoogleClient;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.json.GenericJson;
+import com.google.api.client.util.BackOff;
+import com.google.api.client.util.BackOffUtils;
+import com.google.api.client.util.Sleeper;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,7 +17,7 @@ import java.net.URISyntaxException;
 public abstract class BaseWorkflowSample {
   protected static final String ENDPOINT_ENV_VAR = "GOOGLE_SHOPPING_SAMPLES_ENDPOINT";
 
-  protected void checkGoogleJsonResponseException(GoogleJsonResponseException e)
+  protected static void checkGoogleJsonResponseException(GoogleJsonResponseException e)
       throws GoogleJsonResponseException {
     GoogleJsonError err = e.getDetails();
     // err can be null if response is not JSON
@@ -49,6 +54,26 @@ public abstract class BaseWorkflowSample {
     @SuppressWarnings({"unchecked"})
     T built = (T) builder.build();
     return built;
+  }
+
+  protected <T extends GenericJson> T retryFailures(
+      AbstractGoogleClientRequest<T> request, BackOff backOff) throws IOException {
+    while (true) {
+      try {
+        return request.execute();
+      } catch (GoogleJsonResponseException e) {
+        try {
+          long nextPause = backOff.nextBackOffMillis();
+          if (nextPause == BackOff.STOP) {
+            throw e;
+          }
+          System.out.printf("Operation failed, retrying in %f seconds.%n", nextPause / 1000.0);
+          BackOffUtils.next(Sleeper.DEFAULT, backOff);
+        } catch (InterruptedException ie) {
+          // Just go straight into retry if interrupted.
+        }
+      }
+    }
   }
 
   public abstract void execute() throws IOException;
