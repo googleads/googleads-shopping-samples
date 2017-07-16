@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using Google.Apis.ShoppingContent.v2;
 using Google.Apis.ShoppingContent.v2.Data;
 
@@ -28,6 +29,10 @@ namespace ShoppingSamples.Content
     {
         private ShoppingContentService service;
         ShoppingUtil shoppingUtil = new ShoppingUtil();
+        // Currently, we may receive a 401 Unauthorized error if a datafeed is not yet
+        // available soon after creating it, so retry if we see one while making a modification
+        // to or deleting a datafeed. The specific HTTP error we receive may be subject to change.
+        IEnumerable<HttpStatusCode> retryCodes = new HttpStatusCode[] {HttpStatusCode.Unauthorized};
 
         /// <summary>Initializes a new instance of the <see cref="DatafeedsSample"/> class.</summary>
         /// <param name="service">Content service object on which to run the requests.</param>
@@ -43,14 +48,7 @@ namespace ShoppingSamples.Content
             GetAllDatafeeds(merchantId);
             Datafeed newDatafeed = InsertDatafeed(merchantId);
             UpdateDatafeed(merchantId, (ulong)newDatafeed.Id);
-            try
-            {
-                DeleteDatafeed(merchantId, (ulong)newDatafeed.Id);
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine("Warning: Tried to delete a datafeed too soon after creation. " + e.Message);
-            }
+            DeleteDatafeed(merchantId, (ulong)newDatafeed.Id);
         }
 
         /// <summary>Gets and prints all datafeeds for the given merchant ID.</summary>
@@ -96,17 +94,12 @@ namespace ShoppingSamples.Content
             Console.WriteLine("=================================================================");
             Console.WriteLine(String.Format("Updating datafeed {0}", datafeedId));
             Console.WriteLine("=================================================================");
-            // First we need to retrieve the full object, since there are no partial updates for the
-            // datafeeds collection in Content API v2.
 
-            Datafeed datafeed = service.Datafeeds.Get(merchantId, datafeedId).Execute();
-
-            // Set ETag to null as Patch() will reject it otherwise.
-            datafeed.ETag = null;
-
+            Datafeed datafeed = new Datafeed();
             datafeed.FetchSchedule.Hour = 7;
 
-            Datafeed response = service.Datafeeds.Patch(datafeed, merchantId, datafeedId).Execute();
+            var request = service.Datafeeds.Patch(datafeed, merchantId, datafeedId);
+            Datafeed response = shoppingUtil.ExecuteWithRetries(request, retryCodes);
             Console.WriteLine(
                 "Datafeed updated with ID \"{0}\" and name \"{1}\".",
                 response.Id,
@@ -143,7 +136,8 @@ namespace ShoppingSamples.Content
             Console.WriteLine(String.Format("Deleting datafeed {0}", datafeedId));
             Console.WriteLine("=================================================================");
 
-            service.Datafeeds.Delete(merchantId, datafeedId).Execute();
+            var request = service.Datafeeds.Delete(merchantId, datafeedId);
+            shoppingUtil.ExecuteWithRetries(request, retryCodes);
 
             Console.WriteLine("Datafeed with ID \"{0}\" was deleted.", datafeedId);
             Console.WriteLine();

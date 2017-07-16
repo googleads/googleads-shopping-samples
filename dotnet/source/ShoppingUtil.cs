@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using Google.Apis.Requests;
 using Google.Apis.ShoppingContent.v2.Data;
 
@@ -42,6 +44,40 @@ namespace ShoppingSamples.Content
             foreach (Error warn in warnings)
             {
                 Console.WriteLine(" - [" + warn.Reason + "] " + warn.Message);
+            }
+        }
+
+        /// <summary>
+        /// Given a service request, retries the request up to 10 times using an exponential
+        /// backoff strategy. Also takes an enumeration of status codes for which requests should be
+        /// retried (that is, HTTP errors that are expected to occur transiently).
+        /// </summary>
+        internal TResponse ExecuteWithRetries<TResponse>(
+            IClientServiceRequest<TResponse> request, IEnumerable<HttpStatusCode> statusCodes)
+        {
+            var backOff = new Google.Apis.Util.ExponentialBackOff();
+            int numRetries = 0;
+            while (true)
+            {
+                try
+                {
+                    return request.Execute();
+                }
+                catch (Google.GoogleApiException e)
+                {
+                    if (!statusCodes.Contains(e.HttpStatusCode))
+                    {
+                        throw e;
+                    }
+                    numRetries++;
+                    var nextSpan = backOff.GetNextBackOff(numRetries);
+                    if (nextSpan == TimeSpan.MinValue)
+                    {
+                        throw e;
+                    }
+                    Console.WriteLine("Attempt {0} failed, retrying in {1}.", numRetries, nextSpan);
+                    System.Threading.Thread.Sleep(nextSpan);
+                }
             }
         }
     }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Net;
 using Google.Apis.ShoppingContent.v2;
 using Google.Apis.ShoppingContent.v2.Data;
 
@@ -12,6 +14,11 @@ namespace ShoppingSamples.Content
     {
         private ShoppingContentService service;
         ShoppingUtil shoppingUtil = new ShoppingUtil();
+        // Currently, we may receive a 401 Unauthorized error if the (sub-)account is not yet
+        // available soon after creating it, so retry if we see one while making a modification
+        // to or deleting an account. The specific HTTP error we receive may be subject to change.
+        IEnumerable<HttpStatusCode> retryCodes = new HttpStatusCode[] {HttpStatusCode.Unauthorized};
+
 
         /// <summary>Initializes a new instance of the <see cref="ShoppingcontentApiConsumer"/> class.</summary>
         /// <param name="service">Content service object on which to run the requests.</param>
@@ -24,22 +31,8 @@ namespace ShoppingSamples.Content
         {
             GetAllAccounts(merchantId);
             Account newAccount = InsertAccount(merchantId);
-            try
-            {
-                UpdateAccount(merchantId, (ulong)newAccount.Id);
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine("Warning: Tried to update an account too soon after creation. " + e.Message);
-            }
-            try
-            {
-                DeleteAccount(merchantId, (ulong)newAccount.Id);
-            }
-            catch (Google.GoogleApiException e)
-            {
-                Console.WriteLine("Warning: Tried to delete an account too soon after creation. " + e.Message);
-            }
+            UpdateAccount(merchantId, (ulong)newAccount.Id);
+            DeleteAccount(merchantId, (ulong)newAccount.Id);
         }
 
         /// <summary>Gets all accounts on the specified multi-client account</summary>
@@ -84,16 +77,12 @@ namespace ShoppingSamples.Content
             Console.WriteLine("=================================================================");
             Console.WriteLine(String.Format("Updating account {0}", accountId));
             Console.WriteLine("=================================================================");
-            // First we need to retrieve the full object, since there are no partial updates for the
-            // accounts collection in Content API v2.
 
-            Account account = service.Accounts.Get(merchantId, accountId).Execute();
-
-            // Set ETag to null as Patch() will reject it otherwise.
-            account.ETag = null;
+            Account account = new Account();
             account.Name = "updated-account" + shoppingUtil.GetUniqueId();
 
-            Account response = service.Accounts.Patch(account, merchantId, accountId).Execute();
+            var request = service.Accounts.Patch(account, merchantId, accountId);
+            Account response = shoppingUtil.ExecuteWithRetries(request, retryCodes);
             Console.WriteLine(
                 "Account updated with ID \"{0}\" and name \"{1}\".",
                 response.Id,
@@ -130,7 +119,8 @@ namespace ShoppingSamples.Content
             Console.WriteLine(String.Format("Deleting account {0}", accountId));
             Console.WriteLine("=================================================================");
 
-            service.Accounts.Delete(merchantId, accountId).Execute();
+            var request = service.Accounts.Delete(merchantId, accountId);
+            shoppingUtil.ExecuteWithRetries(request, retryCodes);
 
             Console.WriteLine("Account with ID \"{0}\" was deleted.", accountId);
             Console.WriteLine();
