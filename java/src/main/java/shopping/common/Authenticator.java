@@ -62,6 +62,12 @@ public class Authenticator {
                 .createScoped(scopes);
         System.out.printf(
             "Loaded service account credentials for %s%n", credential.getServiceAccountId());
+        // GoogleCredential.fromStream does NOT refresh, since scopes must be added after.
+        if (!credential.refreshToken()) {
+          System.out.println("The service account access token could not be refreshed.");
+          System.out.println("The service account key may have been deleted in the API Console.");
+          throw new IOException("Failed to refresh service account token");
+        }
         return credential;
       } catch (IOException e) {
         throw new IOException(
