@@ -64,7 +64,7 @@ def main(argv):
   # Set the new order's merchant order ID. For here, we'll just use a
   # random int of 32 bits.
   merchant_order_id = 'test order %d' % random.getrandbits(32)
-  print('Updating merchant order ID to %s... ' % merchant_order_id, end='')
+  print('Updating merchant order ID to "%s"... ' % merchant_order_id, end='')
   request = orders.updatemerchantorderid(
       merchantId=merchant_id,
       orderId=order_id,
@@ -75,8 +75,11 @@ def main(argv):
   response = request.execute()
   print('done (%s).\n' % response['executionStatus'])
 
-  request = orders.get(merchantId=merchant_id, orderId=order_id)
-  current_order = request.execute()
+  print('Retrieving merchant order "%s"... ' % merchant_order_id, end='')
+  request = orders.getbymerchantorderid(
+      merchantId=merchant_id, merchantOrderId=merchant_order_id)
+  current_order = request.execute()['order']
+  print('done.\n')
   print_order(current_order)
   print()
 
