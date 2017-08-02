@@ -69,11 +69,12 @@ namespace ShoppingSamples.Content
             // various systems, like the order IDs for the merchant's internal systems, the
             // shipping IDs for the merchant's internal systems, and the tracking ID we'd get
             // from the shipping carriers.
-            UpdateMerchantOrderId(merchantId, orderId, prng.Next().ToString());
+            string merchantOrderId = prng.Next().ToString();
+            UpdateMerchantOrderId(merchantId, orderId, merchantOrderId);
 
             // Print out the current status of the order (and store a reference to the resource
             // so we can pull stuff out of it shortly).
-            var currentOrder = GetOrder(merchantId, orderId);
+            var currentOrder = GetOrderByMerchantOrderId(merchantId, merchantOrderId);
             PrintOrder(currentOrder);
             Console.WriteLine();
 
@@ -168,6 +169,23 @@ namespace ShoppingSamples.Content
             Console.WriteLine();
 
             return status;
+        }
+
+        /// <summary>
+        /// Retrieves a particular order given the merchant-specified order ID.
+        /// </summary>
+        /// <returns>The order resource for the specified order.</returns>
+        private Order GetOrderByMerchantOrderId(ulong merchantId, string merchantOrderId)
+        {
+            Console.WriteLine("=================================================================");
+            Console.WriteLine("Getting Merchant Order {0}", merchantOrderId);
+            Console.WriteLine("=================================================================");
+
+            var resp =
+                sandboxService.Orders.Getbymerchantorderid(merchantId, merchantOrderId).Execute();
+            Console.WriteLine();
+
+            return resp.Order;
         }
 
         /// <summary>
