@@ -107,7 +107,15 @@ func ordersDemo(ctx context.Context, service *content.APIService, config *mercha
 	fmt.Printf("done with status %q.\n", mercOrdIDResp.ExecutionStatus)
 	fmt.Println()
 
-	testOrder = getCurrentOrderState()
+	// Retrieve the order using the now-set merchant order ID, instead of
+	// the Google-supplied order ID.
+	fmt.Printf("Retrieving merchant order %q... ", merchantOrderID)
+	getMercOrdIDResp, err := orders.Getbymerchantorderid(config.MerchantID, merchantOrderID).Do()
+	if err != nil {
+		dumpAPIErrorAndStop(err, "Retrieving by merchant order ID failed")
+	}
+	fmt.Println("done.")
+	testOrder = getMercOrdIDResp.Order
 	printOrder(testOrder)
 	fmt.Println()
 
