@@ -187,7 +187,7 @@ class ContentSession {
     // If there is no configured Merchant Center account ID, use the first one
     // that this user has access to.
     if (array_key_exists('merchantId', $this->config)) {
-      $this->merchantId = $this->config['merchantId'];
+      $this->merchantId = strval($this->config['merchantId']);
     } else {
       $firstAccount = $response->getAccountIdentifiers()[0];
       if (!is_null($firstAccount->getMerchantId())) {
