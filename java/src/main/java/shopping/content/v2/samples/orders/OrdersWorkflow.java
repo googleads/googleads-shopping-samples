@@ -104,7 +104,7 @@ public class OrdersWorkflow extends ContentWorkflowSample {
             .getExecutionStatus());
     System.out.println();
 
-    Order currentOrder = getOrder(orderId);
+    Order currentOrder = getOrderByMerchantOrderId(merchantOrderId);
     OrdersUtils.printOrder(currentOrder);
     System.out.println();
 
@@ -283,6 +283,15 @@ public class OrdersWorkflow extends ContentWorkflowSample {
     return ret;
   }
 
+  private Order getOrderByMerchantOrderId(String merchantOrderId) throws IOException {
+    System.out.printf("Retrieving merchant order \"%s\"... ", merchantOrderId);
+    Order ret = sandbox.orders().getbymerchantorderid(config.getMerchantId(), merchantOrderId)
+        .execute()
+        .getOrder();
+    System.out.println("done.");
+    System.out.println();
+    return ret;
+  }
 
 
   public static void main(String[] args) throws IOException {
