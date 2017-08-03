@@ -54,7 +54,7 @@ def order_workflow(content_api, merchant_id)
 
   # Set the new order's merchant order ID.  We'll just use a random 32-bit int.
   merchant_order_id = "test order #{Random.rand(2**32 - 1)}"
-  print "Updating merchant order ID to #{merchant_order_id}... "
+  print "Updating merchant order ID to '#{merchant_order_id}'... "
   req = Google::Apis::ContentV2::OrdersUpdateMerchantOrderIdRequest.new
   req.merchant_order_id = merchant_order_id
   req.operation_id = new_operation_id()
@@ -62,7 +62,11 @@ def order_workflow(content_api, merchant_id)
   puts "done (#{resp.execution_status})."
   puts
 
-  current_order = content_api.get_order(merchant_id, order_id)
+  print "Retrieving order with merchant order ID '#{merchant_order_id}'... "
+  resp =
+     content_api.get_order_by_merchant_order_id(merchant_id, merchant_order_id)
+  print "done.\n\n"
+  current_order = resp.order
   print_order(current_order)
   puts
 
