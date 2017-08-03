@@ -55,9 +55,10 @@ class OrdersSample extends BaseSample {
     // We'll also set the merchant order ID to simulate having entered it into
     // our own internal database.  For this, and the tracking and shipping IDs
     // we'll see later, we'll use random numbers.
-    $this->updateMerchantOrderId($orderId, mt_rand());
+    $merchantOrderId = mt_rand();
+    $this->updateMerchantOrderId($orderId, $merchantOrderId);
 
-    $currentOrder = $this->getOrder($orderId);
+    $currentOrder = $this->getByMerchantOrderId($merchantOrderId);
     $this->printOrder($currentOrder);
     print "\n";
 
@@ -189,18 +190,33 @@ class OrdersSample extends BaseSample {
   }
 
   /**
-   * Retrieves the order information for {@code $orderId}.
+   * Retrieves the order information for the (Google-supplied) {@code $orderId}.
    *
    * @param string $orderId the order ID of the order to retrieve
    * @return Google_Service_ShoppingContent_Order
    */
   public function getOrder($orderId) {
-    printf("Retrieving order %s... ", $orderId);
+    printf('Retrieving order %s... ', $orderId);
     $order = $this->session->sandboxService->orders->get(
         $this->session->merchantId, $orderId);
-    print "done.\n";
-    print "\n";
+    print "done.\n\n";
     return $order;
+  }
+
+  /**
+   * Retrieves the order information for the (merchant-supplied)
+   * {@code $merchantOrderId}.
+   *
+   * @param string $merchantOrderId the merchant order ID of the order to
+   *     retrieve
+   * @return Google_Service_ShoppingContent_Order
+   */
+  public function getByMerchantOrderId($merchantOrderId) {
+    printf('Retrieving merchant order %s... ', $merchantOrderId);
+    $resp = $this->session->sandboxService->orders->getbymerchantorderid(
+        $this->session->merchantId, $merchantOrderId);
+    print "done.\n\n";
+    return $resp->getOrder();
   }
 
   /**
