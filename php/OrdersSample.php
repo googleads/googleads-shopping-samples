@@ -35,8 +35,8 @@ class OrdersSample extends BaseSample {
     $request =
         new Google_Service_ShoppingContent_OrdersCreateTestOrderRequest();
     $request->setTemplateName("template1");
-    $resp = $this->sandboxService->orders->createtestorder(
-        $this->merchantId, $request);
+    $resp = $this->session->sandboxService->orders->createtestorder(
+        $this->session->merchantId, $request);
     $orderId = $resp->getOrderId();
     printf("done (%s).\n", $orderId);
     print "\n";
@@ -80,8 +80,8 @@ class OrdersSample extends BaseSample {
     // at which an order is no longer cancellable by the customer and the order
     // information reflects that we're ready for the merchant to ship.
     printf("Advancing test order %s...", $orderId);
-    $this->sandboxService->orders->advancetestorder(
-        $this->merchantId, $orderId);
+    $this->session->sandboxService->orders->advancetestorder(
+        $this->session->merchantId, $orderId);
     print "done.\n";
     print "\n";
 
@@ -151,15 +151,16 @@ class OrdersSample extends BaseSample {
   }
 
   /**
-   * Lists the unacknowledged orders for {@code $this->merchantId}, printing
-   * out each in turn.
+   * Lists the unacknowledged orders for {@code $this->session->merchantId},
+   * printing out each in turn.
    */
   public function listUnacknowledgedOrders() {
-    printf("Printing unacknowledged orders for %s.\n", $this->merchantId);
+    printf("Printing unacknowledged orders for %s.\n",
+        $this->session->merchantId);
     $parameters = ['acknowledged' => 'false'];
     do {
-      $resp = $this->sandboxService->orders->listOrders(
-          $this->merchantId, $parameters);
+      $resp = $this->session->sandboxService->orders->listOrders(
+          $this->session->merchantId, $parameters);
       if (empty($resp->getResources())) {
         print ("No orders.\n");
       }
@@ -181,8 +182,8 @@ class OrdersSample extends BaseSample {
     printf("Acknowledging order %s... ", $orderId);
     $req = new Google_Service_ShoppingContent_OrdersAcknowledgeRequest();
     $req->setOperationId($this->newOperationId());
-    $resp = $this->sandboxService->orders->acknowledge(
-        $this->merchantId, $orderId, $req);
+    $resp = $this->session->sandboxService->orders->acknowledge(
+        $this->session->merchantId, $orderId, $req);
     printf("done (%s).\n", $resp->getExecutionStatus());
     print "\n";
   }
@@ -195,7 +196,8 @@ class OrdersSample extends BaseSample {
    */
   public function getOrder($orderId) {
     printf("Retrieving order %s... ", $orderId);
-    $order = $this->sandboxService->orders->get($this->merchantId, $orderId);
+    $order = $this->session->sandboxService->orders->get(
+        $this->session->merchantId, $orderId);
     print "done.\n";
     print "\n";
     return $order;
@@ -214,8 +216,8 @@ class OrdersSample extends BaseSample {
     $req->setOperationId($this->newOperationId());
     $req->setMerchantOrderId($merchantOrderId);
 
-    $resp = $this->sandboxService->orders->updatemerchantorderid(
-        $this->merchantId, $orderId, $req);
+    $resp = $this->session->sandboxService->orders->updatemerchantorderid(
+        $this->session->merchantId, $orderId, $req);
     printf("done (%s).\n", $resp->getExecutionStatus());
     print "\n";
   }
@@ -241,8 +243,8 @@ class OrdersSample extends BaseSample {
     $req->setReasonText($reasonText);
     $req->operationId = $this->newOperationId();
 
-    $resp = $this->sandboxService->orders->cancellineitem(
-        $this->merchantId, $orderId, $req);
+    $resp = $this->session->sandboxService->orders->cancellineitem(
+        $this->session->merchantId, $orderId, $req);
     printf("done (%s).\n", $resp->getExecutionStatus());
     print "\n";
   }
@@ -273,8 +275,8 @@ class OrdersSample extends BaseSample {
     $req->setLineItems([$item]);
     $req->operationId = $this->newOperationId();
 
-    $resp = $this->sandboxService->orders->shiplineitems(
-        $this->merchantId, $orderId, $req);
+    $resp = $this->session->sandboxService->orders->shiplineitems(
+        $this->session->merchantId, $orderId, $req);
     printf("done (%s).\n", $resp->getExecutionStatus());
     print "\n";
 
@@ -298,8 +300,8 @@ class OrdersSample extends BaseSample {
     $req->setStatus('delivered');
     $req->operationId = $this->newOperationId();
 
-    $resp = $this->sandboxService->orders->updateshipment(
-        $this->merchantId, $orderId, $req);
+    $resp = $this->session->sandboxService->orders->updateshipment(
+        $this->session->merchantId, $orderId, $req);
     printf("done (%s).\n", $resp->getExecutionStatus());
     print "\n";
   }
@@ -325,8 +327,8 @@ class OrdersSample extends BaseSample {
     $req->setReasonText($reasonText);
     $req->operationId = $this->newOperationId();
 
-    $resp = $this->sandboxService->orders->returnlineitem(
-        $this->merchantId, $orderId, $req);
+    $resp = $this->session->sandboxService->orders->returnlineitem(
+        $this->session->merchantId, $orderId, $req);
     printf("done (%s).\n", $resp->getExecutionStatus());
     print "\n";
   }

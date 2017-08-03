@@ -27,8 +27,10 @@ class InventorySample extends BaseSample {
     $product1 = $this->createExampleProduct('book1');
     $product2 = $this->createExampleProduct('book2');
 
-    $this->service->products->insert($this->merchantId, $product1);
-    $this->service->products->insert($this->merchantId, $product2);
+    $this->session->service->products->insert(
+        $this->session->merchantId, $product1);
+    $this->session->service->products->insert(
+        $this->session->merchantId, $product2);
 
     // Now we create an inventory update. We will change the availability and
     // increase the price.
@@ -42,12 +44,12 @@ class InventorySample extends BaseSample {
     $inventory->setPrice($price);
 
     // Make the request
-    $response = $this->service->inventory->set($this->merchantId, 'online',
-        'online:en:US:book1', $inventory);
+    $response = $this->session->service->inventory->set(
+        $this->session->merchantId, 'online', 'online:en:US:book1', $inventory);
 
     // Retrieve the product so that we can see that the values really changed.
-    $updated =
-        $this->service->products->get($this->merchantId, 'online:en:US:book1');
+    $updated = $this->session->service->products->get(
+        $this->session->merchantId, 'online:en:US:book1');
 
     print ("Updated product:\n");
     printf("* Price: %s %s => %s %s\n", $product1->getPrice()->getValue(),
@@ -81,7 +83,7 @@ class InventorySample extends BaseSample {
     $batch_entry_1->setStoreCode('online');
     $batch_entry_1->setProductId('online:en:US:book1');
     $batch_entry_1->setInventory($inventory);
-    $batch_entry_1->setMerchantId($this->merchantId);
+    $batch_entry_1->setMerchantId($this->session->merchantId);
 
     $batch_entry_2 =
         new Google_Service_ShoppingContent_InventoryCustomBatchRequestEntry();
@@ -89,17 +91,20 @@ class InventorySample extends BaseSample {
     $batch_entry_2->setStoreCode('online');
     $batch_entry_2->setProductId('online:en:US:book2');
     $batch_entry_2->setInventory($inventory);
-    $batch_entry_2->setMerchantId($this->merchantId);
+    $batch_entry_2->setMerchantId($this->session->merchantId);
 
     $batchRequest =
         new Google_Service_ShoppingContent_InventoryCustomBatchRequest();
     $batchRequest->setEntries(array($batch_entry_1, $batch_entry_2));
 
-    $batchResponse = $this->service->inventory->custombatch($batchRequest);
+    $batchResponse =
+        $this->session->service->inventory->custombatch($batchRequest);
 
     // Tidy up after ourselves
-    $this->service->products->delete($this->merchantId, 'online:en:US:book1');
-    $this->service->products->delete($this->merchantId, 'online:en:US:book2');
+    $this->session->service->products->delete(
+        $this->session->merchantId, 'online:en:US:book1');
+    $this->session->service->products->delete(
+        $this->session->merchantId, 'online:en:US:book2');
   }
 
   private function createExampleProduct($offer_id) {
@@ -108,8 +113,9 @@ class InventorySample extends BaseSample {
     $product->setOfferId($offer_id);
     $product->setTitle('A Tale of Two Cities');
     $product->setDescription('A classic novel about the French Revolution');
-    $product->setLink('http://my-book-shop.com/tale-of-two-cities.html');
-    $product->setImageLink('http://my-book-shop.com/tale-of-two-cities.jpg');
+    $product->setLink($this->session->websiteUrl . '/tale-of-two-cities.html');
+    $product->setImageLink(
+        $this->session->websiteUrl . '/tale-of-two-cities.jpg');
     $product->setContentLanguage('en');
     $product->setTargetCountry('US');
     $product->setChannel('online');
@@ -145,6 +151,3 @@ class InventorySample extends BaseSample {
     return $product;
   }
 }
-
-$sample = new InventorySample();
-$sample->run();

@@ -25,16 +25,18 @@ require_once 'BaseSample.php';
 class AccounttaxSample extends BaseSample {
 
   public function run() {
-    printf("Retrieving tax settings for %s\n", $this->merchantId);
-    $oldSettings = $this->getAccounttax($this->merchantId);
+    printf("Retrieving tax settings for %s\n", $this->session->merchantId);
+    $oldSettings = $this->getAccounttax($this->session->merchantId);
     $this->printAccounttax($oldSettings);
-    printf("Updating tax settings for %s\n", $this->merchantId);
-    $newSettings = $this->createTaxSample($this->merchantId);
-    $this->updateAccounttax($this->merchantId, $newSettings);
-    $this->printAccounttax($this->getAccounttax($this->merchantId));
-    printf("Replacing old tax settings for %s\n", $this->merchantId);
-    $this->updateAccounttax($this->merchantId, $oldSettings);
-    $this->printAccounttax($this->getAccounttax($this->merchantId));
+    printf("Updating tax settings for %s\n", $this->session->merchantId);
+    $newSettings = $this->createTaxSample($this->session->merchantId);
+    $updatedSettings = $this->updateAccounttax(
+        $this->session->merchantId, $newSettings);
+    $this->printAccounttax($updatedSettings);
+    printf("Replacing old tax settings for %s\n", $this->session->merchantId);
+    $updatedSettings = $this->updateAccounttax(
+        $this->session->merchantId, $oldSettings);
+    $this->printAccounttax($updatedSettings);
   }
 
   /**
@@ -51,11 +53,12 @@ class AccounttaxSample extends BaseSample {
    *     a different account
    */
   public function getAccounttax($accountId) {
-    if ($accountId != $this->merchantId) {
-      $this->mustBeMCA('Non-multi-client accounts can only get their own '
-          . 'information.');
+    if ($accountId != $this->session->merchantId) {
+      $this->session->mustBeMCA(
+          'Non-multi-client accounts can only get their own information.');
     }
-    $settings = $this->service->accounttax->get($this->merchantId, $accountId);
+    $settings = $this->session->service->accounttax->get(
+        $this->session->merchantId, $accountId);
     return $settings;
   }
 
@@ -69,16 +72,18 @@ class AccounttaxSample extends BaseSample {
    *     to update information
    * @param AccountTax $settings the tax settings with which to update the
    *     account
+   * @return Accounttax the Accounttax resource that contains
+   *     the updated tax information for the requested account
    * @throws InvalidArgumentException if a non-MCA requests information for
    *     a different account
    */
   public function updateAccounttax($accountId, $settings) {
-    if ($accountId != $this->merchantId) {
-      $this->mustBeMCA('Non-multi-client accounts can only set their own '
-          . 'information.');
+    if ($accountId != $this->session->merchantId) {
+      $this->session->mustBeMCA(
+          'Non-multi-client accounts can only set their own information.');
     }
-    $this->service->accounttax->update(
-        $this->merchantId, $accountId, $settings);
+    return $this->session->service->accounttax->update(
+        $this->session->merchantId, $accountId, $settings);
   }
 
   /**
@@ -123,6 +128,3 @@ class AccounttaxSample extends BaseSample {
     return $settings;
   }
 }
-
-$sample = new AccounttaxSample();
-$sample->run();

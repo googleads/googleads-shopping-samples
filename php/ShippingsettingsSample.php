@@ -25,16 +25,19 @@ require_once 'BaseSample.php';
 class ShippingsettingsSample extends BaseSample {
 
   public function run() {
-    printf("Retrieving shipping settings for %s\n", $this->merchantId);
-    $oldSettings = $this->getShippingsettings($this->merchantId);
+    printf("Retrieving shipping settings for %s\n", $this->session->merchantId);
+    $oldSettings = $this->getShippingsettings($this->session->merchantId);
     $this->printShippingsettings($oldSettings);
-    printf("Updating shipping settings for %s\n", $this->merchantId);
+    printf("Updating shipping settings for %s\n", $this->session->merchantId);
     $newSettings = $this->createShippingSample();
-    $this->updateShippingsettings($this->merchantId, $newSettings);
-    $this->printShippingsettings($this->getShippingsettings($this->merchantId));
-    printf("Replacing old shipping settings for %s\n", $this->merchantId);
-    $this->updateShippingsettings($this->merchantId, $oldSettings);
-    $this->printShippingsettings($this->getShippingsettings($this->merchantId));
+    $updatedSettings = $this->updateShippingsettings(
+        $this->session->merchantId, $newSettings);
+    $this->printShippingsettings($updatedSettings);
+    printf("Replacing old shipping settings for %s\n",
+        $this->session->merchantId);
+    $updatedSettings = $this->updateShippingsettings(
+        $this->session->merchantId, $oldSettings);
+    $this->printShippingsettings($updatedSettings);
   }
 
   /**
@@ -51,12 +54,12 @@ class ShippingsettingsSample extends BaseSample {
    *     a different account
    */
   public function getShippingsettings($accountId) {
-    if ($accountId != $this->merchantId) {
+    if ($accountId != $this->session->merchantId) {
       $this->mustBeMCA('Non-multi-client accounts can only get their own '
           . 'information.');
     }
-    $settings = $this->service->shippingsettings->get(
-        $this->merchantId, $accountId);
+    $settings = $this->session->service->shippingsettings->get(
+        $this->session->merchantId, $accountId);
     return $settings;
   }
 
@@ -70,17 +73,18 @@ class ShippingsettingsSample extends BaseSample {
    *     to retrieve information
    * @param Shippingsettings $settings the Shippingsettings resource with
    *     which to update the account
+   * @return Shippingsettings the Shippingsettings resource that contains
+   *     the updated shipping information for the requested account
    * @throws InvalidArgumentException if a non-MCA requests information for
    *     a different account
    */
   public function updateShippingsettings($accountId, $settings) {
-    if ($accountId != $this->merchantId) {
+    if ($accountId != $this->session->merchantId) {
       $this->mustBeMCA('Non-multi-client accounts can only set their own '
           . 'information.');
-      return;
     }
-    $this->service->shippingsettings->update(
-        $this->merchantId, $accountId, $settings);
+    return $this->session->service->shippingsettings->update(
+        $this->session->merchantId, $accountId, $settings);
   }
 
   /**
@@ -96,7 +100,7 @@ class ShippingsettingsSample extends BaseSample {
       printf("- There are %d postal code group(s):\n",
           count($settings->getPostalCodeGroups()));
       foreach ($settings->getPostalCodeGroups() as $group) {
-        printf("  Postal group "%s":\n", $group->getName());
+        printf("  Postal group '%s':\n", $group->getName());
         printf("  - Country: %s\n", $group->getCountry());
         printf("  - Contains %d postal code range(s).\n",
             count($group->getPostalCodeRanges()));
@@ -108,7 +112,7 @@ class ShippingsettingsSample extends BaseSample {
       printf("- There are %d shipping service(s):\n",
           count($settings->getServices()));
       foreach ($settings->getServices() as $service) {
-        printf("  Service "%s":\n", $service->getName());
+        printf("  Service '%s':\n", $service->getName());
         printf("  - Active: %s\n", $service->getActive() ? 'yes' : 'no');
         printf("  - Country: %s\n", $service->getDeliveryCountry());
         printf("  - Currency: %s\n", $service->getCurrency());
@@ -151,6 +155,3 @@ class ShippingsettingsSample extends BaseSample {
     return $settings;
   }
 }
-
-$sample = new ShippingsettingsSample();
-$sample->run();

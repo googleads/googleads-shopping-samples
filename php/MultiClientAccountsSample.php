@@ -25,7 +25,7 @@ class MultiClientAccountsSample extends BaseSample {
   const BATCH_SIZE = 10;
 
   public function run() {
-    $this->mustBeMCA();
+    $this->session->mustBeMCA();
 
     $exampleAccountName = 'account123';
     $exampleAccountBatchNames = [];
@@ -53,16 +53,17 @@ class MultiClientAccountsSample extends BaseSample {
     //
     // To achieve this we retry each method up to 5 times with an exponential
     // back-off.
-    $this->retry("getAccount", $exampleAccountId);
-    $this->retry("updateAccount", $exampleAccount);
-    $this->retry("deleteAccount", $exampleAccountId);
+    $this->session->retry($this, 'getAccount', $exampleAccountId);
+    $this->session->retry($this, 'updateAccount', $exampleAccount);
+    $this->session->retry($this, 'deleteAccount', $exampleAccountId);
 
     $this->deleteAccountBatch($exampleAccountBatchIds);
   }
 
   public function insertAccount(
       Google_Service_ShoppingContent_Account $account) {
-    $response = $this->service->accounts->insert($this->merchantId, $account);
+    $response = $this->session->service->accounts->insert(
+        $this->session->merchantId, $account);
 
     printf("Created a new account, '%s', with ID %d\n", $response->getName(),
         $response->getId());
@@ -71,7 +72,8 @@ class MultiClientAccountsSample extends BaseSample {
   }
 
   public function getAccount($account_id) {
-    $account = $this->service->accounts->get($this->merchantId, $account_id);
+    $account = $this->session->service->accounts->get(
+        $this->session->merchantId, $account_id);
     printf("Retrieved account %s: '%s'\n", $account->getId(),
         $account->getName());
   }
@@ -82,8 +84,8 @@ class MultiClientAccountsSample extends BaseSample {
 
     $account->setName('updated example account');
 
-    $response = $this->service->accounts->update($this->merchantId,
-        $account->getId(), $account);
+    $response = $this->session->service->accounts->update(
+        $this->session->merchantId, $account->getId(), $account);
 
     printf("Account name changed from '%s' to '%s'\n", $original,
         $response->getName());
@@ -91,7 +93,8 @@ class MultiClientAccountsSample extends BaseSample {
 
   public function deleteAccount($account_id) {
     // The response for a successful delete is empty
-    $this->service->accounts->delete($this->merchantId, $account_id);
+    $this->session->service->accounts->delete(
+        $this->session->merchantId, $account_id);
     print "Test account deleted\n";
   }
 
@@ -104,7 +107,7 @@ class MultiClientAccountsSample extends BaseSample {
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setAccount($account);
-      $entry->setMerchantId($this->merchantId);
+      $entry->setMerchantId($this->session->merchantId);
 
       $entries[] = $entry;
     }
@@ -113,7 +116,8 @@ class MultiClientAccountsSample extends BaseSample {
         new Google_Service_ShoppingContent_AccountsCustomBatchRequest();
     $batchRequest->setEntries($entries);
 
-    $batchResponse = $this->service->accounts->custombatch($batchRequest);
+    $batchResponse =
+        $this->session->service->accounts->custombatch($batchRequest);
 
     printf("Inserted %d accounts.\n", count($batchResponse->entries));
 
@@ -137,12 +141,10 @@ class MultiClientAccountsSample extends BaseSample {
     // We set the maximum number of results to be lower than the number of
     // accounts that we inserted, to demonstrate paging
     $parameters = array('maxResults' => self::BATCH_SIZE - 1);
-    $accounts = $this->service->accounts->listAccounts($this->merchantId,
-        $parameters);
     // You can fetch all accounts in a loop
     do {
-      $accounts = $this->service->accounts->listAccounts($this->merchantId,
-          $parameters);
+      $accounts = $this->session->service->accounts->listAccounts(
+          $this->session->merchantId, $parameters);
 
       foreach ($accounts->getResources() as $account) {
         printf("%s %s\n", $account->getId(), $account->getName());
@@ -153,7 +155,7 @@ class MultiClientAccountsSample extends BaseSample {
       if ($accounts->nextPageToken != null) {
         // You can fetch the next page of results by setting the pageToken
         // parameter with the value of nextPageToken from the previous result.
-        $parameters["pageToken"] = $accounts->nextPageToken;
+        $parameters['pageToken'] = $accounts->nextPageToken;
       } else {
         break;
       }
@@ -169,7 +171,7 @@ class MultiClientAccountsSample extends BaseSample {
       $entry->setMethod('delete');
       $entry->setBatchId($key);
       $entry->setAccountId($id);
-      $entry->setMerchantId($this->merchantId);
+      $entry->setMerchantId($this->session->merchantId);
 
       $entries[] = $entry;
     }
@@ -178,7 +180,8 @@ class MultiClientAccountsSample extends BaseSample {
         new Google_Service_ShoppingContent_AccountsCustomBatchRequest();
     $batchRequest->setEntries($entries);
 
-    $batchResponses = $this->service->accounts->custombatch($batchRequest);
+    $batchResponses =
+        $this->session->service->accounts->custombatch($batchRequest);
 
     $errors = 0;
     foreach ($batchResponses->entries as $entry) {
@@ -209,6 +212,3 @@ class MultiClientAccountsSample extends BaseSample {
     return $account;
   }
 }
-
-$sample = new MultiClientAccountsSample();
-$sample->run();

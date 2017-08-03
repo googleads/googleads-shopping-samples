@@ -32,7 +32,7 @@ class ProductsSample extends BaseSample {
   const BATCH_SIZE = 10;
 
   public function run() {
-    if (is_null($this->websiteUrl)) {
+    if (is_null($this->session->websiteUrl)) {
       throw InvalidArgumentException(
           'Cannot run Products workflow on a Merchant Center account without '
           . 'a configured website URL.');
@@ -61,7 +61,8 @@ class ProductsSample extends BaseSample {
 
   public function insertProduct(
       Google_Service_ShoppingContent_Product $product) {
-    $response = $this->service->products->insert($this->merchantId, $product);
+    $response = $this->session->service->products->insert(
+        $this->session->merchantId, $product);
 
     // Our example product generator does not set a product_type, so we should
     // get at least one warning.
@@ -74,7 +75,8 @@ class ProductsSample extends BaseSample {
 
   public function getProduct($offerId) {
     $productId = $this->buildProductId($offerId);
-    $product = $this->service->products->get($this->merchantId, $productId);
+    $product = $this->session->service->products->get(
+        $this->session->merchantId, $productId);
     printf("Retrieved product %s: '%s'\n", $product->getId(),
         $product->getTitle());
   }
@@ -86,7 +88,8 @@ class ProductsSample extends BaseSample {
     // Notice that we use insert. The products service does not have an update
     // method. Inserting a product with an ID that already exists means the same
     // as doing an update anyway.
-    $response = $this->service->products->insert($this->merchantId, $product);
+    $response = $this->session->service->products->insert(
+        $this->session->merchantId, $product);
 
     // We should no longer get the product_type warning.
     $warnings = $response->getWarnings();
@@ -99,7 +102,8 @@ class ProductsSample extends BaseSample {
   public function deleteProduct($offerId) {
     $productId = $this->buildProductId($offerId);
     // The response for a successful delete is empty
-    $this->service->products->delete($this->merchantId, $productId);
+    $this->session->service->products->delete(
+        $this->session->merchantId, $productId);
   }
 
   public function insertProductBatch($products) {
@@ -111,7 +115,7 @@ class ProductsSample extends BaseSample {
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setProduct($product);
-      $entry->setMerchantId($this->merchantId);
+      $entry->setMerchantId($this->session->merchantId);
 
       $entries[] = $entry;
     }
@@ -120,7 +124,8 @@ class ProductsSample extends BaseSample {
         new Google_Service_ShoppingContent_ProductsCustomBatchRequest();
     $batchRequest->setEntries($entries);
 
-    $batchResponse = $this->service->products->custombatch($batchRequest);
+    $batchResponse =
+        $this->session->service->products->custombatch($batchRequest);
 
     printf("Inserted %d products.\n", count($batchResponse->entries));
 
@@ -142,8 +147,8 @@ class ProductsSample extends BaseSample {
     // We set the maximum number of results to be lower than the number of
     // products that we inserted, to demonstrate paging.
     $parameters = array('maxResults' => self::BATCH_SIZE - 1);
-    $products =
-        $this->service->products->listProducts($this->merchantId, $parameters);
+    $products = $this->session->service->products->listProducts(
+        $this->session->merchantId, $parameters);
     $count = 0;
     // You can fetch all items in a loop. We limit to looping just 3
     // times for this example as it may take a long time to finish if you
@@ -160,8 +165,8 @@ class ProductsSample extends BaseSample {
       // You can fetch the next page of results by setting the pageToken
       // parameter with the value of nextPageToken from the previous result.
       $parameters['pageToken'] = $products->nextPageToken;
-      $products = $this->service->products->listProducts($this->merchantId,
-          $parameters);
+      $products = $this->session->service->products->listProducts(
+          $this->session->merchantId, $parameters);
     }
   }
 
@@ -174,7 +179,7 @@ class ProductsSample extends BaseSample {
       $entry->setMethod('delete');
       $entry->setBatchId($key);
       $entry->setProductId($this->buildProductId($offerId));
-      $entry->setMerchantId($this->merchantId);
+      $entry->setMerchantId($this->session->merchantId);
 
       $entries[] = $entry;
     }
@@ -183,7 +188,8 @@ class ProductsSample extends BaseSample {
         new Google_Service_ShoppingContent_ProductsCustomBatchRequest();
     $batchRequest->setEntries($entries);
 
-    $batchResponses = $this->service->products->custombatch($batchRequest);
+    $batchResponses =
+        $this->session->service->products->custombatch($batchRequest);
     $errors = 0;
     foreach ($batchResponses->entries as $entry) {
       if (!empty($entry->getErrors())) {
@@ -215,8 +221,9 @@ class ProductsSample extends BaseSample {
     $product->setOfferId($offerId);
     $product->setTitle('A Tale of Two Cities');
     $product->setDescription('A classic novel about the French Revolution');
-    $product->setLink($this->websiteUrl . '/tale-of-two-cities.html');
-    $product->setImageLink($this->websiteUrl . '/tale-of-two-cities.jpg');
+    $product->setLink($this->session->websiteUrl . '/tale-of-two-cities.html');
+    $product->setImageLink(
+        $this->session->websiteUrl . '/tale-of-two-cities.jpg');
     $product->setContentLanguage(self::CONTENT_LANGUAGE);
     $product->setTargetCountry(self::TARGET_COUNTRY);
     $product->setChannel(self::CHANNEL);
@@ -252,6 +259,3 @@ class ProductsSample extends BaseSample {
     return $product;
   }
 }
-
-$sample = new ProductsSample();
-$sample->run();

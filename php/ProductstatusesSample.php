@@ -22,32 +22,33 @@ require_once 'BaseSample.php';
 class ProductstatusesSample extends BaseSample {
 
   public function run() {
-    $this->mustNotBeMCA('This demo contains no operations for a multi-client '
-        . 'account.');
-    $this->listProductstatuses();
+    if (!$this->session->mcaStatus) {
+      $this->listProductstatuses();
+    } else {
+      print "This demo contains no operations for a multi-client account.\n";
+    }
   }
 
   public function getProductstatus($itemId) {
-    $this->mustNotBeMCA('Multi-client accounts cannot contain products.');
-    $status = $this->service->productstatuses->get(
-        $this->merchantId, $itemId);
+    $this->session->mustNotBeMCA(
+        'Multi-client accounts cannot contain products.');
+    $status = $this->session->service->productstatuses->get(
+        $this->session->merchantId, $itemId);
     $this->printProductstatus($status);
   }
 
   public function listProductstatuses() {
-    $this->mustNotBeMCA('Multi-client accounts cannot contain products.');
+    $this->session->mustNotBeMCA(
+        'Multi-client accounts cannot contain products.');
     $parameters = [];
     do {
-      $productStatuses = $this->service->productstatuses->listProductstatuses(
-          $this->merchantId, $parameters);
-      foreach ($productStatuses->getResources() as $status) {
+      $statuses = $this->session->service->productstatuses->listProductstatuses(
+          $this->session->merchantId, $parameters);
+      foreach ($statuses->getResources() as $status) {
         $this->printProductstatus($status);
       }
-      if(empty($productStatuses->getNextPageToken())) {
-        break;
-      }
-      $parameters['pageToken'] = $productStatuses->nextPageToken;
-    } while (true);
+      $parameters['pageToken'] = $statuses->nextPageToken;
+    } while (!empty($parameters['pageToken']));
   }
 
   public function printProductstatus($status) {
@@ -69,6 +70,3 @@ class ProductstatusesSample extends BaseSample {
     }
   }
 }
-
-$sample = new ProductstatusesSample();
-$sample->run();

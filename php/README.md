@@ -35,10 +35,11 @@ below assume that you are using Composer.
    $ composer install
    ```
 
-1. Run any of the included samples on the command line.
+1. Run one of the following samples on the command line.
 
     ```
-    $ php php/ProductsSample.php
+    $ php php/NonOrdersSamples.php # Runs through all non-Orders services.
+    $ php php/OrdersSample.php     # Runs only the Orders service.
     ```
 
 1. Examine your shell output, be inspired and start hacking an amazing new app!

@@ -23,37 +23,37 @@ class AccountstatusesSample extends BaseSample {
 
   public function run() {
     printf("Retrieving merchant center information for %s\n",
-        $this->merchantId);
-    $this->getAccountstatus($this->merchantId);
-    printf("Retrieving subaccount information for %s\n", $this->merchantId);
-    $this->listAccountstatuses();
+        $this->session->merchantId);
+    $this->getAccountstatus($this->session->merchantId);
+    if ($this->session->mcaStatus) {
+      printf("Retrieving subaccount information for %s\n",
+          $this->session->merchantId);
+      $this->listAccountstatuses();
+    }
   }
 
   public function getAccountstatus($accountId) {
-    if ($accountId != $this->merchantId) {
-      $this->mustBeMCA('Non-multi-client accounts can only get their own '
-          . 'information.');
+    if ($accountId != $this->session->merchantId) {
+      $this->session->mustBeMCA(
+          'Non-multi-client accounts can only get their own information.');
       return;
     }
-    $status = $this->service->accountstatuses->get(
-        $this->merchantId, $accountId);
+    $status = $this->session->service->accountstatuses->get(
+        $this->session->merchantId, $accountId);
     $this->printAccountstatus($status);
   }
 
   public function listAccountstatuses() {
-    $this->mustBeMCA('Only multi-client accounts have subaccounts.');
+    $this->session->mustBeMCA('Only multi-client accounts have subaccounts.');
     $parameters = [];
     do {
-      $accountStatuses = $this->service->accountstatuses->listAccountstatuses(
-          $this->merchantId, $parameters);
-      foreach ($accountStatuses->getResources() as $status) {
+      $statuses = $this->session->service->accountstatuses->listAccountstatuses(
+          $this->session->merchantId, $parameters);
+      foreach ($statuses->getResources() as $status) {
         $this->printAccountstatus($status);
       }
-      if(empty($accountStatuses->getNextPageToken())) {
-        break;
-      }
-      $parameters['pageToken'] = $accountStatuses->nextPageToken;
-    } while (true);
+      $parameters['pageToken'] = $statuses->nextPageToken;
+    } while (!empty($parameters['pageToken']));
   }
 
   public function printAccountstatus($status) {
@@ -75,6 +75,3 @@ class AccountstatusesSample extends BaseSample {
     }
   }
 }
-
-$sample = new AccountstatusesSample();
-$sample->run();

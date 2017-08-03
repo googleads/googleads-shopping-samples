@@ -45,21 +45,21 @@ class DatafeedsSample extends BaseSample {
     // There is a short period after creating a datafeed during which it may not
     // be deleted. In general use it would be unusual to do so anyway, but for
     // the purposes of this example we retry with back off.
-    $this->retry("deleteDatafeed", $exampleDatafeedId);
+    $this->session->retry($this, 'deleteDatafeed', $exampleDatafeedId);
     $this->deleteDatafeedBatch($exampleDatafeedBatchIDs);
   }
 
   public function insertDatafeed(
       Google_Service_ShoppingContent_Datafeed $datafeed) {
-    $response =
-        $this->service->datafeeds->insert($this->merchantId, $datafeed);
+    $response = $this->session->service->datafeeds->insert(
+        $this->session->merchantId, $datafeed);
     printf("Datafeed created with ID %d\n", $response->getId());
     return $response;
   }
 
   public function getDatafeed($datafeed_id) {
-    $datafeed =
-        $this->service->datafeeds->get($this->merchantId, $datafeed_id);
+    $datafeed = $this->session->service->datafeeds->get(
+        $this->session->merchantId, $datafeed_id);
     printf("Retrieved datafeed %s: '%s'\n", $datafeed->getId(),
         $datafeed->getName());
   }
@@ -70,8 +70,8 @@ class DatafeedsSample extends BaseSample {
     $original = $datafeed->getFetchSchedule()->getHour();
     $datafeed->getFetchSchedule()->setHour(7);
 
-    $response = $this->service->datafeeds->update($this->merchantId,
-        $datafeed->getId(), $datafeed);
+    $response = $this->session->service->datafeeds->update(
+        $this->session->merchantId, $datafeed->getId(), $datafeed);
 
     printf("Scheduled fetch time changed from %d:00 to %d:00\n", $original,
         $response->getFetchSchedule()->getHour());
@@ -79,7 +79,8 @@ class DatafeedsSample extends BaseSample {
 
   public function deleteDatafeed($datafeed_id) {
     // The response for a successful delete is empty
-    $this->service->datafeeds->delete($this->merchantId, $datafeed_id);
+    $this->session->service->datafeeds->delete(
+        $this->session->merchantId, $datafeed_id);
     print ("Deleted test data feed\n");
   }
 
@@ -92,7 +93,7 @@ class DatafeedsSample extends BaseSample {
       $entry->setMethod('insert');
       $entry->setBatchId($key);
       $entry->setDatafeed($datafeed);
-      $entry->setMerchantId($this->merchantId);
+      $entry->setMerchantId($this->session->merchantId);
 
       $entries[] = $entry;
     }
@@ -101,7 +102,8 @@ class DatafeedsSample extends BaseSample {
         new Google_Service_ShoppingContent_DatafeedsCustomBatchRequest();
     $batchRequest->setEntries($entries);
 
-    $batchResponse = $this->service->datafeeds->custombatch($batchRequest);
+    $batchResponse =
+        $this->session->service->datafeeds->custombatch($batchRequest);
 
     printf("Inserted %d datafeeds.\n", count($batchResponse->entries));
 
@@ -125,7 +127,8 @@ class DatafeedsSample extends BaseSample {
   public function listDatafeeds() {
     // There is a low limit on the number of datafeeds per account, so the list
     // method always returns all datafeeds.
-    $datafeeds = $this->service->datafeeds->listDatafeeds($this->merchantId);
+    $datafeeds = $this->session->service->datafeeds->listDatafeeds(
+        $this->session->merchantId);
 
     foreach ($datafeeds->getResources() as $datafeed) {
       printf("%s %s\n", $datafeed->getId(), $datafeed->getName());
@@ -141,7 +144,7 @@ class DatafeedsSample extends BaseSample {
       $entry->setMethod('delete');
       $entry->setBatchId($key);
       $entry->setDatafeedId($id);
-      $entry->setMerchantId($this->merchantId);
+      $entry->setMerchantId($this->session->merchantId);
 
       $entries[] = $entry;
     }
@@ -150,7 +153,8 @@ class DatafeedsSample extends BaseSample {
         new Google_Service_ShoppingContent_DatafeedsCustomBatchRequest();
     $batchRequest->setEntries($entries);
 
-    $batchResponses = $this->service->datafeeds->custombatch($batchRequest);
+    $batchResponses =
+        $this->session->service->datafeeds->custombatch($batchRequest);
 
     $errors = 0;
     foreach ($batchResponses->entries as $entry) {
@@ -220,6 +224,3 @@ class DatafeedsSample extends BaseSample {
     return $datafeed;
   }
 }
-
-$sample = new DatafeedsSample();
-$sample->run();

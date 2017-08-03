@@ -22,31 +22,32 @@ require_once 'BaseSample.php';
 // normal accounts.
 class PrimaryAccountsSample extends BaseSample {
   public function run() {
-    $account = $this->getAccount($this->merchantId);
+    $account = $this->getAccount($this->session->merchantId);
 
     // The user that you add to an account must be a valid Google account.
     // Because this example email address does not belong to any account, the
     // call will always fail. If you wish to test it with a real account be
     // aware that a Google account can only be associated with one Merchant
     // Center account, so the call may still fail.
-    if(array_key_exists('accountSampleUser', $this->config)) {
-      $this->addUser($account, $this->config['accountSampleUser']);
-      $this->removeUser($account, $this->config['accountSampleUser']);
+    if(array_key_exists('accountSampleUser', $this->session->config)) {
+      $this->addUser($account, $this->session->config['accountSampleUser']);
+      $this->removeUser($account, $this->session->config['accountSampleUser']);
     }
 
     // You may see an AdWords account ID written as '123-456-7890'. However, the
     // Content API expects to recive a long integer like 1234567890. Simply
     // remove the dashes and convert to an integer.
-    if(array_key_exists('accountSampleAdWordsCID', $this->config)) {
+    if(array_key_exists('accountSampleAdWordsCID', $this->session->config)) {
       $this->linkAdWordsAccount($account,
-          $this->config['accountSampleAdWordsCID']);
+          $this->session->config['accountSampleAdWordsCID']);
       $this->unlinkAdWordsAccount($account,
-          $this->config['accountSampleAdWordsCID']);
+          $this->session->config['accountSampleAdWordsCID']);
     }
   }
 
   public function getAccount($accountId) {
-    return $this->service->accounts->get($this->merchantId, $accountId);
+    return $this->session->service->accounts->get(
+        $this->session->merchantId, $accountId);
   }
 
   public function addUser(Google_Service_ShoppingContent_Account $account,
@@ -60,8 +61,8 @@ class PrimaryAccountsSample extends BaseSample {
     $account->setUsers($users);
 
     try {
-      $response = $this->service->accounts->update($this->merchantId,
-          $this->merchantId, $account);
+      $response = $this->session->service->accounts->update(
+          $this->session->merchantId, $this->session->merchantId, $account);
       printf("Added user '%s' to account\n", $email);
     } catch (Google_Service_Exception $exception) {
       print ("There were errors while trying to add a user:\n");
@@ -90,8 +91,8 @@ class PrimaryAccountsSample extends BaseSample {
       $account->setUsers($users);
 
       try {
-        $response = $this->service->accounts->update($this->merchantId,
-            $this->merchantId, $account);
+        $response = $this->session->service->accounts->update(
+            $this->session->merchantId, $this->session->merchantId, $account);
         printf("Removed user '%s' from account\n", $email);
       } catch (Google_Service_Exception $exception) {
         print ("There were errors while trying to remove a user:\n");
@@ -112,8 +113,8 @@ class PrimaryAccountsSample extends BaseSample {
     $account->setAdwordsLinks($adWordsLinks);
 
     try {
-      $response = $this->service->accounts->update($this->merchantId,
-          $this->merchantId, $account);
+      $response = $this->session->service->accounts->update(
+          $this->session->merchantId, $this->session->merchantId, $account);
       printf("Linked AdWords account '%s' to Merchant Center account\n",
           $adWordsId);
     } catch (Google_Service_Exception $exception) {
@@ -140,8 +141,8 @@ class PrimaryAccountsSample extends BaseSample {
       $account->setAdwordsLinks($adWordsLinks);
 
       try {
-        $response = $this->service->accounts->update($this->merchantId,
-            $this->merchantId, $account);
+        $response = $this->session->service->accounts->update(
+            $this->session->merchantId, $this->session->merchantId, $account);
         printf("Unlinked AdWords account '%s' from account\n", $adWordsId);
       } catch (Google_Service_Exception $exception) {
         print ("There were errors while trying to unlink an account:\n");
@@ -152,6 +153,3 @@ class PrimaryAccountsSample extends BaseSample {
     }
   }
 }
-
-$sample = new PrimaryAccountsSample();
-$sample->run();
