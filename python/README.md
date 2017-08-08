@@ -33,6 +33,6 @@ directory. If not, check out the code to a local directory.
 
 1. Start up a sample:
 
-        $ python product_list.py
+        $ python -m shopping.content.products.list
 
 3. Examine your shell output, be inspired and start hacking an amazing new app!

@@ -1,0 +1,54 @@
+#!/usr/bin/python
+#
+# Copyright 2016 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Links the specified AdWords account to the specified merchant center account.
+"""
+
+from __future__ import print_function
+import sys
+
+from shopping.content import common
+
+
+def main(argv):
+  # Authenticate and construct service.
+  service, config, _ = common.init(argv, __doc__)
+  merchant_id = config['merchantId']
+  adwords_id = None
+  if common.json_absent_or_false(config, 'accountSampleAdWordsCID'):
+    print('Must specify the AdWords CID to link in the samples configuration.')
+    sys.exit(1)
+  adwords_id = config['accountSampleAdWordsCID']
+
+  # First we need to retrieve the existing set of users.
+  response = service.accounts().get(
+      merchantId=merchant_id, accountId=merchant_id,
+      fields='adwordsLinks').execute()
+
+  account = response
+
+  # Add new user to existing user list.
+  adwords_link = {'adwordsId': adwords_id, 'status': 'active'}
+  account.setdefault('adwordsLinks', []).append(adwords_link)
+
+  # Patch account with new user list.
+  response = service.accounts().patch(
+      merchantId=merchant_id, accountId=merchant_id, body=account).execute()
+
+  print('AdWords ID %d was added to merchant ID %d' % (adwords_id, merchant_id))
+
+
+if __name__ == '__main__':
+  main(sys.argv)
