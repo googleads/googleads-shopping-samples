@@ -261,7 +261,7 @@ func printGroupValue(value *content.Value) {
 	} else if value.PricePercentage != "" {
 		fmt.Printf("%s%%\n", value.PricePercentage)
 	} else if value.NoShipping {
-		fmt.Println("cannot ship\n")
+		fmt.Println("cannot ship")
 	} else if value.SubtableName != "" {
 		fmt.Printf("see subtable \"%s\"\n", value.SubtableName)
 	}

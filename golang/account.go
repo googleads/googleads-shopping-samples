@@ -51,7 +51,7 @@ func primaryAccountDemo(service *content.APIService, config *merchantInfo) {
 	}
 
 	if config.AccountSampleAdwordsID != 0 {
-		fmt.Printf("Linking Adwords ID %s.\n", config.AccountSampleAdwordsID)
+		fmt.Printf("Linking Adwords ID %d.\n", config.AccountSampleAdwordsID)
 		account.AdwordsLinks = append(account.AdwordsLinks, &content.AccountAdwordsLink{
 			AdwordsId: config.AccountSampleAdwordsID,
 			Status:    "active",
