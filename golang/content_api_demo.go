@@ -57,6 +57,7 @@ func main() {
 	defaultPath := path.Join(usr.HomeDir, "shopping-samples")
 	configPath := flag.String("config_path", defaultPath, "configuration directory for Shopping samples")
 	noConfig := flag.Bool("noconfig", false, "run samples with no configuration directory")
+	logFile := flag.String("log_file", "", "filename for logging API requests and responses")
 
 	flag.Usage = usage
 	flag.Parse()
@@ -77,6 +78,18 @@ func main() {
 	// Set up the API service to be passed to the demos.
 	ctx := context.Background()
 	client := authWithGoogle(ctx, samplesConfig)
+	if *logFile != "" {
+		f, err := os.OpenFile(*logFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			log.Fatalf("Failed to open log file: %s", err.Error())
+		}
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Fatalf("Failed to close log file: %s", err.Error())
+			}
+		}()
+		logClient(client, f)
+	}
 	contentService, err := content.New(client)
 	if err != nil {
 		log.Fatal(err)
