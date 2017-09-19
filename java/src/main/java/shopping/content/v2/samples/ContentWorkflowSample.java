@@ -89,11 +89,11 @@ public abstract class ContentWorkflowSample extends BaseWorkflowSample {
     }
     config.setIsMCA(false);
     for (AccountIdentifier ids : resp.getAccountIdentifiers()) {
-      if (ids.getAggregatorId() == config.getMerchantId()) {
+      if (ids.getAggregatorId() != null && ids.getAggregatorId().equals(config.getMerchantId())) {
         config.setIsMCA(true);
         break;
       }
-      if (ids.getMerchantId() == config.getMerchantId()) {
+      if (ids.getMerchantId() != null && ids.getMerchantId().equals(config.getMerchantId())) {
         break;
       }
     }
