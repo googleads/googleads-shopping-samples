@@ -1,110 +1,71 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"log"
 	"net/http"
+	"net/http/httputil"
+	"sync"
 )
 
 type loggedRoundTripper struct {
-	Output   *json.Encoder
-	Delegate http.RoundTripper
+	Output      io.Writer
+	OutputMutex *sync.Mutex
+	Delegate    http.RoundTripper
 }
 
-type loggedRequest struct {
-	Method string `json:"method"`
-	URL    string `json:"url"`
-	// Only one of the following fields should be set:
-	// ParsedBody, if the body was a single JSON value
-	// RawBody, otherwise.
-	ParsedBody interface{} `json:"parsedBody,omitempty"`
-	RawBody    []byte      `json:"rawBody,omitempty"`
+func (lrt loggedRoundTripper) dumpLogs(reqBytes []byte, respBytes []byte) error {
+	lrt.OutputMutex.Lock()
+	defer lrt.OutputMutex.Unlock()
+
+	if _, err := lrt.Output.Write(reqBytes); err != nil {
+		return fmt.Errorf("error logging request: %v", err)
+	}
+	if _, err := lrt.Output.Write(respBytes); err != nil {
+		return fmt.Errorf("error logging response: %v", err)
+	}
+
+	return nil
 }
 
-type loggedResponse struct {
-	StatusCode int `json:"statusCode"`
-	// Only one of the following fields should be set:
-	// ParsedBody, if the body was a single JSON value
-	// RawBody, otherwise.
-	ParsedBody interface{} `json:"parsedBody,omitempty"`
-	RawBody    []byte      `json:"rawBody,omitempty"`
-}
-
+// RoundTrip logs the outgoing HTTP request, delegates sending the request to
+// the wrapped RoundTripper, and logs the incoming HTTP response, if any.
 func (lrt loggedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	loggedRequest := loggedRequest{
-		Method: req.Method,
-		URL:    req.URL.String(),
-	}
-	if req.Body != nil {
-		copy, err := req.GetBody()
-		if err != nil {
-			return nil, fmt.Errorf("error copying request body in logger: %s", err.Error())
-		}
-		buf, err := ioutil.ReadAll(copy)
-		if err != nil {
-			return nil, fmt.Errorf("error reading request body in logger: %s", err.Error())
-		}
-		dec := json.NewDecoder(bytes.NewReader(buf))
-		if err := dec.Decode(&loggedRequest.ParsedBody); err != nil {
-			// Non-JSON contents, so just store the raw body instead.
-			loggedRequest.RawBody = buf
-		} else if dec.More() {
-			// More than just a single JSON response, so again, store the raw body.
-			loggedRequest.RawBody = buf
-			loggedRequest.ParsedBody = nil
-		}
-
-	}
-	if err := lrt.Output.Encode(loggedRequest); err != nil {
-		return nil, fmt.Errorf("error encoding request as JSON in logger: %s", err.Error())
+	reqBytes, err := httputil.DumpRequest(req, true)
+	if err != nil {
+		req.Body.Close() // RoundTrippers must close the request body even in error cases.
+		return nil, fmt.Errorf("error dumping request in logger: %v", err)
 	}
 
 	resp, err := lrt.Delegate.RoundTrip(req)
 	if err != nil {
+		// Since we won't be receiving a response, attempt to write the request (since we
+		// already have a pending error, don't worry about checking whether it succeeds).
+		lrt.dumpLogs(reqBytes, nil)
 		return resp, err
 	}
 
-	loggedResponse := loggedResponse{
-		StatusCode: resp.StatusCode,
+	respBytes, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		log.Printf("error dumping response in logger: %v", err)
+		lrt.dumpLogs(reqBytes, nil)
+		return resp, nil
 	}
-	if resp.ContentLength != 0 {
-		oldBody := resp.Body
-		defer oldBody.Close()
-		contents, err := ioutil.ReadAll(oldBody)
-		if err != nil {
-			return resp, fmt.Errorf("error reading response body in logger: %s", err.Error())
-		}
-		buf := bytes.NewReader(contents)
 
-		respDecoder := json.NewDecoder(buf)
-		if err := respDecoder.Decode(&loggedResponse.ParsedBody); err != nil {
-			// Non-JSON contents, so just store the raw body instead.
-			loggedResponse.RawBody = contents
-		} else if respDecoder.More() {
-			// More than just a single JSON response, so again, store the raw body.
-			loggedResponse.RawBody = contents
-			loggedResponse.ParsedBody = nil
-		}
-
-		buf.Seek(0, 0)
-		resp.Body = ioutil.NopCloser(buf)
-	}
-	if err := lrt.Output.Encode(loggedResponse); err != nil {
-		return nil, fmt.Errorf("error encoding response as JSON in logger: %s", err.Error())
+	// Write the request and responses to disk within the same lock to avoid unwanted interleaving
+	// if this RoundTripper is used concurrently within multiple goroutines.
+	if err := lrt.dumpLogs(reqBytes, respBytes); err != nil {
+		log.Print(err.Error())
 	}
 
 	return resp, nil
 }
 
 func logClient(client *http.Client, writer io.Writer) {
-	encoder := json.NewEncoder(writer)
-	encoder.SetEscapeHTML(false)
-	encoder.SetIndent("", "  ")
 	client.Transport = loggedRoundTripper{
-		Output:   encoder,
-		Delegate: client.Transport,
+		Output:      writer,
+		OutputMutex: &sync.Mutex{},
+		Delegate:    client.Transport,
 	}
 }
