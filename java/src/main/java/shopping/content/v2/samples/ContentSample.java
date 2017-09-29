@@ -16,7 +16,7 @@ public abstract class ContentSample extends BaseSample {
   public ContentSample(String args[]) throws IOException {
     super(args);
     ShoppingContent.Builder builder =
-        new ShoppingContent.Builder(httpTransport, jsonFactory, credential)
+        new ShoppingContent.Builder(httpTransport, jsonFactory, initializer)
             .setApplicationName("Content API for Shopping Samples");
     content = createService(builder);
     sandbox = createSandboxContentService(builder);

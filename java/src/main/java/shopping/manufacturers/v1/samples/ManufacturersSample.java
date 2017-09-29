@@ -20,7 +20,7 @@ public abstract class ManufacturersSample extends BaseSample {
   public ManufacturersSample(String[] args) throws IOException {
     super(args);
     ManufacturerCenter.Builder builder =
-        new ManufacturerCenter.Builder(httpTransport, jsonFactory, credential)
+        new ManufacturerCenter.Builder(httpTransport, jsonFactory, initializer)
             .setApplicationName("Manufacturer Center API Samples");
     manufacturers = createService(builder);
   }

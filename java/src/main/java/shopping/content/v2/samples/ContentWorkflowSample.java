@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import org.apache.commons.cli.CommandLine;
 import shopping.common.Authenticator;
+import shopping.common.BaseOption;
 import shopping.common.BaseWorkflowSample;
 
 /** Base class for the Content API workflow samples. */
@@ -30,8 +32,8 @@ public abstract class ContentWorkflowSample extends BaseWorkflowSample {
     this.config = config;
   }
 
-  protected static ShoppingContent.Builder createStandardBuilder(ContentConfig config)
-      throws IOException {
+  protected static ShoppingContent.Builder createStandardBuilder(
+      CommandLine parsedArgs, ContentConfig config) throws IOException {
     JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
     HttpTransport httpTransport = null;
     try {
@@ -44,7 +46,8 @@ public abstract class ContentWorkflowSample extends BaseWorkflowSample {
         new Authenticator(httpTransport, jsonFactory, ShoppingContentScopes.all(), config);
     Credential credential = authenticator.authenticate();
 
-    return new ShoppingContent.Builder(httpTransport, jsonFactory, credential)
+    return new ShoppingContent.Builder(
+            httpTransport, jsonFactory, BaseOption.installLogging(credential, parsedArgs))
         .setApplicationName("Content API for Shopping Samples");
   }
 

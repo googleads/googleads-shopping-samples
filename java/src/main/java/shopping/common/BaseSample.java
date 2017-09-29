@@ -6,6 +6,7 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.googleapis.services.AbstractGoogleClient;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -18,7 +19,7 @@ import org.apache.commons.cli.CommandLine;
 public abstract class BaseSample {
   protected static final String ENDPOINT_ENV_VAR = "GOOGLE_SHOPPING_SAMPLES_ENDPOINT";
 
-  protected final Credential credential;
+  protected final HttpRequestInitializer initializer;
   protected final HttpTransport httpTransport;
   protected final Authenticator authenticator;
   protected final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
@@ -33,7 +34,7 @@ public abstract class BaseSample {
     }
     httpTransport = createHttpTransport();
     authenticator = loadAuthentication();
-    credential = createCredential();
+    initializer = BaseOption.installLogging(createCredential(), parsedArgs);
   }
 
   protected HttpTransport createHttpTransport() throws IOException {

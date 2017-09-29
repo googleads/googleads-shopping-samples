@@ -84,8 +84,7 @@ public class AccountPatchSample extends ContentSample {
       patchedAccount.setAdwordsLinks(links);
     }
 
-    account =
-        content.accounts().patch(merchantId, patchedAccount.getId(), patchedAccount).execute();
+    account = content.accounts().patch(merchantId, account.getId(), patchedAccount).execute();
     System.out.printf("%nAccount information after removing new user/link:%n");
     AccountUtils.printAccount(account);
   }

@@ -1,6 +1,15 @@
 package shopping.common;
 
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.HttpTransport;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -17,6 +26,7 @@ public enum BaseOption {
       "PATH",
       "Configuration directory for Shopping samples",
       new File(System.getProperty("user.home"), "shopping-samples").getAbsolutePath()),
+  CALL_LOG_FILE("l", "log_file", "FILE", "File for logging API requests and responses"),
   NO_CONFIG("n", "noconfig", "Run samples without a configuration directory"),
   HELP("h", "help", "print this message");
 
@@ -45,6 +55,10 @@ public enum BaseOption {
   private BaseOption(
       String option, String longOpt, String description, String argName, String defaultArg) {
     this(option, longOpt, description, true, argName, defaultArg);
+  }
+
+  private BaseOption(String option, String longOpt, String argName, String description) {
+    this(option, longOpt, description, true, argName, null);
   }
 
   private BaseOption(String option, String longOpt, String description) {
@@ -109,5 +123,28 @@ public enum BaseOption {
           "Configuration directory '" + pathString + "' does not exist");
     }
     return path;
+  }
+
+  public static HttpRequestInitializer installLogging(
+      HttpRequestInitializer initializer, CommandLine parsedArgs) throws IOException {
+    String filename = CALL_LOG_FILE.getOptionValue(parsedArgs);
+    if (filename == null) {
+      return initializer;
+    }
+    Logger logger = Logger.getLogger(HttpTransport.class.getName());
+    logger.setLevel(Level.CONFIG);
+    Handler handler = new FileHandler(filename);
+    // Only output log messages so that the log files are simply just the requests and responses
+    // in text form. (SimpleFormatter would output timestamps/logger names for each log call.)
+    handler.setFormatter(
+        new Formatter() {
+          @Override
+          public String format(LogRecord record) {
+            return formatMessage(record);
+          }
+        });
+    handler.setLevel(Level.CONFIG);
+    logger.addHandler(handler);
+    return new LoggingHttpRequestInitializer(initializer);
   }
 }

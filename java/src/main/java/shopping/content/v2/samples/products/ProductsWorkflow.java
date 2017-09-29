@@ -129,7 +129,7 @@ public class ProductsWorkflow extends ContentWorkflowSample {
     }
     ContentConfig config = ContentConfig.load(configPath);
 
-    ShoppingContent.Builder builder = createStandardBuilder(config);
+    ShoppingContent.Builder builder = createStandardBuilder(parsedArgs, config);
     ShoppingContent content = createService(builder);
     ShoppingContent sandbox = createSandboxContentService(builder);
     retrieveConfiguration(content, config);
