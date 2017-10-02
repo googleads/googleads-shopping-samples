@@ -20,13 +20,11 @@
 
 require_relative 'product_common'
 
-# The maximum number of results to be returned in a page.
-MAX_PAGE_SIZE = 50
-
-def list_products(content_api, merchant_id, next_page = nil, count = 0)
+def list_products(
+    content_api, merchant_id, next_page = nil, count = 0, page_size = 50)
   content_api.list_products(
     merchant_id,
-    max_results: MAX_PAGE_SIZE,
+    max_results: page_size,
     page_token: next_page
   ) do |res, err|
     if err
@@ -48,7 +46,8 @@ def list_products(content_api, merchant_id, next_page = nil, count = 0)
     end
 
     return if !res.next_page_token || count >= 3
-    list_products(content_api, merchant_id, res.next_page_token, count + 1)
+    list_products(
+        content_api, merchant_id, res.next_page_token, count + 1, page_size)
   end
 end
 

@@ -20,12 +20,9 @@
 
 require_relative 'mca_common'
 
-# The maximum number of results to be returned in a page.
-MAX_PAGE_SIZE = 50
-
-def list_accounts(content_api, merchant_id, next_page = nil)
+def list_accounts(content_api, merchant_id, next_page = nil, page_size = 50)
   content_api.list_accounts(
-      merchant_id, max_results: MAX_PAGE_SIZE, page_token: next_page
+      merchant_id, max_results: page_size, page_token: next_page
   ) do |res, err|
     if err
       handle_errors(err)
@@ -42,7 +39,7 @@ def list_accounts(content_api, merchant_id, next_page = nil)
     end
 
     return unless res.next_page_token
-    list_accounts(content_api, merchant_id, res.next_page_token)
+    list_accounts(content_api, merchant_id, res.next_page_token, page_size)
   end
 end
 

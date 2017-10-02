@@ -24,19 +24,19 @@ def insert_datafeed(content_api, merchant_id)
   example_id = 'feed%s' % unique_id()
   datafeed = create_example_datafeed(example_id)
 
-  content_api.insert_datafeed(merchant_id, datafeed) do |res, err|
-    if err
-      handle_errors(err)
-      exit
-    end
+  res = content_api.insert_datafeed(merchant_id, datafeed)
 
-    puts "Datafeed created with ID #{res.id}."
-  end
+  puts "Datafeed created with ID #{res.id}."
+  return res
 end
 
 
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
   config, content_api = service_setup(options)
-  insert_datafeed(content_api, config.merchant_id)
+  begin
+    insert_datafeed(content_api, config.merchant_id)
+  rescue Exception => ex
+    handle_errors(ex)
+  end
 end

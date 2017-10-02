@@ -21,14 +21,11 @@
 require_relative 'mca_common'
 
 def get_account(content_api, merchant_id, account_id)
-  content_api.get_account(merchant_id, account_id) do |res, err|
-    if err
-      handle_errors(err)
-      exit
-    end
-
-    puts "Retrieved account ID #{res.id} for merchant #{merchant_id}"
-  end
+  account = content_api.get_account(merchant_id, account_id)
+  name = account.name
+  id = account.id
+  puts "Retrieved account '#{name}' (ID #{id}) for merchant #{merchant_id}"
+  return account
 end
 
 
@@ -57,5 +54,9 @@ if __FILE__ == $0
     puts "Non-MCA merchants cannot retrieve information about other accounts."
     exit
   end
-  get_account(content_api, config.merchant_id, account_id)
+  begin
+    get_account(content_api, config.merchant_id, account_id)
+  rescue Exception => ex
+    handle_errors(ex)
+  end
 end

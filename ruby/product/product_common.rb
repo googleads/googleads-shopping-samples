@@ -44,14 +44,14 @@ def create_example_product(config, offer_id)
         :value => '2.50',
         :currency => 'USD'
     },
-    :shipping => {
+    :shipping => [{
         :country => 'US',
         :service => 'Standard shipping',
         :price => {
             :value => '0.99',
             :currency => 'USD'
         }
-    },
+    }],
     :shipping_weight => {
         :value => '200',
         :unit => 'grams'

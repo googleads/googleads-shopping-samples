@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Encoding: utf-8
 #
-# Copyright:: Copyright 2016, Google Inc. All Rights Reserved.
+# Copyright:: Copyright 2017, Google Inc. All Rights Reserved.
 #
 # License:: Licensed under the Apache License, Version 2.0 (the "License");
 #           you may not use this file except in compliance with the License.
@@ -16,32 +16,36 @@
 #           See the License for the specific language governing permissions and
 #           limitations under the License.
 #
-# Adds a client account to the specified parent account.
+# Gets the tax settings for the current account's subaccounts.
 
-require_relative 'mca_common'
+require_relative 'account_tax_common'
 
-def insert_account(content_api, merchant_id)
-  example_id = 'account%s' % unique_id()
-  account = create_example_account(example_id)
-
-  content_api.insert_account(merchant_id, account) do |res, err|
+def list_account_taxes(
+    content_api, merchant_id, next_page = nil, page_size = 50)
+  content_api.list_account_taxes(
+    merchant_id,
+    max_results: page_size,
+    page_token: next_page
+  ) do |res, err|
     if err
       handle_errors(err)
       exit
     end
-
-    puts "Created account ID #{res.id} for MCA #{merchant_id}"
-    return res
+    res.resources.each do |settings|
+      print_account_tax(settings)
+    end
+    return unless res.next_page_token
+    list_account_taxes(
+        content_api, merchant_id, res.next_page_token, page_size)
   end
 end
-
 
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
   config, content_api = service_setup(options)
   unless config.is_mca
-    puts "Merchant in configuration is not described as an MCA."
+    puts "Configured merchant center account must be a multi-client account."
     exit
   end
-  insert_account(content_api, config.merchant_id)
+  list_account_taxes(content_api, config.merchant_id)
 end

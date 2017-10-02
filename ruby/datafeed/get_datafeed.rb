@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Encoding: utf-8
 #
-# Copyright:: Copyright 2016, Google Inc. All Rights Reserved.
+# Copyright:: Copyright 2017, Google Inc. All Rights Reserved.
 #
 # License:: Licensed under the Apache License, Version 2.0 (the "License");
 #           you may not use this file except in compliance with the License.
@@ -16,32 +16,30 @@
 #           See the License for the specific language governing permissions and
 #           limitations under the License.
 #
-# Adds a client account to the specified parent account.
+# Retrieves the specified datafeed from the specified account.
 
-require_relative 'mca_common'
+require_relative 'datafeed_common'
 
-def insert_account(content_api, merchant_id)
-  example_id = 'account%s' % unique_id()
-  account = create_example_account(example_id)
-
-  content_api.insert_account(merchant_id, account) do |res, err|
-    if err
-      handle_errors(err)
-      exit
-    end
-
-    puts "Created account ID #{res.id} for MCA #{merchant_id}"
-    return res
-  end
+def get_datafeed(content_api, merchant_id, datafeed_id)
+  feed = content_api.get_datafeed(merchant_id, datafeed_id)
+  puts "Datafeed '#{feed.name}' (ID #{feed.id}) successfully retrieved."
+  return feed
 end
 
 
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
-  config, content_api = service_setup(options)
-  unless config.is_mca
-    puts "Merchant in configuration is not described as an MCA."
+
+  unless ARGV.size == 1
+    puts "Usage: #{$0} DATAFEED_ID"
     exit
   end
-  insert_account(content_api, config.merchant_id)
+  datafeed_id = ARGV[0]
+
+  config, content_api = service_setup(options)
+  begin
+    get_datafeed(content_api, config.merchant_id, datafeed_id)
+  rescue Exception => ex
+    handle_errors(ex)
+  end
 end

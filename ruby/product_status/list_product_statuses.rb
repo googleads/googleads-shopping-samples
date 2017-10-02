@@ -20,13 +20,11 @@
 
 require_relative 'product_status_common'
 
-# The maximum number of results to be returned in a page.
-MAX_PAGE_SIZE = 50
-
-def list_product_statuses(content_api, merchant_id, next_page = nil)
+def list_product_statuses(
+    content_api, merchant_id, next_page = nil, page_size = 50)
   content_api.list_product_statuses(
     merchant_id,
-    max_results: MAX_PAGE_SIZE,
+    max_results: page_size,
     page_token: next_page
   ) do |res, err|
     if err
@@ -41,7 +39,8 @@ def list_product_statuses(content_api, merchant_id, next_page = nil)
       print_product_status(status)
     end
     return unless res.next_page_token
-    list_product_statuses(content_api, merchant_id, res.next_page_token)
+    list_product_statuses(
+        content_api, merchant_id, res.next_page_token, page_size)
   end
 end
 

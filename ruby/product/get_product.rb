@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Encoding: utf-8
 #
-# Copyright:: Copyright 2016, Google Inc. All Rights Reserved.
+# Copyright:: Copyright 2017, Google Inc. All Rights Reserved.
 #
 # License:: Licensed under the Apache License, Version 2.0 (the "License");
 #           you may not use this file except in compliance with the License.
@@ -16,21 +16,18 @@
 #           See the License for the specific language governing permissions and
 #           limitations under the License.
 #
-# Adds a client account to the specified parent account.
+# Retrieves the specified product from the specified account.
 
-require_relative 'mca_common'
+require_relative 'product_common'
 
-def insert_account(content_api, merchant_id)
-  example_id = 'account%s' % unique_id()
-  account = create_example_account(example_id)
-
-  content_api.insert_account(merchant_id, account) do |res, err|
+def get_product(content_api, merchant_id, product_id)
+  content_api.get_product(merchant_id, product_id) do |res, err|
     if err
       handle_errors(err)
       exit
     end
 
-    puts "Created account ID #{res.id} for MCA #{merchant_id}"
+    puts "Product '#{res.title}' (ID #{res.id}) successfully retrieved."
     return res
   end
 end
@@ -38,10 +35,13 @@ end
 
 if __FILE__ == $0
   options = ArgParser.parse(ARGV)
-  config, content_api = service_setup(options)
-  unless config.is_mca
-    puts "Merchant in configuration is not described as an MCA."
+
+  unless ARGV.size == 1
+    puts "Usage: #{$0} PRODUCT_ID"
     exit
   end
-  insert_account(content_api, config.merchant_id)
+  product_id = ARGV[0]
+
+  config, content_api = service_setup(options)
+  get_product(content_api, config.merchant_id, product_id)
 end
