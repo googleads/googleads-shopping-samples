@@ -96,6 +96,7 @@ namespace ShoppingSamples.Content
             Console.WriteLine("=================================================================");
 
             Datafeed datafeed = new Datafeed();
+            datafeed.FetchSchedule = new DatafeedFetchSchedule();
             datafeed.FetchSchedule.Hour = 7;
 
             var request = service.Datafeeds.Patch(datafeed, merchantId, datafeedId);
