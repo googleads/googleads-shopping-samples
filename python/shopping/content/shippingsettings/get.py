@@ -49,15 +49,17 @@ def main(argv):
   status = service.shippingsettings().get(
       merchantId=merchant_id, accountId=merchant_id).execute()
   print('Account %s:' % status['accountId'])
-  if common.json_absent_or_false(status, 'postalCodeGroups'):
+  postal_groups = status.get('postalCodeGroups')
+  if not postal_groups:
     print('- No postal code groups.')
   else:
-    print('- %d postal code group(s):' % len(status['postalCodeGroups']))
-  if common.json_absent_or_false(status, 'services'):
+    print('- %d postal code group(s):' % len(postal_groups))
+  services = status.get('services')
+  if not services:
     print('- No services.')
   else:
-    print('- %d service(s):' % len(status['services']))
-    for service in status['services']:
+    print('- %d service(s):' % len(services))
+    for service in services:
       print('  Service "%s":' % service['name'])
       print('  - Delivery country: %s' % service['deliveryCountry'])
       print('  - Currency: %s' % service['currency'])
@@ -65,10 +67,11 @@ def main(argv):
       print('  - Delivery time: %d - %d days' %
             (service['deliveryTime']['minTransitTimeInDays'],
              service['deliveryTime']['maxTransitTimeInDays']))
-      if common.json_absent_or_false(service, 'rateGroups'):
+      rate_groups = service.get('rateGroups')
+      if not rate_groups:
         print('  - No rate groups.')
       else:
-        print('  - %d rate groups.' % len(service['rateGroups']))
+        print('  - %d rate group(s).' % len(rate_groups))
 
 
 if __name__ == '__main__':

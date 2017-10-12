@@ -15,7 +15,6 @@
 # limitations under the License.
 """Creates a sample datafeed object for the datafeed samples."""
 from shopping.content import _constants
-from shopping.content import common
 
 
 def create_datafeed_sample(config, name, **overwrites):
@@ -29,9 +28,7 @@ def create_datafeed_sample(config, name, **overwrites):
   Returns:
       A new datafeed in dictionary form.
   """
-  website_url = 'https://feeds.myshop.com/'
-  if not common.json_absent_or_false(config, 'websiteUrl'):
-    website_url = config['websiteUrl']
+  website_url = config.get('websiteUrl', 'https://feeds.myshop.com/')
 
   datafeed = {
       'name': name,

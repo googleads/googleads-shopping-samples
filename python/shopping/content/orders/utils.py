@@ -17,8 +17,6 @@
 
 from __future__ import print_function
 
-from shopping.content import common
-
 
 def print_order(order):
   """Prints out the given order with some human-readable indentation.
@@ -29,50 +27,52 @@ def print_order(order):
   print('Order %s:' % order['id'])
   print('- Status: %s' % order['status'])
   print('- Merchant: %s' % order['merchantId'])
-  if not common.json_absent_or_false(order, 'merchantOrderId'):
+  if 'merchantOrderId' in order:
     print('- Merchant order ID: %s' % order['merchantOrderId'])
-  if not common.json_absent_or_false(order, 'customer'):
+  if 'customer' in order:
     print('- Customer information:')
     print('  - Full name: %s' % order['customer']['fullName'])
     print('  - Email: %s' % order['customer']['email'])
   print('- Placed on date: %s' % order['placedDate'])
-  if not common.json_absent_or_false(order, 'netAmount'):
+  if 'netAmount' in order:
     print('- Name amount: %s %s' % (order['netAmount']['value'],
                                     order['netAmount']['currency']))
   print('- Payment status: %s' % order['paymentStatus'])
-  if not common.json_absent_or_false(order, 'paymentMethod'):
+  if 'paymentMethod' in order:
     print('- Payment method:')
     print('  - Type: %s' % order['paymentMethod']['type'])
     print('  - Expiration date: %s/%s' %
           (order['paymentMethod']['expirationMonth'],
            order['paymentMethod']['expirationYear']))
-  if common.json_absent_or_false(order, 'acknowledged'):
-    print('- Acknowledged: no')
-  else:
+  if order.get('acknowledged', False):
     print('- Acknowledged: yes')
-  if not common.json_absent_or_false(order, 'lineItems'):
+  else:
+    print('- Acknowledged: no')
+  if 'lineItems' in order:
     print('- %d line item(s):' % len(order['lineItems']))
     for item in order['lineItems']:
       _print_line_item(item)
   print('- Shipping option: %s' % order['shippingOption'])
-  if not common.json_absent_or_false(order, 'shippingCost'):
+  if 'shippingCost' in order:
     print('- Shipping cost: %s %s' % (order['shippingCost']['value'],
                                       order['shippingCost']['currency']))
-  if not common.json_absent_or_false(order, 'shippingCostTax'):
+  if 'shippingCostTax' in order:
     print('- Shipping cost tax: %s %s' % (order['shippingCostTax']['value'],
                                           order['shippingCostTax']['currency']))
-  if not common.json_absent_or_false(order, 'shipments'):
-    print('- %d shipments(s):' % len(order['shipments']))
-    for shipment in order['shipments']:
+  shipments = order.get('shipments')
+  if shipments:
+    print('- %d shipments(s):' % len(shipments))
+    for shipment in shipments:
       print('  Shipment %s:' % shipment['id'])
       print('  - Creation date: %s:' % shipment['creationDate'])
       print('  - Carrier: %s:' % shipment['carrier'])
       print('  - Tracking ID: %s:' % shipment['trackingId'])
-      if not common.json_absent_or_false(shipment, 'lineItems'):
-        print('  - %d line item(s):' % len(shipment['lineItems']))
-        for item in shipment['lineItems']:
+      lineitems = shipment.get('lineItems')
+      if lineitems:
+        print('  - %d line item(s):' % len(lineitems))
+        for item in lineitems:
           print('    %d of item %s' % (item['quantity'], item['lineItemId']))
-      if not common.json_absent_or_false(shipment, 'deliveryDate'):
+      if 'deliveryDate' in shipment:
         print('  - Delivery date: %s' % shipment['deliveryDate'])
 
 
@@ -95,35 +95,37 @@ def _print_line_item(item):
   print_if_nonzero(item['quantityDelivered'], 'Quantity delivered')
   print_if_nonzero(item['quantityReturned'], 'Quantity returned')
   print_if_nonzero(item['quantityCanceled'], 'Quantity canceled')
-  if not common.json_absent_or_false(item, 'shippingDetails'):
+  if 'shippingDetails' in item:
     print('  - Ship by date: %s' % item['shippingDetails']['shipByDate'])
     print('  - Deliver by date: %s' % item['shippingDetails']['deliverByDate'])
     method = item['shippingDetails']['method']
     print('  - Deliver via %s %s (%s - %s days).' %
           (method['carrier'], method['methodName'], method['minDaysInTransit'],
            method['maxDaysInTransit']))
-  if not common.json_absent_or_false(item, 'cancellations'):
-    print('  - %d cancellation(s):' % len(item['cancellations']))
-    for cancel in item['cancellations']:
+  cancellations = item.get('cancellations')
+  if cancellations:
+    print('  - %d cancellation(s):' % len(cancellations))
+    for cancel in cancellations:
       print('    Cancellation:')
-      if not common.json_absent_or_false(cancel, 'actor'):
+      if cancel.get('actor'):
         print('    - Actor: %s' % cancel['actor'])
       print('    - Creation date: %s' % cancel['creationDate'])
       print('    - Quantity: %d' % cancel['quantity'])
       print('    - Reason: %s' % cancel['reason'])
       print('    - Reason text: %s' % cancel['reasonText'])
-  if (not common.json_absent_or_false(item, 'returnInfo') and
-      item['returnInfo']['isReturnable']):
+  return_info = item.get('returnInfo', {})
+  if return_info.get('isReturnable', False):
     print('  - Item is returnable.')
-    print('    - Days to return: %s' % item['returnInfo']['daysToReturn'])
-    print('    - Return policy is at %s.' % item['returnInfo']['policyUrl'])
+    print('    - Days to return: %s' % return_info['daysToReturn'])
+    print('    - Return policy is at %s.' % return_info['policyUrl'])
   else:
     print('  - Item is not returnable.')
-  if not common.json_absent_or_false(item, 'returns'):
-    print('  - %d return(s):' % len(item['returns']))
-    for ret in item['returns']:
+  returns = item.get('returns')
+  if returns:
+    print('  - %d return(s):' % len(returns))
+    for ret in returns:
       print('    Return:')
-      if not common.json_absent_or_false(ret, 'actor'):
+      if 'actor' in ret:
         print('    - Actor: %s' % ret['actor'])
       print('    - Creation date: %s' % ret['creationDate'])
       print('    - Quantity: %d' % ret['quantity'])

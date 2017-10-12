@@ -34,16 +34,14 @@ def main(argv):
 
   while request is not None:
     result = request.execute()
-    if common.json_absent_or_false(result, 'resources'):
+    products = result.get('resources')
+    if not products:
       print('No products were found.')
       break
-    else:
-      products = result['resources']
-      for product in products:
-        print('Product "%s" with title "%s" was found.' % (product['id'],
-                                                           product['title']))
-
-      request = service.products().list_next(request, result)
+    for product in products:
+      print('Product "%s" with title "%s" was found.' %
+            (product['id'], product['title']))
+    request = service.products().list_next(request, result)
 
 
 if __name__ == '__main__':

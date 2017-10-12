@@ -25,30 +25,32 @@ def main(argv):
   # Authenticate and construct service.
   service, config, _ = common.init(argv, __doc__)
   merchant_id = config['merchantId']
-  adwords_id = None
-  if common.json_absent_or_false(config, 'accountSampleAdWordsCID'):
+  adwords_id = config.get('accountSampleAdWordsCID')
+  if not adwords_id:
     print('Must specify the AdWords CID to unlink in the samples config.')
     sys.exit(1)
-  adwords_id = config['accountSampleAdWordsCID']
 
   # First we need to retrieve the existing set of users.
   account = service.accounts().get(
       merchantId=merchant_id, accountId=merchant_id,
       fields='adwordsLinks').execute()
 
-  if common.json_absent_or_false(account, 'adwordsLinks'):
+  adwords_links = account.get('adwordsLinks')
+  if not adwords_links:
     print('No AdWords accounts linked to account %d.' % merchant_id)
     sys.exit(1)
 
+  # Do an integer comparison to match the version from the configuration.
   matched = [
-      l for l in account['adwordsLinks'] if l['adwordsId'] == adwords_id
+      l for l in adwords_links if int(l['adwordsId']) == adwords_id
   ]
   if not matched:
     print('AdWords account %d was not linked.' % adwords_id)
     sys.exit(1)
 
   for u in matched:
-    account['adwordsLinks'].remove(u)
+    adwords_links.remove(u)
+  account['adwordsLinks'] = adwords_links
 
   # Patch account with new user list.
   service.accounts().patch(

@@ -35,28 +35,28 @@ def main(argv):
 
   while request is not None:
     result = request.execute()
-    if common.json_absent_or_false(result, 'resources'):
-      print('No accounts were found.')
+    statuses = result.get('resources')
+    if not statuses:
+      print('No statuses were returned.')
       break
-    else:
-      statuses = result['resources']
-      for status in statuses:
-        print('Account %s:' % status['accountId'])
-        if common.json_absent_or_false(status, 'dataQualityIssues'):
-          print('- No data quality issues.')
-        else:
-          print('- Found %d data quality issues:' %
-                len(status['dataQualityIssues']))
-          for issue in status['dataQualityIssues']:
-            print('  - (%s) [%s]' % (issue['severity'], issue['id']))
-            if common.json_absent_or_false(issue, 'exampleItems'):
-              print('  - No example items.')
-            else:
-              print('  - Have %d examples from %d affected items:' %
-                    (len(issue['exampleItems']), issue['numItems']))
-              for example in issue['exampleItems']:
-                print('    - %s: %s' % (example['itemId'], example['title']))
-      request = service.accountstatuses().list_next(request, result)
+    for status in statuses:
+      print('Account %s:' % status['accountId'])
+      issues = status.get('dataQualityIssues')
+      if not issues:
+        print('- No data quality issues.')
+        continue
+      print('- Found %d data quality issues:' % len(issues))
+      for issue in issues:
+        print('  - (%s) [%s]' % (issue['severity'], issue['id']))
+        items = issue.get('exampleItems')
+        if not items:
+          print('    No example items.')
+          continue
+        print('    Have %d examples from %d affected items:' %
+              (len(items), issue['numItems']))
+        for example in items:
+          print('    - %s: %s' % (example['itemId'], example['title']))
+    request = service.accountstatuses().list_next(request, result)
 
 
 if __name__ == '__main__':

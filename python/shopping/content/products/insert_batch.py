@@ -53,13 +53,14 @@ def main(argv):
   if result['kind'] == 'content#productsCustomBatchResponse':
     entries = result['entries']
     for entry in entries:
-      if not common.json_absent_or_false(entry, 'product'):
-        product = entry['product']
+      product = entry.get('product')
+      errors = entry.get('errors')
+      if product:
         print('Product "%s" with offerId "%s" and title "%s" was created.' %
               (product['id'], product['offerId'], product['title']))
-      elif not common.json_absent_or_false(entry, 'errors'):
+      elif errors:
         print('Errors for batch entry %d:' % entry['batchId'])
-        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+        print(json.dumps(errors, sort_keys=True, indent=2,
                          separators=(',', ': ')))
   else:
     print('There was an error. Response: %s' % result)

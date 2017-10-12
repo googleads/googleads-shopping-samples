@@ -47,12 +47,14 @@ def main(argv):
   if result['kind'] == 'content#datafeedsCustomBatchResponse':
     entries = result['entries']
     for entry in entries:
-      if not common.json_absent_or_false(entry, 'datafeed'):
+      datafeed = entry.get('datafeed')
+      errors = entry.get('errors')
+      if datafeed:
         print('Datafeed %s with name "%s" created.' %
-              (entry['datafeed']['id'], entry['datafeed']['name']))
-      elif not common.json_absent_or_false(entry, 'errors'):
+              (datafeed['id'], datafeed['name']))
+      elif errors:
         print('Errors for batch entry %d:' % entry['batchId'])
-        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+        print(json.dumps(errors, sort_keys=True, indent=2,
                          separators=(',', ': ')))
   else:
     print('There was an error. Response: %s' % result)

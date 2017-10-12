@@ -25,11 +25,10 @@ def main(argv):
   # Authenticate and construct service.
   service, config, _ = common.init(argv, __doc__)
   merchant_id = config['merchantId']
-  email = None
-  if common.json_absent_or_false(config, 'accountSampleUser'):
+  email = config.get('accountSampleUser')
+  if not email:
     print('Must specify the user email to add in the samples configuration.')
     sys.exit(1)
-  email = config['accountSampleUser']
 
   # First we need to retrieve the existing set of users.
   response = service.accounts().get(

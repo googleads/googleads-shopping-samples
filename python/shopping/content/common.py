@@ -19,12 +19,14 @@ from __future__ import print_function
 import argparse
 import json
 import os
+import random
 import sys
 import time
 import urlparse
 
 import google_auth_httplib2
 from googleapiclient import discovery
+from googleapiclient import errors
 from googleapiclient import http
 from shopping.content import _constants
 from shopping.content import auth
@@ -161,16 +163,16 @@ def retrieve_remaining_config_from_api(service, config):
     config: dictionary, Python representation of config JSON.
   """
   authinfo = service.accounts().authinfo().execute()
-  if json_absent_or_false(authinfo, 'accountIdentifiers'):
+  account_ids = authinfo.get('accountIdentifiers')
+  if not account_ids:
     print('The currently authenticated user does not have access to '
           'any Merchant Center accounts.')
     sys.exit(1)
   if 'merchantId' not in config:
-    first_account = authinfo['accountIdentifiers'][0]
-    if json_absent_or_false(first_account, 'merchantId'):
+    first_account = account_ids[0]
+    config['merchantId'] = int(first_account.get('merchantId', 0))
+    if not config['merchant_id']:
       config['merchantId'] = int(first_account['aggregatorId'])
-    else:
-      config['merchantId'] = int(first_account['merchantId'])
     print('Using Merchant Center %d for running samples.' %
           config['merchantId'])
   merchant_id = config['merchantId']
@@ -192,15 +194,17 @@ def retrieve_remaining_config_from_api(service, config):
     print('Merchant Center %d is not an MCA.' % config['merchantId'])
   account = service.accounts().get(
       merchantId=merchant_id, accountId=merchant_id).execute()
-  if not json_absent_or_false(account, 'websiteUrl'):
-    config['websiteUrl'] = account['websiteUrl']
-  elif 'websiteUrl' in config:
-    del config['websiteUrl']
-  if 'websiteUrl' not in config:
+  config['websiteUrl'] = account.get('websiteUrl')
+  if not config['websiteUrl']:
     print('No website for Merchant Center %d.' % config['merchantId'])
   else:
     print('Website for Merchant Center %d: %s' % (config['merchantId'],
                                                   config['websiteUrl']))
+
+
+def is_mca(config):
+  """Returns whether or not the configured account is an MCA."""
+  return config.get('isMCA', False)
 
 
 def check_mca(config, should_be_mca, msg=None):
@@ -213,27 +217,43 @@ def check_mca(config, should_be_mca, msg=None):
     should_be_mca: boolean, whether or not we expect an MCA.
     msg: string, message to use instead of standard error message if desired.
   """
-  is_mca = 'isMCA' in config and config['isMCA']
-
-  if should_be_mca != is_mca:
+  if should_be_mca != is_mca(config):
     if msg is not None:
       print(msg)
     else:
       print('For this sample, you must%s use a multi-client account.' %
-            ' not' if is_mca else '')
+            '' if should_be_mca else ' not')
     sys.exit(1)
 
 
-def json_absent_or_false(json_obj, key):
-  """Checks if the key does not appear or maps to false in the JSON object.
+def retry_request(req, num_retries=5):
+  """Retries the provided request for HTTP errors.
 
-  Our measure of false here is the same as Python.
+  Normally, we could just use the optional num_retries keyword for the
+  execute() methods. However, the only 4xx errors they retry are
+  429s (always) and 403s (sometimes). Unfortunately, the Content API
+  sometimes returns other 4xx messages: for example, it will return 401
+  if you try to retrieve a new sub-account after creating it
+  before it is fully available. Here, we just retry as long as we get
+  an HTTP error.
 
   Args:
-    json_obj: dictionary, Python representation of JSON.
-    key: string, key to check for in the given JSON object.
+    req: HTTP request to retry
+    num_retries: Number of times to retry the request.
 
   Returns:
-    True if the key does not appear or maps to false, false otherwise.
+    The same result as the original request, if successful.
   """
-  return key not in json_obj or not json_obj[key]
+  for retry_num in range(num_retries + 1):
+    if retry_num > 0:
+      sleep_time = random.random() * 2 ** retry_num
+      print('Request failed, trying again after %.2f seconds.' % sleep_time)
+      time.sleep(sleep_time)
+
+    try:
+      return req.execute()
+    except errors.HttpError as e:
+      if retry_num == num_retries:
+        raise e
+      else:
+        continue

@@ -26,24 +26,23 @@ def main(argv):
   # Authenticate and construct service.
   service, config, _ = common.init(argv, __doc__)
   merchant_id = config['merchantId']
-  adwords_id = None
-  if common.json_absent_or_false(config, 'accountSampleAdWordsCID'):
+  adwords_id = config.get('accountSampleAdWordsCID')
+  if not adwords_id:
     print('Must specify the AdWords CID to link in the samples configuration.')
     sys.exit(1)
-  adwords_id = config['accountSampleAdWordsCID']
 
-  # First we need to retrieve the existing set of users.
+  # First we need to retrieve the existing set of AdWords links.
   response = service.accounts().get(
       merchantId=merchant_id, accountId=merchant_id,
       fields='adwordsLinks').execute()
 
   account = response
 
-  # Add new user to existing user list.
+  # Add new AdWords link to existing AdWords link list.
   adwords_link = {'adwordsId': adwords_id, 'status': 'active'}
   account.setdefault('adwordsLinks', []).append(adwords_link)
 
-  # Patch account with new user list.
+  # Patch account with new AdWords link list.
   response = service.accounts().patch(
       merchantId=merchant_id, accountId=merchant_id, body=account).execute()
 

@@ -51,13 +51,14 @@ def main(argv):
 
   if result['kind'] == 'content#accountsCustomBatchResponse':
     for entry in result['entries']:
-      if not common.json_absent_or_false(entry, 'account'):
-        account = entry['account']
+      account = entry.get('account')
+      errors = entry.get('errors')
+      if account:
         print('Account %s with name "%s" was created.' %
               (account['id'], account['name']))
-      elif not common.json_absent_or_false(entry, 'errors'):
+      elif errors:
         print('Errors for batch entry %d:' % entry['batchId'])
-        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+        print(json.dumps(errors, sort_keys=True, indent=2,
                          separators=(',', ': ')))
   else:
     print('There was an error. Response: %s' % result)

@@ -51,9 +51,10 @@ def main(argv):
   if result['kind'] == 'content#accountsCustomBatchResponse':
     entries = result['entries']
     for entry in entries:
-      if not common.json_absent_or_false(entry, 'errors'):
+      errors = entry.get('errors')
+      if errors:
         print('Errors for batch entry %d:' % entry['batchId'])
-        print(json.dumps(entry['errors'], sort_keys=True, indent=2,
+        print(json.dumps(errors, sort_keys=True, indent=2,
                          separators=(',', ': ')))
       else:
         print('Account %s deleted (batch entry %d).' %

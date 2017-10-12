@@ -35,26 +35,25 @@ def main(argv):
 
   while request is not None:
     result = request.execute()
-    if common.json_absent_or_false(result, 'resources'):
-      print('No products were found.')
+    statuses = result.get('resources')
+    if not statuses:
+      print('No product statuses were returned.')
       break
-    else:
-      statuses = result['resources']
-      for status in statuses:
-        print('- Product "%s" with title "%s":' % (status['productId'],
-                                                   status['title']))
-        if common.json_absent_or_false(status, 'dataQualityIssues'):
-          print('  No data quality issues.')
+    for status in statuses:
+      print('- Product "%s" with title "%s":' %
+            (status['productId'], status['title']))
+      issues = status.get('dataQualityIssues')
+      if not issues:
+        print('  No data quality issues.')
+        continue
+      print('  Found %d data quality issues:' % len(issues))
+      for issue in issues:
+        if issue.get('detail'):
+          print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
+                                      issue['detail']))
         else:
-          print('  Found %d data quality issues:' %
-                len(status['dataQualityIssues']))
-          for issue in status['dataQualityIssues']:
-            if common.json_absent_or_false(issue, 'detail'):
-              print('  - (%s) [%s]' % (issue['severity'], issue['id']))
-            else:
-              print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
-                                          issue['detail']))
-      request = service.productstatuses().list_next(request, result)
+          print('  - (%s) [%s]' % (issue['severity'], issue['id']))
+    request = service.productstatuses().list_next(request, result)
 
 
 if __name__ == '__main__':

@@ -30,14 +30,13 @@ def main(argv):
 
   while request is not None:
     result = request.execute()
-    if common.json_absent_or_false(result, 'resources'):
+    datafeeds = result.get('resources')
+    if not datafeeds:
       print('No datafeeds were found.')
       break
-    else:
-      datafeeds = result['resources']
-      for datafeed in datafeeds:
-        print('Datafeed %s with name "%s" was found.' %
-              (datafeed['id'], datafeed['name']))
+    for datafeed in datafeeds:
+      print('Datafeed %s with name "%s" was found.' %
+            (datafeed['id'], datafeed['name']))
     request = service.datafeeds().list_next(request, result)
 
 

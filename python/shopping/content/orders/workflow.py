@@ -255,13 +255,13 @@ def _list_all_orders(orders, merchant_id, **args):
   request = orders.list(merchantId=merchant_id, **args)
   while request is not None:
     result = request.execute()
-    if common.json_absent_or_false(result, 'resources'):
+    order_resources = result.get('resources')
+    if not order_resources:
       print('No orders were found.')
-    else:
-      order_resources = result['resources']
-      for order in order_resources:
-        utils.print_order(order)
-      request = orders.list_next(request, result)
+      break
+    for order in order_resources:
+      utils.print_order(order)
+    request = orders.list_next(request, result)
 
 
 if __name__ == '__main__':

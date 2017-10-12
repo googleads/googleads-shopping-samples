@@ -51,19 +51,23 @@ def main(argv):
   status = service.accounttax().update(
       merchantId=merchant_id, accountId=merchant_id, body=settings).execute()
   print('Account %s:' % status['accountId'])
-  if common.json_absent_or_false(status, 'rules'):
+  rules = status.get('rules')
+  if not rules:
     print('- No tax settings, so no tax is charged.')
-  else:
-    print('- Found %d tax rules:' % len(status['rules']))
-    for issue in status['rules']:
-      if not common.json_absent_or_false(issue, 'ratePercent'):
-        print('  - For %s in %s: %s%%' %
-              (issue['locationId'], issue['country'], issue['ratePercent']))
-      if not common.json_absent_or_false(issue, 'useGlobalRate'):
-        print('  - For %s in %s: using the global tax table rate.' %
-              (issue['locationId'], issue['country']))
-      if not common.json_absent_or_false(issue, 'shippingTaxed'):
-        print('   NOTE: Shipping charges are also taxed.')
+    return
+  print('- Found %d tax rules:' % len(rules))
+  for rule in rules:
+    rate_percent = rule.get('ratePercent')
+    if rate_percent:
+      print('  - For %s in %s: %s%%' %
+            (rule['locationId'], rule['country'], rate_percent))
+    use_global = rule.get('useGlobalRate')
+    if use_global:
+      print('  - For %s in %s: using the global tax table rate.' %
+            (rule['locationId'], rule['country']))
+    taxed_shipping = rule.get('shippingTaxed')
+    if taxed_shipping:
+      print('   NOTE: Shipping charges are also taxed.')
 
 
 if __name__ == '__main__':

@@ -49,14 +49,15 @@ def main(argv):
 
   if result['kind'] == 'content#productsCustomBatchResponse':
     for entry in result['entries']:
-      if common.json_absent_or_false(entry, 'errors'):
-        print('Deletion of product %s (batch entry %d) successful.' %
-              (batch['entries'][entry['batchId']]['productId'],
-               entry['batchId']))
-      else:
+      errors = entry.get('errors')
+      if errors:
         print('Errors for batch entry %d:' % entry['batchId'])
         print(json.dumps(entry['errors'], sort_keys=True, indent=2,
                          separators=(',', ': ')))
+      else:
+        print('Deletion of product %s (batch entry %d) successful.' %
+              (batch['entries'][entry['batchId']]['productId'],
+               entry['batchId']))
 
   else:
     print('There was an error. Response: %s' % result)

@@ -25,28 +25,29 @@ def main(argv):
   # Authenticate and construct service.
   service, config, _ = common.init(argv, __doc__)
   merchant_id = config['merchantId']
-  email = None
-  if common.json_absent_or_false(config, 'accountSampleUser'):
+  email = config.get('accountSampleUser')
+  if not email:
     print('Must specify the user email to remove in the samples configuration.')
     sys.exit(1)
-  email = config['accountSampleUser']
 
   # First we need to retrieve the existing set of users.
   account = service.accounts().get(
       merchantId=merchant_id, accountId=merchant_id,
       fields='users').execute()
 
-  if common.json_absent_or_false(account, 'users'):
+  users = account.get('users')
+  if not users:
     print('No users in account %d.' % merchant_id)
     sys.exit(1)
 
-  matched = [u for u in account['users'] if u['emailAddress'] == email]
+  matched = [u for u in users if u['emailAddress'] == email]
   if not matched:
     print('User %s was not found.' % email)
     sys.exit(1)
 
   for u in matched:
-    account['users'].remove(u)
+    users.remove(u)
+  account['users'] = users
 
   # Patch account with new user list.
   service.accounts().patch(

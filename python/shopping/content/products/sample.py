@@ -15,7 +15,6 @@
 # limitations under the License.
 """Creates a sample product object for the product samples."""
 from shopping.content import _constants
-from shopping.content import common
 
 
 def create_product_sample(config, offer_id, **overwrites):
@@ -29,9 +28,7 @@ def create_product_sample(config, offer_id, **overwrites):
   Returns:
       A new product in dictionary form.
   """
-  website_url = 'http://my-book-shop.com'
-  if not common.json_absent_or_false(config, 'websiteUrl'):
-    website_url = config['websiteUrl']
+  website_url = config.get('websiteUrl', 'http://my-book-shop.com')
 
   product = {
       'offerId':

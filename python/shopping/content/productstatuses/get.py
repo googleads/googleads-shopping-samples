@@ -37,18 +37,20 @@ def main(argv):
   status = service.productstatuses().get(
       merchantId=merchant_id, productId=product_id).execute()
 
-  print('- Product "%s" with title "%s":' % (status['productId'],
-                                             status['title']))
-  if common.json_absent_or_false(status, 'dataQualityIssues'):
+  print('- Product "%s" with title "%s":' %
+        (status['productId'], status['title']))
+  issues = status.get('dataQualityIssues')
+  if not issues:
     print('  No data quality issues.')
-  else:
-    print('  Found %d data quality issues:' % len(status['dataQualityIssues']))
-    for issue in status['dataQualityIssues']:
-      if common.json_absent_or_false(issue, 'detail'):
-        print('  - (%s) [%s]' % (issue['severity'], issue['id']))
-      else:
-        print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
-                                    issue['detail']))
+    return
+
+  print('  Found %d data quality issues:' % len(issues))
+  for issue in issues:
+    if issue.get('detail'):
+      print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
+                                  issue['detail']))
+    else:
+      print('  - (%s) [%s]' % (issue['severity'], issue['id']))
 
 
 if __name__ == '__main__':

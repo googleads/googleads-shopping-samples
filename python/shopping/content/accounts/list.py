@@ -35,15 +35,14 @@ def main(argv):
 
   while request is not None:
     result = request.execute()
-    if common.json_absent_or_false(result, 'resources'):
+    accounts = result.get('resources')
+    if not accounts:
       print('No accounts were found.')
       break
-    else:
-      accounts = result['resources']
-      for account in accounts:
-        print('Account %s with name "%s" was found.' %
-              (account['id'], account['name']))
-      request = service.accounts().list_next(request, result)
+    for account in accounts:
+      print('Account %s with name "%s" was found.' %
+            (account['id'], account['name']))
+    request = service.accounts().list_next(request, result)
 
 
 if __name__ == '__main__':
