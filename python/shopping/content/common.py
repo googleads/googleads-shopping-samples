@@ -226,7 +226,7 @@ def check_mca(config, should_be_mca, msg=None):
     sys.exit(1)
 
 
-def retry_request(req, num_retries=5):
+def retry_request(req, slot_time=5.0, max_time=60.0):
   """Retries the provided request for HTTP errors.
 
   Normally, we could just use the optional num_retries keyword for the
@@ -239,21 +239,27 @@ def retry_request(req, num_retries=5):
 
   Args:
     req: HTTP request to retry
-    num_retries: Number of times to retry the request.
+    slot_time: float, slot time (in seconds) for retries
+    max_time: float, max time (in seconds) to retry
 
   Returns:
     The same result as the original request, if successful.
   """
-  for retry_num in range(num_retries + 1):
-    if retry_num > 0:
-      sleep_time = random.random() * 2 ** retry_num
-      print('Request failed, trying again after %.2f seconds.' % sleep_time)
-      time.sleep(sleep_time)
-
+  waited_time = 0.0
+  retry_num = 0
+  while True:
     try:
       return req.execute()
     except errors.HttpError as e:
-      if retry_num == num_retries:
+      if waited_time >= max_time:
         raise e
       else:
+        sleep_time = random.randint(0, 2 ** retry_num - 1) * slot_time
+        # Cap the sleep time to avoid overrunning the max time by too long.
+        if waited_time + sleep_time > max_time:
+          sleep_time = max_time - waited_time
+        print('Request failed, trying again after %.2f seconds.' % sleep_time)
+        time.sleep(sleep_time)
+        waited_time += sleep_time
+        retry_num += 1
         continue
