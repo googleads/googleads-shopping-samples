@@ -183,14 +183,26 @@ class MultiClientAccountsSample extends BaseSample {
     $batchResponses =
         $this->session->service->accounts->custombatch($batchRequest);
 
-    $errors = 0;
+    print "Requested delete of batch inserted test accounts...\n";
+    $entryErrors = 0;
     foreach ($batchResponses->entries as $entry) {
-      if (!empty($entry->getErrors())) {
-        $errors++;
+      $errors = $entry->getErrors();
+      if (!empty($errors)) {
+        $entryErrors++;
+        printf("Got %d error(s) while executing batch entry %d:\n",
+            count($errors), $entry->getBatchId());
+        foreach ($errors as $error) {
+          printf(" - [%s] %s\n", $error->getReason(), $error->getMessage());
+        }
       }
     }
-    print "Requested delete of batch inserted test accounts\n";
-    printf("There were %d errors\n", $errors);
+    if ($entryErrors !== 0) {
+      throw new RuntimeException(
+          sprintf('Had errors for %d batch entries when deleting accounts',
+              $entryErrors));
+    } else {
+      print "Accounts deleted without errors.\n";
+    }
   }
 
   private function createExampleAccounts($names) {

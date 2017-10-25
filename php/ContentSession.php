@@ -385,7 +385,10 @@ class ContentSession {
       try {
         return call_user_func([$object, $function], $parameter);
       } catch (Google_Service_Exception $exception) {
-        sleep($attempts * $attempts);
+        $sleepTime = $attempts * $attempts;
+        printf("Attempt to call %s failed, retrying in %d second(s).\n",
+            $function, $sleepTime);
+        sleep($sleepTime);
         $attempts++;
       }
     }
