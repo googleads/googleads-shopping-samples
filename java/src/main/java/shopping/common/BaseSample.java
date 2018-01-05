@@ -56,7 +56,7 @@ public abstract class BaseSample {
     BaseWorkflowSample.checkGoogleJsonResponseException(e);
   }
 
-  protected <T extends AbstractGoogleClient> T createService(T.Builder builder) {
+  protected <T extends AbstractGoogleClient> T createService(AbstractGoogleClient.Builder builder) {
     return BaseWorkflowSample.createService(builder);
   }
 

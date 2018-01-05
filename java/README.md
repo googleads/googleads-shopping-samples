@@ -8,7 +8,7 @@ the Google Content API for Shopping and/or the Manufacturer Center API.
 
 ## Prerequisites
 
-Please make sure that you're running Java 5+. If you use Maven, you can use
+Please make sure that you're running Java 7+. If you use Maven, you can use
 the included `pom.xml` to install the required dependencies.  Otherwise,
 install the
 [Content API for Shopping Client Library for Java](https://developers.google.com/api-client-library/java/apis/content/v2)
@@ -29,4 +29,4 @@ project appropriately for access to the Google APIs Client Library for Java.
 
 1. Build and run any of the included samples.
 
-2. Examine your shell output, be inspired and start hacking an amazing new app!
+1. Examine your shell output, be inspired and start hacking an amazing new app!

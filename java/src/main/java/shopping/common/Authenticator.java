@@ -96,13 +96,13 @@ public class Authenticator {
         String userID = ConfigDataStoreFactory.UNUSED_ID;
         Credential storedCredential = flow.loadCredential(userID);
         if (storedCredential != null) {
-          System.out.printf("Retrieved stored credential%n", userID);
+          System.out.printf("Retrieved stored credential for %s from cache.%n", userID);
           return storedCredential;
         }
         LocalServerReceiver receiver =
             new LocalServerReceiver.Builder().setHost("localhost").setPort(9999).build();
         Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize(userID);
-        System.out.printf("Retrieved credential from web%n", userID);
+        System.out.printf("Retrieved credential for %s from web.%n", userID);
         return credential;
       } catch (IOException e) {
         throw new IOException(

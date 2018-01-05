@@ -36,7 +36,8 @@ public abstract class BaseWorkflowSample {
     }
   }
 
-  protected static <T extends AbstractGoogleClient> T createService(T.Builder builder) {
+  protected static <T extends AbstractGoogleClient> T createService(
+      AbstractGoogleClient.Builder builder) {
     String endpoint = System.getenv(ENDPOINT_ENV_VAR);
     if (endpoint != null) {
       try {
