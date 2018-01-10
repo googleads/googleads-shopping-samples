@@ -31,7 +31,6 @@ public class ContentConfig extends Config {
     if (basePath == null) {
       return new ContentConfig();
     }
-    InputStream inputStream = null;
     File configPath = new File(basePath, CONTENT_DIR);
     if (!configPath.exists()) {
       throw new IOException(
@@ -40,8 +39,7 @@ public class ContentConfig extends Config {
               + "' does not exist");
     }
     File configFile = new File(configPath, FILE_NAME);
-    try {
-      inputStream = new FileInputStream(configFile);
+    try (InputStream inputStream = new FileInputStream(configFile)) {
       ContentConfig config = new JacksonFactory().fromInputStream(inputStream, ContentConfig.class);
       config.setPath(configPath);
       return config;
@@ -53,10 +51,6 @@ public class ContentConfig extends Config {
               + FILE_NAME
               + " file in the "
               + "samples root as a template.");
-    } finally {
-      if (inputStream != null) {
-        inputStream.close();
-      }
     }
   }
 

@@ -36,7 +36,7 @@ public class AccountDeleteSample extends ContentSample {
   }
 
   private List<BigInteger> getAccountIdsWithName(String name) throws IOException {
-    List<BigInteger> results = new ArrayList<BigInteger>();
+    List<BigInteger> results = new ArrayList<>();
     ShoppingContent.Accounts.List listAccounts = content.accounts().list(config.getMerchantId());
     do {
       AccountsListResponse page = listAccounts.execute();

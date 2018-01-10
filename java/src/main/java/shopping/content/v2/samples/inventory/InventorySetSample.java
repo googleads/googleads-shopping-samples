@@ -19,13 +19,10 @@ public class InventorySetSample extends ContentSample {
 
     String offerId = "online:en:GB:book123";
 
-    Price price = new Price();
-    price.setValue("4.50");
-    price.setCurrency("GBP");
-
-    InventorySetRequest request = new InventorySetRequest();
-    request.setPrice(price);
-    request.setAvailability("out of stock");
+    InventorySetRequest request =
+        new InventorySetRequest()
+            .setPrice(new Price().setValue("4.50").setCurrency("GBP"))
+            .setAvailability("out of stock");
 
     System.out.printf(
         "Setting information for %s: price %s %s, availability %s%n",

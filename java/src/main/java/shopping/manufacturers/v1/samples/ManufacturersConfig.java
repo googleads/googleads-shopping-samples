@@ -26,7 +26,6 @@ public class ManufacturersConfig extends Config {
       throw new IllegalArgumentException(
           "Manufacturer Center API samples cannot be run without a configuration directory.");
     }
-    InputStream inputStream = null;
     File configPath = new File(basePath, MANUFACTURERS_DIR);
     if (!configPath.exists()) {
       throw new IOException(
@@ -35,8 +34,7 @@ public class ManufacturersConfig extends Config {
               + "' does not exist");
     }
     File configFile = new File(configPath, FILE_NAME);
-    try {
-      inputStream = new FileInputStream(configFile);
+    try (InputStream inputStream = new FileInputStream(configFile)) {
       ManufacturersConfig config =
           new JacksonFactory().fromInputStream(inputStream, ManufacturersConfig.class);
       config.setPath(configPath);
@@ -47,12 +45,7 @@ public class ManufacturersConfig extends Config {
               + configFile.getCanonicalPath()
               + ". You can use the "
               + FILE_NAME
-              + " file in the "
-              + "samples root as a template.");
-    } finally {
-      if (inputStream != null) {
-        inputStream.close();
-      }
+              + " file in the samples root as a template.");
     }
   }
 

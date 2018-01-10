@@ -19,8 +19,7 @@ public class AccountInsertSample extends ContentSample {
     checkMCA();
 
     try {
-      Account account = new Account();
-      account.setName(AccountUtils.SAMPLE_ACCOUNT_NAME);
+      Account account = new Account().setName(AccountUtils.SAMPLE_ACCOUNT_NAME);
 
       System.out.println("Inserting new account.");
 

@@ -33,21 +33,18 @@ public class DatafeedsWorkflow extends ContentWorkflowSample {
   }
 
   private DatafeedsCustomBatchRequest deleteBatch(DatafeedsCustomBatchResponse batchResponse) {
-    List<DatafeedsCustomBatchRequestEntry> datafeedsBatchRequestEntries =
-        new ArrayList<DatafeedsCustomBatchRequestEntry>();
+    List<DatafeedsCustomBatchRequestEntry> datafeedsBatchRequestEntries = new ArrayList<>();
     for (DatafeedsCustomBatchResponseEntry e : batchResponse.getEntries()) {
       if (e.getDatafeed() != null) {
-        DatafeedsCustomBatchRequestEntry entry = new DatafeedsCustomBatchRequestEntry();
-        entry.setBatchId(e.getBatchId());
-        entry.setMerchantId(config.getMerchantId());
-        entry.setDatafeedId(BigInteger.valueOf(e.getDatafeed().getId()));
-        entry.setMethod("delete");
-        datafeedsBatchRequestEntries.add(entry);
+        datafeedsBatchRequestEntries.add(
+            new DatafeedsCustomBatchRequestEntry()
+                .setBatchId(e.getBatchId())
+                .setMerchantId(config.getMerchantId())
+                .setDatafeedId(BigInteger.valueOf(e.getDatafeed().getId()))
+                .setMethod("delete"));
       }
     }
-    DatafeedsCustomBatchRequest batchRequest = new DatafeedsCustomBatchRequest();
-    batchRequest.setEntries(datafeedsBatchRequestEntries);
-    return batchRequest;
+    return new DatafeedsCustomBatchRequest().setEntries(datafeedsBatchRequestEntries);
   }
 
   @Override

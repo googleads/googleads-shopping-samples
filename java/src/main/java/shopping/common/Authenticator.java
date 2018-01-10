@@ -39,8 +39,6 @@ public class Authenticator {
   }
 
   public Credential authenticate() throws IOException {
-    InputStream inputStream = null;
-
     try {
       Credential credential = GoogleCredential.getApplicationDefault().createScoped(scopes);
       System.out.println("Loaded the Application Default Credentials.");
@@ -55,8 +53,7 @@ public class Authenticator {
     File serviceAccountFile = new File(config.getPath(), "service-account.json");
     if (serviceAccountFile.exists()) {
       System.out.println("Loading service account credentials.");
-      try {
-        inputStream = new FileInputStream(serviceAccountFile);
+      try (InputStream inputStream = new FileInputStream(serviceAccountFile)) {
         GoogleCredential credential =
             GoogleCredential.fromStream(inputStream, httpTransport, jsonFactory)
                 .createScoped(scopes);
@@ -73,17 +70,12 @@ public class Authenticator {
         throw new IOException(
             "Could not retrieve service account credentials from the file "
                 + serviceAccountFile.getCanonicalPath());
-      } finally {
-        if (inputStream != null) {
-          inputStream.close();
-        }
       }
     }
     File clientSecretsFile = new File(config.getPath(), "client-secrets.json");
     if (clientSecretsFile.exists()) {
       System.out.println("Loading OAuth2 client credentials.");
-      try {
-        inputStream = new FileInputStream(clientSecretsFile);
+      try (InputStream inputStream = new FileInputStream(clientSecretsFile)) {
         GoogleClientSecrets clientSecrets =
             GoogleClientSecrets.load(jsonFactory, new InputStreamReader(inputStream));
         // set up authorization code flow
@@ -108,10 +100,6 @@ public class Authenticator {
         throw new IOException(
             "Could not retrieve OAuth2 client credentials from the file "
                 + clientSecretsFile.getCanonicalPath());
-      } finally {
-        if (inputStream != null) {
-          inputStream.close();
-        }
       }
     }
     throw new IOException(

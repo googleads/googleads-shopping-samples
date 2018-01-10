@@ -62,30 +62,18 @@ public class ConfigDataStoreFactory implements DataStoreFactory {
     }
 
     private Token loadToken() throws IOException {
-      InputStream inputStream = null;
-      try {
-        inputStream = new FileInputStream(tokenFile);
+      try (InputStream inputStream = new FileInputStream(tokenFile)) {
         return new JacksonFactory().fromInputStream(inputStream, Token.class);
-      } finally {
-        if (inputStream != null) {
-          inputStream.close();
-        }
       }
     }
 
     private void writeToken() throws IOException {
-      OutputStreamWriter outputWriter = null;
-      try {
-        OutputStream outputStream = new FileOutputStream(tokenFile);
-        outputWriter = new OutputStreamWriter(outputStream);
+      try (OutputStream outputStream = new FileOutputStream(tokenFile);
+          OutputStreamWriter outputWriter = new OutputStreamWriter(outputStream)) {
         JsonGenerator generator = new JacksonFactory().createJsonGenerator(outputWriter);
         generator.enablePrettyPrint();
         generator.serialize(token);
         generator.flush();
-      } finally {
-        if (outputWriter != null) {
-          outputWriter.close();
-        }
       }
     }
 

@@ -28,22 +28,14 @@ public class AccountPatchSample extends ContentSample {
     // We can adjust the account information directly and send it back in:
     if (user != null) {
       System.out.printf("Adding new user %s%n", user);
-
-      AccountUser newUser = new AccountUser();
-      newUser.setAdmin(false);
-      newUser.setEmailAddress(user);
-
-      account.getUsers().add(newUser);
+      account.getUsers().add(new AccountUser().setAdmin(false).setEmailAddress(user));
       changed = true;
     }
     if (adWordsCID != null) {
       System.out.printf("Linking AdWords CID %s%n", adWordsCID);
-
-      AccountAdwordsLink newLink = new AccountAdwordsLink();
-      newLink.setAdwordsId(adWordsCID);
-      newLink.setStatus("active");
-
-      account.getAdwordsLinks().add(newLink);
+      account
+          .getAdwordsLinks()
+          .add(new AccountAdwordsLink().setAdwordsId(adWordsCID).setStatus("active"));
       changed = true;
     }
 
@@ -61,7 +53,7 @@ public class AccountPatchSample extends ContentSample {
 
     if (user != null) {
       System.out.printf("Removing new user %s%n", user);
-      List<AccountUser> users = new ArrayList<AccountUser>();
+      List<AccountUser> users = new ArrayList<>();
 
       for (AccountUser u : account.getUsers()) {
         if (!u.getEmailAddress().equals(user)) {
@@ -73,7 +65,7 @@ public class AccountPatchSample extends ContentSample {
     }
     if (adWordsCID != null) {
       System.out.printf("Removing new AdWords link for %s%n", adWordsCID);
-      List<AccountAdwordsLink> links = new ArrayList<AccountAdwordsLink>();
+      List<AccountAdwordsLink> links = new ArrayList<>();
 
       for (AccountAdwordsLink link : account.getAdwordsLinks()) {
         if (!link.getAdwordsId().equals(adWordsCID)) {

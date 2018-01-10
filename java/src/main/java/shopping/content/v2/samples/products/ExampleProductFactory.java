@@ -5,6 +5,7 @@ import com.google.api.services.content.model.Product;
 import com.google.api.services.content.model.ProductShipping;
 import com.google.api.services.content.model.ProductsCustomBatchRequest;
 import com.google.api.services.content.model.ProductsCustomBatchRequestEntry;
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
 import shopping.content.v2.samples.ContentConfig;
@@ -19,7 +20,6 @@ public class ExampleProductFactory {
   private static final int PRODUCT_COUNT = 10;
 
   public static Product create(ContentConfig config, String offerId) {
-    Product product = new Product();
     String websiteUrl = config.getWebsiteUrl();
 
     if (websiteUrl == null || websiteUrl.equals("")) {
@@ -27,54 +27,38 @@ public class ExampleProductFactory {
           "Cannot create example products without a configured website");
     }
 
-    product.setOfferId(offerId);
-    product.setTitle("A Tale of Two Cities");
-    product.setDescription("A classic novel about the French Revolution");
-    product.setLink(websiteUrl + "/tale-of-two-cities.html");
-    product.setImageLink(websiteUrl + "/tale-of-two-cities.jpg");
-    product.setChannel(CHANNEL);
-    product.setContentLanguage(CONTENT_LANGUAGE);
-    product.setTargetCountry(TARGET_COUNTRY);
-    product.setAvailability("in stock");
-    product.setCondition("new");
-    product.setGoogleProductCategory("Media > Books");
-    product.setGtin("9780007350896");
-
-    Price price = new Price();
-    price.setValue("2.50");
-    price.setCurrency("GBP");
-    product.setPrice(price);
-
-    Price shippingPrice = new Price();
-    shippingPrice.setValue("0.99");
-    shippingPrice.setCurrency("GBP");
-
-    ProductShipping shipping = new ProductShipping();
-    shipping.setPrice(shippingPrice);
-    shipping.setCountry("GB");
-    shipping.setService("1st class post");
-
-    ArrayList<ProductShipping> shippingList = new ArrayList<ProductShipping>();
-    shippingList.add(shipping);
-    product.setShipping(shippingList);
-
-    return product;
+    return new Product()
+        .setOfferId(offerId)
+        .setTitle("A Tale of Two Cities")
+        .setDescription("A classic novel about the French Revolution")
+        .setLink(websiteUrl + "/tale-of-two-cities.html")
+        .setImageLink(websiteUrl + "/tale-of-two-cities.jpg")
+        .setChannel(CHANNEL)
+        .setContentLanguage(CONTENT_LANGUAGE)
+        .setTargetCountry(TARGET_COUNTRY)
+        .setAvailability("in stock")
+        .setCondition("new")
+        .setGoogleProductCategory("Media > Books")
+        .setGtin("9780007350896")
+        .setPrice(new Price().setValue("2.50").setCurrency("GBP"))
+        .setShipping(
+            ImmutableList.of(
+                new ProductShipping()
+                    .setPrice(new Price().setValue("0.99").setCurrency("GBP"))
+                    .setCountry("GB")
+                    .setService("1st class post")));
   }
 
   public static ProductsCustomBatchRequest createBatch(ContentConfig config, String prefix) {
-    List<ProductsCustomBatchRequestEntry> productsBatchRequestEntries =
-        new ArrayList<ProductsCustomBatchRequestEntry>();
+    List<ProductsCustomBatchRequestEntry> productsBatchRequestEntries = new ArrayList<>();
     for (int i = 0; i < PRODUCT_COUNT; i++) {
-      Product product = ExampleProductFactory.create(config, prefix + i);
       productsBatchRequestEntries.add(
           new ProductsCustomBatchRequestEntry()
               .setBatchId((long) i)
               .setMerchantId(config.getMerchantId())
-              .setProduct(product)
+              .setProduct(create(config, prefix + i))
               .setMethod("insert"));
     }
-    ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
-    batchRequest.setEntries(productsBatchRequestEntries);
-    return batchRequest;
+    return new ProductsCustomBatchRequest().setEntries(productsBatchRequestEntries);
   }
 }

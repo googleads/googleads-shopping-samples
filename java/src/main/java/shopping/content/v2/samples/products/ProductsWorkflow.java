@@ -38,21 +38,18 @@ public class ProductsWorkflow extends ContentWorkflowSample {
   }
 
   private ProductsCustomBatchRequest deleteBatch(ProductsCustomBatchResponse batchResponse) {
-    List<ProductsCustomBatchRequestEntry> productsBatchRequestEntries =
-        new ArrayList<ProductsCustomBatchRequestEntry>();
+    List<ProductsCustomBatchRequestEntry> productsBatchRequestEntries = new ArrayList<>();
     for (ProductsCustomBatchResponseEntry e : batchResponse.getEntries()) {
       if (e.getProduct() != null) {
-        ProductsCustomBatchRequestEntry entry = new ProductsCustomBatchRequestEntry();
-        entry.setBatchId(e.getBatchId());
-        entry.setMerchantId(config.getMerchantId());
-        entry.setProductId(e.getProduct().getId());
-        entry.setMethod("delete");
-        productsBatchRequestEntries.add(entry);
+        productsBatchRequestEntries.add(
+            new ProductsCustomBatchRequestEntry()
+                .setBatchId(e.getBatchId())
+                .setMerchantId(config.getMerchantId())
+                .setProductId(e.getProduct().getId())
+                .setMethod("delete"));
       }
     }
-    ProductsCustomBatchRequest batchRequest = new ProductsCustomBatchRequest();
-    batchRequest.setEntries(productsBatchRequestEntries);
-    return batchRequest;
+    return new ProductsCustomBatchRequest().setEntries(productsBatchRequestEntries);
   }
 
   @Override

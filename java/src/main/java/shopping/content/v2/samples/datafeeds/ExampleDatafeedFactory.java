@@ -5,6 +5,7 @@ import com.google.api.services.content.model.DatafeedFetchSchedule;
 import com.google.api.services.content.model.DatafeedFormat;
 import com.google.api.services.content.model.DatafeedsCustomBatchRequest;
 import com.google.api.services.content.model.DatafeedsCustomBatchRequestEntry;
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
 import shopping.content.v2.samples.ContentConfig;
@@ -24,7 +25,6 @@ public class ExampleDatafeedFactory {
   }
 
   public static Datafeed create(ContentConfig config, String name) {
-    Datafeed datafeed = new Datafeed();
     String websiteUrl = config.getWebsiteUrl();
 
     if (websiteUrl == null || websiteUrl.equals("")) {
@@ -32,31 +32,25 @@ public class ExampleDatafeedFactory {
           "Cannot create example datafeed without a configured website");
     }
 
-    List<String> destinations = new ArrayList<String>();
-    destinations.add("Shopping");
-
-    DatafeedFetchSchedule schedule = new DatafeedFetchSchedule();
-    schedule.setWeekday("monday");
-    schedule.setHour(6L);
-    schedule.setTimeZone("America/Los_Angeles");
-    schedule.setFetchUrl(websiteUrl + "/" + name);
-
-    DatafeedFormat format = new DatafeedFormat();
-    format.setFileEncoding("utf-8");
-    format.setColumnDelimiter("tab");
-    format.setQuotingMode("value quoting");
-
-    datafeed.setName(name);
-    datafeed.setContentType("products");
-    datafeed.setAttributeLanguage("en");
-    datafeed.setContentLanguage(CONTENT_LANGUAGE);
-    datafeed.setIntendedDestinations(destinations);
-    datafeed.setFileName(name);
-    datafeed.setTargetCountry(TARGET_COUNTRY);
-    datafeed.setFetchSchedule(schedule);
-    datafeed.setFormat(format);
-
-    return datafeed;
+    return new Datafeed()
+        .setName(name)
+        .setContentType("products")
+        .setAttributeLanguage("en")
+        .setContentLanguage(CONTENT_LANGUAGE)
+        .setIntendedDestinations(ImmutableList.of("Shopping"))
+        .setFileName(name)
+        .setTargetCountry(TARGET_COUNTRY)
+        .setFetchSchedule(
+            new DatafeedFetchSchedule()
+                .setWeekday("monday")
+                .setHour(6L)
+                .setTimeZone("America/Los_Angeles")
+                .setFetchUrl(websiteUrl + "/" + name))
+        .setFormat(
+            new DatafeedFormat()
+                .setFileEncoding("utf-8")
+                .setColumnDelimiter("tab")
+                .setQuotingMode("value quoting"));
   }
 
   public static DatafeedsCustomBatchRequest createBatch(ContentConfig config) {
@@ -64,19 +58,15 @@ public class ExampleDatafeedFactory {
   }
 
   public static DatafeedsCustomBatchRequest createBatch(ContentConfig config, String prefix) {
-    List<DatafeedsCustomBatchRequestEntry> datafeedsBatchRequestEntries =
-        new ArrayList<DatafeedsCustomBatchRequestEntry>();
+    List<DatafeedsCustomBatchRequestEntry> datafeedsBatchRequestEntries = new ArrayList<>();
     for (int i = 0; i < DATAFEED_COUNT; i++) {
-      Datafeed datafeed = ExampleDatafeedFactory.create(config, prefix + i);
       datafeedsBatchRequestEntries.add(
           new DatafeedsCustomBatchRequestEntry()
               .setBatchId((long) i)
               .setMerchantId(config.getMerchantId())
-              .setDatafeed(datafeed)
+              .setDatafeed(create(config, prefix + i))
               .setMethod("insert"));
     }
-    DatafeedsCustomBatchRequest batchRequest = new DatafeedsCustomBatchRequest();
-    batchRequest.setEntries(datafeedsBatchRequestEntries);
-    return batchRequest;
+    return new DatafeedsCustomBatchRequest().setEntries(datafeedsBatchRequestEntries);
   }
 }
