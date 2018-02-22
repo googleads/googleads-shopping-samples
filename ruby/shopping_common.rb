@@ -20,6 +20,7 @@
 
 require 'addressable/uri'
 require 'google/apis/content_v2'
+require 'google/apis/options'
 require 'google/api_client/client_secrets'
 
 require_relative 'arg_parser'
@@ -48,6 +49,12 @@ TARGET_COUNTRY = 'US';
 #
 # It returns both the configuration and the API service object.
 def service_setup(options, use_sandbox = false)
+  if options.log_file
+    Google::Apis.logger.reopen(options.log_file)
+    Google::Apis::ClientOptions.default.transparent_gzip_decompression = false
+    Google::Apis::ClientOptions.default.log_http_requests = true
+  end
+
   if options.noconfig
     config = ContentConfig.new()
   else

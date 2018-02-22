@@ -36,7 +36,7 @@ class ArgParser
 
       opts.on('-p', '--config_path PATH',
           'Path for Shopping samples configuration') do |path|
-        if not Dir.exists? path
+        unless Dir.exists? path
           STDERR.puts "ERROR: Directory '#{path}' does not exist."
           raise OptionParser::InvalidArgument, path
         end
@@ -46,6 +46,15 @@ class ArgParser
       opts.on('-n', '--noconfig',
           'Run samples without a configuration') do
         options.noconfig = true
+      end
+
+      opts.on('-l', '--log_file FILE',
+          'Filename for logging API requests and responses') do |file|
+        unless Dir.exists?(File.dirname(file))
+          STDERR.puts "ERROR: Directory for log file '#{file}' does not exist."
+          raise OptionParser::InvalidArgument, file
+        end
+        options.log_file = file
       end
     end
 
