@@ -38,7 +38,7 @@ class ContentSession {
   // Constructor that sets up configuration and authentication for all
   // the samples.
   public function __construct () {
-    $options = getopt('', ['config_path:', 'noconfig']);
+    $options = getopt('', ['config_path:', 'log_file:', 'noconfig']);
     if (array_key_exists('noconfig', $options)) {
       $this->config = [];
     } else {
@@ -67,8 +67,22 @@ class ContentSession {
     $client = new Google_Client();
     $client->setApplicationName('Content API for Shopping Samples');
     $client->setScopes(Google_Service_ShoppingContent::CONTENT);
-    $this->authenticate($client);
 
+    if (array_key_exists('log_file', $options)) {
+      $logHandler = new Monolog\Handler\StreamHandler($options['log_file']);
+      $logHandler->setFormatter(new Monolog\Formatter\LineFormatter(
+          /* $format = */ null,
+          /* $dateFormat = */ null,
+          /* $allowInlineLineBreaks = */ true));
+      $log = new Monolog\Logger('http-log');
+      $log->pushHandler($logHandler);
+      $clientHandler = $client->getHttpClient()->getConfig('handler');
+      $clientHandler->push(
+          GuzzleHttp\Middleware::log($log,
+          new GuzzleHttp\MessageFormatter(GuzzleHttp\MessageFormatter::DEBUG)));
+    }
+
+    $this->authenticate($client);
     $this->prepareServices($client);
     $this->retrieveConfig();
   }

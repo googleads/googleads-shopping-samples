@@ -15,6 +15,9 @@
   ],
   "require": {
     "google/apiclient": "^2.0",
+    "monolog/monolog": "^1.17",
+    "guzzlehttp/guzzle": "~6.0",
+    "guzzlehttp/psr7": "^1.2",
     "php": ">=5.4"
   },
   "autoload": {
