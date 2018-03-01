@@ -18,6 +18,7 @@
 from __future__ import print_function
 import argparse
 import json
+import logging
 import os
 import random
 import sys
@@ -28,6 +29,7 @@ import google_auth_httplib2
 from googleapiclient import discovery
 from googleapiclient import errors
 from googleapiclient import http
+from googleapiclient import model
 from shopping.content import _constants
 from shopping.content import auth
 
@@ -68,7 +70,16 @@ def init(argv, doc, parents=None, sandbox=False):
       '--noconfig',
       action='store_true',
       help='run samples with no configuration directory')
+  parser.add_argument(
+      '--log_file',
+      metavar='FILE',
+      help='filename for logging API requests and responses'
+  )
   flags = parser.parse_args(argv[1:])
+
+  if flags.log_file:
+    logging.basicConfig(filename=flags.log_file, level=logging.INFO)
+    model.dump_request_response = True
 
   config = {}
   if not flags.noconfig:
