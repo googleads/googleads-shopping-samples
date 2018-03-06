@@ -34,31 +34,31 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="log4net">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <HintPath>..\packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Core">
-      <HintPath>..\packages\Google.Apis.Core.1.20.0\lib\net45\Google.Apis.Core.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.Core.1.32.2\lib\net45\Google.Apis.Core.dll</HintPath>
     </Reference>
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis">
-      <HintPath>..\packages\Google.Apis.1.20.0\lib\net45\Google.Apis.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.1.32.2\lib\net45\Google.Apis.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.PlatformServices">
-      <HintPath>..\packages\Google.Apis.1.20.0\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.1.32.2\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Auth">
-      <HintPath>..\packages\Google.Apis.Auth.1.20.0\lib\net45\Google.Apis.Auth.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.Auth.1.32.2\lib\net45\Google.Apis.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Auth.PlatformServices">
-      <HintPath>..\packages\Google.Apis.Auth.1.20.0\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.Auth.1.32.2\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.ManufacturerCenter.v1">
-      <HintPath>..\packages\Google.Apis.ManufacturerCenter.v1.1.20.0.666\lib\net45\Google.Apis.ManufacturerCenter.v1.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.ManufacturerCenter.v1.1.32.2.1154\lib\net45\Google.Apis.ManufacturerCenter.v1.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="CommandLine">

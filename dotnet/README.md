@@ -32,12 +32,10 @@ solution. You will need to
 [Restore NuGet Packages](https://docs.nuget.org/ndocs/consume-packages/package-restore)
 as well to pull in the dependencies. (The IDEs listed above all support this.)
 
-1. Build and run any of the included projects.  There are five:
+1. Build and run any of the included projects.  There are three:
 
-   * Samples4.0 - .NET Framework 4.0 compatible project for main Content API samples
-   * Samples4.5 - .NET Framework 4.5 compatible project for main Content API samples
-   * Orders4.0 - .NET Framework 4.0 compatible project for Content API Orders service workflow sample
-   * Orders4.5 - .NET Framework 4.5 compatible project for Content API Orders service workflow sample
+   * ShoppingContent - .NET Framework 4.5 compatible project for main Content API samples
+   * Orders - .NET Framework 4.5 compatible project for Content API Orders service workflow sample
    * Manufacturers - .NET Framework 4.5 compatible project for the Manufacturer Center API
 
 2. Examine your shell output, be inspired and start hacking an amazing new app!

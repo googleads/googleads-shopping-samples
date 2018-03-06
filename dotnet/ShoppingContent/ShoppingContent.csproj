@@ -5,8 +5,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{2DE51038-FFF8-45FF-90EA-B53A30F4A641}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Samples4.5</RootNamespace>
-    <AssemblyName>Samples4.5</AssemblyName>
+    <RootNamespace>ShoppingContent</RootNamespace>
+    <AssemblyName>ShoppingContent</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -81,34 +81,31 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="log4net">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <HintPath>..\packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Core">
-      <HintPath>..\packages\Google.Apis.Core.1.19.0\lib\net45\Google.Apis.Core.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.Core.1.32.2\lib\net45\Google.Apis.Core.dll</HintPath>
     </Reference>
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis">
-      <HintPath>..\packages\Google.Apis.1.19.0\lib\net45\Google.Apis.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.1.32.2\lib\net45\Google.Apis.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.PlatformServices">
-      <HintPath>..\packages\Google.Apis.1.19.0\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.1.32.2\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Auth">
-      <HintPath>..\packages\Google.Apis.Auth.1.19.0\lib\net45\Google.Apis.Auth.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.Auth.1.32.2\lib\net45\Google.Apis.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Auth.PlatformServices">
-      <HintPath>..\packages\Google.Apis.Auth.1.19.0\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.Auth.1.32.2\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.ShoppingContent.v2">
-      <HintPath>..\packages\Google.Apis.ShoppingContent.v2.1.19.0.665\lib\net45\Google.Apis.ShoppingContent.v2.dll</HintPath>
+      <HintPath>..\packages\Google.Apis.ShoppingContent.v2.1.32.2.1153\lib\net45\Google.Apis.ShoppingContent.v2.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123">
-      <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="CommandLine">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>

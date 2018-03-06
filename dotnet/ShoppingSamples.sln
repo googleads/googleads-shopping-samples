@@ -1,13 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples4.5", "Samples4.5\Samples4.5.csproj", "{2DE51038-FFF8-45FF-90EA-B53A30F4A641}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingContent", "ShoppingContent\ShoppingContent.csproj", "{2DE51038-FFF8-45FF-90EA-B53A30F4A641}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples4.0", "Samples4.0\Samples4.0.csproj", "{68B3CD02-273D-4E5B-BA83-A75B48A351F2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders4.0", "Orders4.0\Orders4.0.csproj", "{4EC68381-2BE7-40A9-84C5-FF8FE3268D4F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders4.5", "Orders4.5\Orders4.5.csproj", "{ACB87A33-2E81-4CF1-841B-1F4013A15C35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders", "Orders\Orders.csproj", "{ACB87A33-2E81-4CF1-841B-1F4013A15C35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manufacturers", "Manufacturers\Manufacturers.csproj", "{7377DC5A-3046-4D14-8181-B890DC80983E}"
 EndProject
@@ -21,14 +17,6 @@ Global
         {2DE51038-FFF8-45FF-90EA-B53A30F4A641}.Debug|x86.Build.0 = Debug|x86
         {2DE51038-FFF8-45FF-90EA-B53A30F4A641}.Release|x86.ActiveCfg = Release|x86
         {2DE51038-FFF8-45FF-90EA-B53A30F4A641}.Release|x86.Build.0 = Release|x86
-        {4EC68381-2BE7-40A9-84C5-FF8FE3268D4F}.Debug|x86.ActiveCfg = Debug|x86
-        {4EC68381-2BE7-40A9-84C5-FF8FE3268D4F}.Debug|x86.Build.0 = Debug|x86
-        {4EC68381-2BE7-40A9-84C5-FF8FE3268D4F}.Release|x86.ActiveCfg = Release|x86
-        {4EC68381-2BE7-40A9-84C5-FF8FE3268D4F}.Release|x86.Build.0 = Release|x86
-        {68B3CD02-273D-4E5B-BA83-A75B48A351F2}.Debug|x86.ActiveCfg = Debug|x86
-        {68B3CD02-273D-4E5B-BA83-A75B48A351F2}.Debug|x86.Build.0 = Debug|x86
-        {68B3CD02-273D-4E5B-BA83-A75B48A351F2}.Release|x86.ActiveCfg = Release|x86
-        {68B3CD02-273D-4E5B-BA83-A75B48A351F2}.Release|x86.Build.0 = Release|x86
         {7377DC5A-3046-4D14-8181-B890DC80983E}.Debug|x86.ActiveCfg = Debug|x86
         {7377DC5A-3046-4D14-8181-B890DC80983E}.Debug|x86.Build.0 = Debug|x86
         {7377DC5A-3046-4D14-8181-B890DC80983E}.Release|x86.ActiveCfg = Release|x86
