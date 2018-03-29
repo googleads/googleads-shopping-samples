@@ -182,7 +182,7 @@ def retrieve_remaining_config_from_api(service, config):
   if 'merchantId' not in config:
     first_account = account_ids[0]
     config['merchantId'] = int(first_account.get('merchantId', 0))
-    if not config['merchant_id']:
+    if not config['merchantId']:
       config['merchantId'] = int(first_account['aggregatorId'])
     print('Using Merchant Center %d for running samples.' %
           config['merchantId'])
