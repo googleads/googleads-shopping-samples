@@ -23,7 +23,6 @@ import os
 import random
 import sys
 import time
-import urlparse
 
 import google_auth_httplib2
 from googleapiclient import discovery
@@ -32,6 +31,8 @@ from googleapiclient import http
 from googleapiclient import model
 from shopping.content import _constants
 from shopping.content import auth
+
+import six.moves.urllib.parse
 
 
 # Authenticate and return the Content API service along with any command-line
@@ -111,7 +112,9 @@ def init(argv, doc, parents=None, sandbox=False):
           http.build_http(), _constants.APPLICATION_NAME))
   if _constants.ENDPOINT_ENV_VAR in os.environ:
     # Strip off everything after the host/port in the URL.
-    root_url = urlparse.urljoin(os.environ[_constants.ENDPOINT_ENV_VAR], '/')
+    root_url = six.moves.urllib.parse.urljoin(
+        os.environ[_constants.ENDPOINT_ENV_VAR],
+        '/')
     print('Using non-standard root for API discovery: %s' % root_url)
     discovery_url = root_url + '/discovery/v1/apis/{api}/{apiVersion}/rest'
     service = discovery.build(

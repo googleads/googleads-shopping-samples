@@ -14,6 +14,7 @@ the [Google Auth Python
 Library](https://github.com/GoogleCloudPlatform/google-auth-library-python),
 [google-auth-oauthlib](https://pypi.python.org/pypi/google-auth-oauthlib), and
 [google-auth-httplib2](https://pypi.python.org/pypi/google-auth-httplib2).
+The samples should be compatible with both Python 2 and Python 3.
 
 For your convenience, you can run the following command from this directory to
 install all needed dependencies via [pip](https://pip.pypa.io/):

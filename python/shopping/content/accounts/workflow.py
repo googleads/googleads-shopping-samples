@@ -59,7 +59,7 @@ def common_workflow(service, config):
     print()
 
     # Keep users that have different emails.
-    remaining = [u for u in account['users'] if u['emailAddress'] <> email]
+    remaining = [u for u in account['users'] if u['emailAddress'] != email]
     account = acc.patch(merchantId=merchant_id, accountId=merchant_id,
                         body={'users': remaining}).execute()
     print('After removing user:')
@@ -79,7 +79,7 @@ def common_workflow(service, config):
     # We need to make sure to do an integer comparison here, to match the
     # value we get from the configuration.
     remaining = [u for u in account['adwordsLinks']
-                 if int(u['adwordsId']) <> adwords_id]
+                 if int(u['adwordsId']) != adwords_id]
     account = acc.patch(merchantId=merchant_id, accountId=merchant_id,
                         body={'adwordsLinks': remaining}).execute()
     print('After removing AdWords link:')
