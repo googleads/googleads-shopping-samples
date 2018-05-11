@@ -15,11 +15,13 @@
 # limitations under the License.
 """Adds accounts to the specified multi-client account, in a single batch."""
 
+from __future__ import absolute_import
 from __future__ import print_function
 import json
 import sys
 
 from shopping.content import common
+from six.moves import range
 
 # Number of accounts to insert.
 BATCH_SIZE = 5

@@ -15,12 +15,14 @@
 # limitations under the License.
 """Adds several products to the specified account, in a single batch."""
 
+from __future__ import absolute_import
 from __future__ import print_function
 import json
 import sys
 
 from shopping.content import common
 from shopping.content.products import sample
+from six.moves import range
 
 # Number of products to insert.
 BATCH_SIZE = 5

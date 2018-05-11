@@ -15,6 +15,8 @@
 # limitations under the License.
 """Sets up module aliases."""
 
-import workflow
+from __future__ import absolute_import
+
+from . import workflow
 
 workflow = workflow.workflow

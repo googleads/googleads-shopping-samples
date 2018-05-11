@@ -15,12 +15,14 @@
 # limitations under the License.
 """Adds several datafeeds to the specified account, in a single batch."""
 
+from __future__ import absolute_import
 from __future__ import print_function
 import json
 import sys
 
 from shopping.content import common
 from shopping.content.datafeeds import sample
+from six.moves import range
 
 # Number of datafeeds to insert.
 BATCH_SIZE = 5
