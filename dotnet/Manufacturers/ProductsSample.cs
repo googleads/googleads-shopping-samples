@@ -26,7 +26,7 @@ namespace ShoppingSamples.Manufacturers
 
         /// <summary>Initializes a new instance of the <see cref="ProductsSample"/> class.</summary>
         /// <param name="service">Content service object on which to run the requests.</param>
-        /// <param name="maxListPageSize">The maximum page size to retrieve.</param> 
+        /// <param name="maxListPageSize">The maximum page size to retrieve.</param>
         public ProductsSample(ManufacturerCenterService service, int maxListPageSize)
         {
             this.service = service;
@@ -51,11 +51,11 @@ namespace ShoppingSamples.Manufacturers
             string pageToken = null;
             ListProductsResponse productsResponse = null;
 
+            AccountsResource.ProductsResource.ListRequest listRequest =
+                service.Accounts.Products.List(manufacturerId);
+            listRequest.PageSize = maxListPageSize;
             do
             {
-                AccountsResource.ProductsResource.ListRequest listRequest =
-                    service.Accounts.Products.List(manufacturerId);
-                listRequest.PageSize = maxListPageSize;
                 listRequest.PageToken = pageToken;
 
                 productsResponse = listRequest.Execute();
@@ -67,7 +67,7 @@ namespace ShoppingSamples.Manufacturers
                         Console.WriteLine(
                             "Product with ID \"{0}\" and title \"{1}\" was found.",
                             product.ProductId,
-                            product.FinalAttributes.Title);
+                            product.Attributes.Title);
                         PrintIssues(product.Issues);
                     }
                 }
@@ -92,11 +92,13 @@ namespace ShoppingSamples.Manufacturers
             Console.WriteLine("Received the following issues:");
             foreach (Issue issue in issues)
             {
+                Console.Write("({0}, {1})", issue.Severity, issue.Resolution);
                 if (issue.Attribute != null)
                 {
                     Console.Write("[{0}] ", issue.Attribute);
                 }
-                Console.WriteLine(issue.Type + ": " + issue.Description);
+                Console.WriteLine(issue.Type + ": " + issue.Title);
+                Console.WriteLine("  " + issue.Description);
             }
         }
     }
