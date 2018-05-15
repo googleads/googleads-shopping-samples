@@ -133,7 +133,7 @@
     <dependency>
       <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-manufacturers</artifactId>
-      <version>v1-rev73-1.23.0</version>
+      <version>v1-rev79-1.23.0</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>

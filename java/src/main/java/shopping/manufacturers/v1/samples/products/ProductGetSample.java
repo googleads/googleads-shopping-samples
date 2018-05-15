@@ -2,6 +2,8 @@ package shopping.manufacturers.v1.samples.products;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.manufacturers.v1.model.Product;
+import com.google.common.collect.ImmutableList;
+
 import java.io.IOException;
 import shopping.manufacturers.v1.samples.ManufacturersSample;
 
@@ -23,7 +25,9 @@ public class ProductGetSample extends ManufacturersSample {
     String name = targetCountry + ":" + contentLanguage + ":" + productId;
     try {
       Product product =
-          manufacturers.accounts().products().get(getManufacturerId(), name).execute();
+          manufacturers.accounts().products().get(getManufacturerId(), name)
+            .setInclude(ImmutableList.of("ATTRIBUTES", "ISSUES"))
+            .execute();
       printProduct(product);
     } catch (GoogleJsonResponseException e) {
       if (e.getDetails().getCode() == 404) {

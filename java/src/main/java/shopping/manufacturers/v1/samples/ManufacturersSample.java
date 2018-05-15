@@ -46,8 +46,8 @@ public abstract class ManufacturersSample extends BaseSample {
   protected void printProduct(Product product) {
     System.out.printf("Product \"%s\"%n", product.getName());
 
-    System.out.println("  Final attributes:");
-    printAttributes(product.getFinalAttributes(), "  ");
+    System.out.println("  Attributes:");
+    printAttributes(product.getAttributes(), "  ");
 
     printIssues(product.getIssues(), "  ");
     System.out.println();
@@ -60,11 +60,12 @@ public abstract class ManufacturersSample extends BaseSample {
     System.out.printf(prefix + "There are %d issue(s):%n", issues.size());
     for (Issue issue : issues) {
       System.out.print(prefix + "- ");
-      System.out.printf("(%s) ", issue.getSeverity());
+      System.out.printf("(%s, %s) ", issue.getSeverity(), issue.getResolution());
       if (issue.getAttribute() != null) {
         System.out.printf("[%s] ", issue.getAttribute());
       }
-      System.out.println(issue.getType() + ": " + issue.getDescription());
+      System.out.println(issue.getType() + ": " + issue.getTitle());
+      System.out.println(prefix + "  " + issue.getDescription());
     }
   }
 
