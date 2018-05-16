@@ -103,10 +103,10 @@ func createSampleProduct(config *merchantInfo, offerID string) *content.Product 
 		Availability:          "in stock",
 		Condition:             "new",
 		GoogleProductCategory: "Media > Books",
-		Gtin:           "9780007350896",
-		Price:          &productPrice,
-		Shipping:       [](*content.ProductShipping){&shippingInfo},
-		ShippingWeight: &shippingWeight,
+		Gtin:                  "9780007350896",
+		Price:                 &productPrice,
+		Shipping:              [](*content.ProductShipping){&shippingInfo},
+		ShippingWeight:        &shippingWeight,
 	}
 	return &product
 }
