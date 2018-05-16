@@ -54,18 +54,27 @@ class ProductstatusesSample extends BaseSample {
   public function printProductstatus($status) {
     printf("Information for product %s:\n", $status->getProductId());
     printf("- Title: %s\n", $status->getTitle());
-    if (empty($status->getDataQualityIssues())) {
-      print "- No data quality issues.\n";
+    printf("- Destination statuses:\n");
+    foreach ($status->getDestinationStatuses() as $dest) {
+      printf('  - Destination %s: %s',
+          $dest->getDestination(), $dest->getApprovalStatus());
+      if ($dest->getApprovalPending()) {
+        print " (still pending)\n";
+      } else {
+        print "\n";
+      }
+    }
+    if (empty($status->getItemLevelIssues())) {
+      print "- No issues.\n";
     } else {
-      printf("- There are %d data quality issues:\n",
-          count($status->getDataQualityIssues()));
-      foreach ($status->getDataQualityIssues() as $issue) {
-        if(empty($issue->getDetail())) {
-          printf("  - (%s) %s\n", $issue->getSeverity(), $issue->getId());
-        } else {
-          printf("  - (%s) %s: %s\n", $issue->getSeverity(), $issue->getId(),
-              $issue->getDetail());
-        }
+      printf("- There are %d issues:\n",
+          count($status->getItemLevelIssues()));
+      foreach ($status->getItemLevelIssues() as $issue) {
+        printf("  - Code: %s\n", $issue->getCode());
+        printf("    Description: %s\n", $issue->getDescription());
+        printf("    Detailed description: %s\n", $issue->getDetail());
+        printf("    Resolution: %s\n", $issue->getResolution());
+        printf("    Servability: %s\n", $issue->getServability());
       }
     }
   }
