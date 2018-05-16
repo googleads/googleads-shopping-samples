@@ -16,6 +16,7 @@
 """Gets the status of all products on the specified account."""
 
 from __future__ import print_function
+import json
 import sys
 
 from shopping.content import common
@@ -39,20 +40,10 @@ def main(argv):
     if not statuses:
       print('No product statuses were returned.')
       break
-    for status in statuses:
+    for stat in statuses:
       print('- Product "%s" with title "%s":' %
-            (status['productId'], status['title']))
-      issues = status.get('dataQualityIssues')
-      if not issues:
-        print('  No data quality issues.')
-        continue
-      print('  Found %d data quality issues:' % len(issues))
-      for issue in issues:
-        if issue.get('detail'):
-          print('  - (%s) [%s] %s' % (issue['severity'], issue['id'],
-                                      issue['detail']))
-        else:
-          print('  - (%s) [%s]' % (issue['severity'], issue['id']))
+            (stat['productId'], stat['title']))
+      print(json.dumps(stat, sort_keys=True, indent=2, separators=(',', ': ')))
     request = service.productstatuses().list_next(request, result)
 
 
