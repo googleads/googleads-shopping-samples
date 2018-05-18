@@ -7,7 +7,7 @@ namespace ShoppingSamples.Content
 {
     /// <summary>
     /// A sample consumer that runs multiple requests against the
-    /// Productstatuses service in the Content API for Shopping. 
+    /// Productstatuses service in the Content API for Shopping.
     /// <para>These include:
     /// <list type="bullet">
     /// <item>
@@ -76,22 +76,12 @@ namespace ShoppingSamples.Content
                 {
                     foreach (var status in statusesResponse.Resources)
                     {
-                        Console.WriteLine(
-                            "Product with ID \"{0}\" and title \"{1}\" was found.",
-                            status.ProductId,
-                            status.Title);
-                        if (status.DataQualityIssues == null)
-                        {
-                            Console.WriteLine("- No data quality issues.");
-                        }
-                        else {
-                            PrintDataQualityIssues(status.DataQualityIssues);
-                        }
+                        PrintStatus(status);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("No accounts found.");
+                    Console.WriteLine("No products found.");
                 }
 
                 pageToken = statusesResponse.NextPageToken;
@@ -102,20 +92,34 @@ namespace ShoppingSamples.Content
             return statusesResponse;
         }
 
-        private void PrintDataQualityIssues(IList<ProductStatusDataQualityIssue> issues)
+        private void PrintStatus(ProductStatus status)
         {
-            Console.WriteLine("{0} data quality issues found:", issues.Count);
-            foreach (var issue in issues)
+            Console.WriteLine("Information for product %s:\n", status.ProductId);
+            Console.WriteLine("- Title: {0}", status.Title);
+
+            Console.WriteLine("- Destination statuses:");
+            foreach (var stat in status.DestinationStatuses)
             {
-                if (issue.Detail != null)
+                Console.WriteLine("  - {0}: {1}{2}",
+                    stat.Destination, stat.ApprovalStatus,
+                    stat.ApprovalPending.GetValueOrDefault(false) ? " (still pending)" : "");
+            }
+
+            if (status.ItemLevelIssues == null)
+            {
+                Console.WriteLine("- No issues.");
+            }
+            else
+            {
+                var issues = status.ItemLevelIssues;
+                Console.WriteLine("- There are {0} issues:", issues.Count);
+                foreach (var issue in issues)
                 {
-                    Console.WriteLine(
-                        "- ({0}) [{1}]: {2}", issue.Severity, issue.Id, issue.Detail);
-                }
-                else
-                {
-                    Console.WriteLine(
-                        "- ({0}) [{1}]", issue.Severity, issue.Id);
+                    Console.WriteLine("  - Code: {0}", issue.Code);
+                    Console.WriteLine("    Description: {0}", issue.Description);
+                    Console.WriteLine("    Detailed description: {0}", issue.Detail);
+                    Console.WriteLine("    Resolution: {0}", issue.Resolution);
+                    Console.WriteLine("    Servability: {0}", issue.Servability);
                 }
             }
         }
