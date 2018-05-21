@@ -23,16 +23,17 @@ require_relative '../shopping_common'
 def print_product_status(status)
   puts "Information for product #{status.product_id}:"
   puts "- Title: #{status.title}"
-  if status.data_quality_issues.nil?
-    puts "- No data quality issues."
-    return
+  puts "- Destination statuses:"
+  status.destination_statuses.each do |s|
+    puts "  - Destination #{s.destination}: #{s.approval_status}"
+    puts "    (currently pending)" if s.approval_pending
   end
-  puts "- There are #{status.data_quality_issues.length} data quality issue(s)."
-  status.data_quality_issues.each do |issue|
-    if issue.detail.nil?
-      puts "  - (#{issue.severity}) [#{issue.id}]"
-    else
-      puts "  - (#{issue.severity}) [#{issue.id}]: #{issue.detail}"
-    end
+  puts "- There are #{status.item_level_issues.length} issue(s)."
+  status.item_level_issues.each do |issue|
+    puts "  - Code: #{issue.code}"
+    puts "    Description: #{issue.description}"
+    puts "    Detailed description: #{issue.detail}"
+    puts "    Resolution: #{issue.resolution}"
+    puts "    Servability: #{issue.servability}"
   end
 end
