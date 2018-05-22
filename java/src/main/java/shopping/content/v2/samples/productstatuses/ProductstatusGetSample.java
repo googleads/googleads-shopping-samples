@@ -2,9 +2,9 @@ package shopping.content.v2.samples.productstatuses;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.content.model.ProductStatus;
-import com.google.api.services.content.model.ProductStatusDestinationStatus;
 import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
+import shopping.content.v2.samples.products.ExampleProductFactory;
 
 /**
  * Sample that shows how to retrieve the status of the product that we inserted with the
@@ -21,14 +21,9 @@ public class ProductstatusGetSample extends ContentSample {
       ProductStatus productStatus =
           content
               .productstatuses()
-              .get(this.config.getMerchantId(), "online:en:GB:book123")
+              .get(this.config.getMerchantId(), ExampleProductFactory.sampleProductId())
               .execute();
-      System.out.printf("%s %s\n", productStatus.getProductId(), productStatus.getTitle());
-      for (ProductStatusDestinationStatus status : productStatus.getDestinationStatuses()) {
-        System.out.printf(
-            " - %s (%s) - %s\n",
-            status.getDestination(), status.getIntention(), status.getApprovalStatus());
-      }
+      ProductstatusUtils.printProductStatus(productStatus);
     } catch (GoogleJsonResponseException e) {
       if (e.getDetails().getCode() == 404) {
         System.out.println(

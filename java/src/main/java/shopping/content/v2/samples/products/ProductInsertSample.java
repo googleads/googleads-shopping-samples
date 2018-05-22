@@ -16,8 +16,8 @@ public class ProductInsertSample extends ContentSample {
   public void execute() throws IOException {
     checkNonMCA();
 
-    // Create a product with ID 'online:en:GB:book123'
-    Product product = ExampleProductFactory.create(config, "book123");
+    // Create a product with the defaults defined within ExampleProductFactory.
+    Product product = ExampleProductFactory.create(config);
 
     try {
       Product result = content.products().insert(this.config.getMerchantId(), product).execute();

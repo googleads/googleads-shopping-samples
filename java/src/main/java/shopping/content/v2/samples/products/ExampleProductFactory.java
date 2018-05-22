@@ -17,7 +17,20 @@ public class ExampleProductFactory {
   private static final String CHANNEL = "online";
   private static final String CONTENT_LANGUAGE = "en";
   private static final String TARGET_COUNTRY = "GB";
+  private static final String OFFER_ID = "book123";
   private static final int PRODUCT_COUNT = 10;
+
+  public static String sampleProductId() {
+    return sampleProductId(OFFER_ID);
+  }
+
+  public static String sampleProductId(String offerId) {
+    return CHANNEL + ":" + CONTENT_LANGUAGE + ":" + TARGET_COUNTRY + ":" + offerId;
+  }
+
+  public static Product create(ContentConfig config) {
+    return create(config, OFFER_ID);
+  }
 
   public static Product create(ContentConfig config, String offerId) {
     String websiteUrl = config.getWebsiteUrl();

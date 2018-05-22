@@ -20,7 +20,9 @@ public class ProductGetSample extends ContentSample {
     try {
       // We create a product with ID online:en:GB:book123 in the ProductInsert sample
       Product product =
-          content.products().get(this.config.getMerchantId(), "online:en:GB:book123").execute();
+          content.products()
+              .get(this.config.getMerchantId(), ExampleProductFactory.sampleProductId())
+              .execute();
       System.out.printf("%s %s\n", product.getId(), product.getTitle());
     } catch (GoogleJsonResponseException e) {
       if (e.getDetails().getCode() == 404) {

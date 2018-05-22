@@ -6,6 +6,7 @@ import com.google.api.services.content.model.Price;
 import com.google.api.services.content.model.Product;
 import java.io.IOException;
 import shopping.content.v2.samples.ContentSample;
+import shopping.content.v2.samples.products.ExampleProductFactory;
 
 /** Sample that modifies a product. We modify the product added in ProductInsertSample. */
 public class InventorySetSample extends ContentSample {
@@ -17,7 +18,7 @@ public class InventorySetSample extends ContentSample {
   public void execute() throws IOException {
     checkNonMCA();
 
-    String offerId = "online:en:GB:book123";
+    String offerId = ExampleProductFactory.sampleProductId();
 
     InventorySetRequest request =
         new InventorySetRequest()
