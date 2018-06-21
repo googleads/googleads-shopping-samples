@@ -37,11 +37,22 @@ func productstatusesDemo(ctx context.Context, service *content.APIService, confi
 
 func printProductstatusesPage(res *content.ProductstatusesListResponse) error {
 	for _, productstatus := range res.Resources {
-		fmt.Printf(" - Offer %s\n",
-			productstatus.ProductId)
-		for _, dqi := range productstatus.DataQualityIssues {
-			fmt.Printf("\t(%s) %s [%s]: %s\n",
-				dqi.Severity, dqi.Id, dqi.Location, dqi.Detail)
+		fmt.Printf(" - Destination statuses for offer %s\n", productstatus.ProductId)
+		for _, ds := range productstatus.DestinationStatuses {
+			fmt.Printf("\t%s for destination %q", ds.ApprovalStatus, ds.Destination)
+			if ds.ApprovalPending {
+				fmt.Printf(" (still pending)\n")
+			} else {
+				fmt.Printf("\n")
+			}
+		}
+		fmt.Printf(" - Issues for offer %s\n", productstatus.ProductId)
+		for _, ili := range productstatus.ItemLevelIssues {
+			fmt.Printf("\t- Code: %s\n", ili.Code)
+			fmt.Printf("\t  Description: %s\n", ili.Description)
+			fmt.Printf("\t  Detailed description: %s\n", ili.Detail)
+			fmt.Printf("\t  Resolution: %s\n", ili.Resolution)
+			fmt.Printf("\t  Servability: %s\n", ili.Servability)
 		}
 		fmt.Printf("\n")
 	}
