@@ -158,7 +158,7 @@ class OrdersSample extends BaseSample {
   public function listUnacknowledgedOrders() {
     printf("Printing unacknowledged orders for %s.\n",
         $this->session->merchantId);
-    $parameters = ['acknowledged' => 'false'];
+    $parameters = ['acknowledged' => false];
     do {
       $resp = $this->session->sandboxService->orders->listOrders(
           $this->session->merchantId, $parameters);
