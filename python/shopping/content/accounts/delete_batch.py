@@ -25,7 +25,7 @@ from shopping.content import common
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
-    'account_ids', nargs='*', help='The IDs of the accounts to delete.')
+    'account_ids', nargs='+', help='The IDs of the accounts to delete.')
 
 
 def main(argv):

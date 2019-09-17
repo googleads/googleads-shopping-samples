@@ -58,8 +58,8 @@ def main(argv):
       product = entry.get('product')
       errors = entry.get('errors')
       if product:
-        print('Product "%s" with offerId "%s" and title "%s" was created.' %
-              (product['id'], product['offerId'], product['title']))
+        print('Product "%s" with offerId "%s" was created.' %
+              (product['id'], product['offerId']))
       elif errors:
         print('Errors for batch entry %d:' % entry['batchId'])
         print(json.dumps(errors, sort_keys=True, indent=2,

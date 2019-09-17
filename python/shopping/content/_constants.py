@@ -26,8 +26,8 @@ SERVICE_ACCOUNT_FILE = 'service-account.json'
 
 # Constants needed for the Content API
 SERVICE_NAME = 'content'
-SERVICE_VERSION = 'v2'
-SANDBOX_SERVICE_VERSION = 'v2sandbox'
+SERVICE_VERSION = 'v2.1'
+SANDBOX_SERVICE_VERSION = 'v2.1sandbox'
 CONTENT_API_SCOPE = 'https://www.googleapis.com/auth/' + SERVICE_NAME
 
 # These constants define the identifiers for all of our example products/feeds.

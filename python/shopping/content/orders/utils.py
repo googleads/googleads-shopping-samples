@@ -30,13 +30,16 @@ def print_order(order):
   if 'merchantOrderId' in order:
     print('- Merchant order ID: %s' % order['merchantOrderId'])
   if 'customer' in order:
+    print(order['customer'])
     print('- Customer information:')
     print('  - Full name: %s' % order['customer']['fullName'])
-    print('  - Email: %s' % order['customer']['email'])
+    print('  - Email: %s' % order['customer'].setdefault(
+        'marketingRightsInfo', {}).setdefault('marketingEmailAddress', ''))
   print('- Placed on date: %s' % order['placedDate'])
-  if 'netAmount' in order:
-    print('- Name amount: %s %s' % (order['netAmount']['value'],
-                                    order['netAmount']['currency']))
+  if 'netPriceAmount' in order:
+    print(
+        '- Name amount: %s %s' %
+        (order['netPriceAmount']['value'], order['netPriceAmount']['currency']))
   print('- Payment status: %s' % order['paymentStatus'])
   if 'paymentMethod' in order:
     print('- Payment method:')
@@ -52,7 +55,7 @@ def print_order(order):
     print('- %d line item(s):' % len(order['lineItems']))
     for item in order['lineItems']:
       _print_line_item(item)
-  print('- Shipping option: %s' % order['shippingOption'])
+  print('- Shipments: %s' % order.setdefault('shipments', {}))
   if 'shippingCost' in order:
     print('- Shipping cost: %s %s' % (order['shippingCost']['value'],
                                       order['shippingCost']['currency']))

@@ -34,12 +34,14 @@ def create_datafeed_sample(config, name, **overwrites):
       'name': name,
       'contentType': 'products',
       'attributeLanguage': 'en',
-      'contentLanguage': _constants.CONTENT_LANGUAGE,
-      'intendedDestinations': ['Shopping'],
+      'targets': [{
+          'language': _constants.CONTENT_LANGUAGE,
+          'includedDestinations': ['Shopping'],
+          'country': _constants.TARGET_COUNTRY
+      }],
       # The file name must be unique per account. We only use unique names in
       # these examples, so it's not an issue here.
       'fileName': name,
-      'targetCountry': _constants.TARGET_COUNTRY,
       # You can schedule monthly, weekly or daily.
       #
       # Monthly - set day of month ('dayOfMonth') and hour ('hour')

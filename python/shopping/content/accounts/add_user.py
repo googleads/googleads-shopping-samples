@@ -32,8 +32,7 @@ def main(argv):
 
   # First we need to retrieve the existing set of users.
   response = service.accounts().get(
-      merchantId=merchant_id, accountId=merchant_id,
-      fields='users').execute()
+      merchantId=merchant_id, accountId=merchant_id).execute()
 
   account = response
 
@@ -41,8 +40,8 @@ def main(argv):
   new_user = {'emailAddress': email, 'admin': False}
   account['users'].append(new_user)
 
-  # Patch account with new user list.
-  response = service.accounts().patch(
+  # Update account with new user list.
+  response = service.accounts().update(
       merchantId=merchant_id, accountId=merchant_id, body=account).execute()
 
   print('Account %s was added to merchant ID %d' % (email, merchant_id))

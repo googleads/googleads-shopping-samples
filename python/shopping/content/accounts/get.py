@@ -47,7 +47,7 @@ def main(argv):
         msg='Non-multi-client accounts can only get their own information.')
 
   account = service.accounts().get(
-      merchantId=merchant_id, accountId=merchant_id).execute()
+      merchantId=merchant_id, accountId=account_id).execute()
   print('Account %s with name "%s" was found.' %
         (account['id'], account['name']))
 

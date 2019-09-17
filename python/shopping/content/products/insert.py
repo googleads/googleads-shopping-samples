@@ -34,8 +34,7 @@ def main(argv):
   request = service.products().insert(merchantId=merchant_id, body=product)
 
   result = request.execute()
-  print('Product with offerId "%s" and title "%s" was created.' %
-        (result['offerId'], result['title']))
+  print('Product with offerId "%s" was created.' % (result['offerId']))
 
 
 if __name__ == '__main__':

@@ -32,8 +32,7 @@ def main(argv):
 
   # First we need to retrieve the existing set of users.
   account = service.accounts().get(
-      merchantId=merchant_id, accountId=merchant_id,
-      fields='users').execute()
+      merchantId=merchant_id, accountId=merchant_id).execute()
 
   users = account.get('users')
   if not users:
@@ -50,7 +49,7 @@ def main(argv):
   account['users'] = users
 
   # Patch account with new user list.
-  service.accounts().patch(
+  service.accounts().update(
       merchantId=merchant_id, accountId=merchant_id, body=account).execute()
 
   print('User %s was removed from merchant ID %d' % (email, merchant_id))

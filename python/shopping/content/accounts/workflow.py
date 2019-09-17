@@ -41,7 +41,7 @@ def common_workflow(service, config):
 
   merchant_id = config['merchantId']
   email = config.get('accountSampleUser')
-  adwords_id = config.get('accountSampleAdWordsCID')
+  google_ads_id = config.get('accountSampleAdWordsCID')
 
   # Retrieve the account information for the configured Merchant Center account.
   account = acc.get(merchantId=merchant_id, accountId=merchant_id).execute()
@@ -60,29 +60,32 @@ def common_workflow(service, config):
 
     # Keep users that have different emails.
     remaining = [u for u in account['users'] if u['emailAddress'] != email]
-    account = acc.patch(merchantId=merchant_id, accountId=merchant_id,
-                        body={'users': remaining}).execute()
+    account['users'] = remaining
+    account = acc.update(
+        merchantId=merchant_id, accountId=merchant_id, body=account).execute()
     print('After removing user:')
     print_account(account)
     print()
 
-  if adwords_id:
-    adwords_link = {'adwordsId': adwords_id, 'status': 'active'}
-    account['adwordsLinks'].append(adwords_link)
+  if google_ads_id:
+    google_ads_link = {'adsId': google_ads_id, 'status': 'active'}
+    account.setdefault('adsLinks', []).append(google_ads_link)
     account = acc.update(merchantId=merchant_id, accountId=merchant_id,
                          body=account).execute()
-    print('After adding AdWords link:')
+    print('After adding Google Ads link:')
     print_account(account)
     print()
 
-    # Only keep links for other AdWords CIDs.
+    # Only keep links for other Google Ads CIDs.
     # We need to make sure to do an integer comparison here, to match the
     # value we get from the configuration.
-    remaining = [u for u in account['adwordsLinks']
-                 if int(u['adwordsId']) != adwords_id]
-    account = acc.patch(merchantId=merchant_id, accountId=merchant_id,
-                        body={'adwordsLinks': remaining}).execute()
-    print('After removing AdWords link:')
+    remaining = [
+        u for u in account['adsLinks'] if int(u['adsId']) != google_ads_id
+    ]
+    account['adsLinks'] = remaining
+    account = acc.update(
+        merchantId=merchant_id, accountId=merchant_id, body=account).execute()
+    print('After removing Google Ads link:')
     print_account(account)
     print()
 

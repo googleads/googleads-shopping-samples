@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Unlinks the specified AdWords account to the specified merchant center."""
+"""Unlinks the specified Google Ads account to the specified merchant center."""
 
 from __future__ import print_function
 import sys
@@ -25,39 +25,36 @@ def main(argv):
   # Authenticate and construct service.
   service, config, _ = common.init(argv, __doc__)
   merchant_id = config['merchantId']
-  adwords_id = config.get('accountSampleAdWordsCID')
-  if not adwords_id:
-    print('Must specify the AdWords CID to unlink in the samples config.')
+  google_ads_id = config.get('accountSampleAdWordsCID')
+  if not google_ads_id:
+    print('Must specify the Google Ads CID to unlink in the samples config.')
     sys.exit(1)
 
   # First we need to retrieve the existing set of users.
   account = service.accounts().get(
-      merchantId=merchant_id, accountId=merchant_id,
-      fields='adwordsLinks').execute()
+      merchantId=merchant_id, accountId=merchant_id).execute()
 
-  adwords_links = account.get('adwordsLinks')
-  if not adwords_links:
-    print('No AdWords accounts linked to account %d.' % merchant_id)
+  google_ads_links = account.get('adsLinks')
+  if not google_ads_links:
+    print('No Google Ads accounts linked to account %d.' % merchant_id)
     sys.exit(1)
 
   # Do an integer comparison to match the version from the configuration.
-  matched = [
-      l for l in adwords_links if int(l['adwordsId']) == adwords_id
-  ]
+  matched = [l for l in google_ads_links if int(l['adsId']) == google_ads_id]
   if not matched:
-    print('AdWords account %d was not linked.' % adwords_id)
+    print('Google Ads account %d was not linked.' % google_ads_id)
     sys.exit(1)
 
   for u in matched:
-    adwords_links.remove(u)
-  account['adwordsLinks'] = adwords_links
+    google_ads_links.remove(u)
+  account['adsLinks'] = google_ads_links
 
   # Patch account with new user list.
-  service.accounts().patch(
+  service.accounts().update(
       merchantId=merchant_id, accountId=merchant_id, body=account).execute()
 
-  print('AdWords ID %d was removed from merchant ID %d' %
-        (adwords_id, merchant_id))
+  print('Google Ads ID %d was removed from merchant ID %d' %
+        (google_ads_id, merchant_id))
 
 
 if __name__ == '__main__':

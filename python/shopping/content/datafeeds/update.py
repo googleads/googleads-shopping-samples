@@ -33,11 +33,14 @@ def main(argv):
   merchant_id = config['merchantId']
   datafeed_id = flags.datafeed_id
 
+  # Get the datafeed to be changed
+  datafeed = service.datafeeds().get(
+      merchantId=merchant_id, datafeedId=datafeed_id).execute()
+
   # Changing the scheduled fetch time to 7:00.
-  request = service.datafeeds().patch(
-      merchantId=merchant_id,
-      datafeedId=datafeed_id,
-      body={'fetchSchedule': {'hour': 7}})
+  datafeed['fetchSchedule']['hour'] = 7
+  request = service.datafeeds().update(
+      merchantId=merchant_id, datafeedId=datafeed_id, body=datafeed)
 
   result = request.execute()
   print('Datafeed with ID %s and fetchSchedule %s was updated.' %

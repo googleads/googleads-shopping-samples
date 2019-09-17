@@ -44,6 +44,7 @@ def non_mca_workflow(service, config, page_size=50):
 
   merchant_id = config['merchantId']
 
+  # List all products
   count = 0
   print('Printing status of all products:')
   request = pr.list(merchantId=merchant_id, maxResults=page_size)
@@ -55,7 +56,12 @@ def non_mca_workflow(service, config, page_size=50):
       break
     count += len(products)
     for product in products:
-      print_product(product)
+      # Get product.
+      product_id = product['id']
+      print('Getting product (ID "%s").' % product_id)
+      info = pr.get(merchantId=merchant_id, productId=product_id).execute()
+      print_product(info)
+      print()
     request = pr.list_next(request, result)
   print('Status for %d products printed.\n' % count)
 
@@ -67,12 +73,6 @@ def non_mca_workflow(service, config, page_size=50):
   new_product = pr.insert(merchantId=merchant_id, body=product).execute()
   print('done.\n')
   product_id = new_product['id']
-
-  print('Retrieving new product (ID "%s").' % product_id)
-  info = pr.get(merchantId=merchant_id, productId=product_id).execute()
-  print('Product information:')
-  print_product(info)
-  print()
 
   # Delete product.
   print('Deleting product "%s"...' % offer_id, end='')

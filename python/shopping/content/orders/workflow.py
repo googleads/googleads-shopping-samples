@@ -128,14 +128,12 @@ def main(argv):
           'lineItemId': item1['id'],
           'quantity': item1['quantityPending']
       }],
-      'carrier':
-          item1['shippingDetails']['method']['carrier'],
-      'shipmentId':
-          '%d' % random.getrandbits(32),
-      'trackingId':
-          '%d' % random.getrandbits(32),
-      'operationId':
-          _new_operation_id()
+      'shipmentInfos': [{
+          'carrier': item1['shippingDetails']['method']['carrier'],
+          'shipmentId': '%d' % random.getrandbits(32),
+          'trackingId': '%d' % random.getrandbits(32)
+      }],
+      'operationId': _new_operation_id()
   }
   request = orders.shiplineitems(
       merchantId=merchant_id, orderId=order_id, body=shipping_request_1)
@@ -155,14 +153,12 @@ def main(argv):
           'lineItemId': item2['id'],
           'quantity': item2['quantityPending']
       }],
-      'carrier':
-          item2['shippingDetails']['method']['carrier'],
-      'shipmentId':
-          '%d' % random.getrandbits(32),
-      'trackingId':
-          '%d' % random.getrandbits(32),
-      'operationId':
-          _new_operation_id()
+      'shipmentInfos': [{
+          'carrier': item2['shippingDetails']['method']['carrier'],
+          'shipmentId': '%d' % random.getrandbits(32),
+          'trackingId': '%d' % random.getrandbits(32)
+      }],
+      'operationId': _new_operation_id()
   }
   request = orders.shiplineitems(
       merchantId=merchant_id, orderId=order_id, body=shipping_request_2)
@@ -180,9 +176,9 @@ def main(argv):
       merchantId=merchant_id,
       orderId=order_id,
       body={
-          'shipmentId': shipping_request_1['shipmentId'],
-          'trackingId': shipping_request_1['trackingId'],
-          'carrier': shipping_request_1['carrier'],
+          'shipmentId': shipping_request_1['shipmentInfos'][0]['shipmentId'],
+          'trackingId': shipping_request_1['shipmentInfos'][0]['trackingId'],
+          'carrier': shipping_request_1['shipmentInfos'][0]['carrier'],
           'status': 'delivered',
           'operationId': _new_operation_id()
       })
@@ -200,9 +196,9 @@ def main(argv):
       merchantId=merchant_id,
       orderId=order_id,
       body={
-          'shipmentId': shipping_request_2['shipmentId'],
-          'trackingId': shipping_request_2['trackingId'],
-          'carrier': shipping_request_2['carrier'],
+          'shipmentId': shipping_request_2['shipmentInfos'][0]['shipmentId'],
+          'trackingId': shipping_request_2['shipmentInfos'][0]['trackingId'],
+          'carrier': shipping_request_2['shipmentInfos'][0]['carrier'],
           'status': 'delivered',
           'operationId': _new_operation_id()
       })
@@ -216,7 +212,7 @@ def main(argv):
 
   # Customer returns one of the first item due to being broken on delivery.
   print('Notifying Google about return of first line item... ', end='')
-  request = orders.returnlineitem(
+  request = orders.returnrefundlineitem(
       merchantId=merchant_id,
       orderId=order_id,
       body={

@@ -25,7 +25,7 @@ from shopping.content import common
 # Declare command-line flags.
 argparser = argparse.ArgumentParser(add_help=False)
 argparser.add_argument(
-    'datafeed_ids', nargs='*', help='The IDs of the datafeeds to delete.')
+    'datafeed_ids', nargs='+', help='The IDs of the datafeeds to delete.')
 
 
 def main(argv):
@@ -56,7 +56,7 @@ def main(argv):
                          separators=(',', ': ')))
       else:
         print('Successfully deleted datafeed %s (batch entry %d).' %
-              (datafeed_ids.get(entry['batchId']), entry['batchId']))
+              (datafeed_ids[entry['batchId']], entry['batchId']))
   else:
     print('There was an error. Response: %s' % result)
 

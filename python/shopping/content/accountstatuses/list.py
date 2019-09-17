@@ -41,21 +41,17 @@ def main(argv):
       break
     for status in statuses:
       print('Account %s:' % status['accountId'])
-      issues = status.get('dataQualityIssues')
-      if not issues:
-        print('- No data quality issues.')
-        continue
-      print('- Found %d data quality issues:' % len(issues))
-      for issue in issues:
-        print('  - (%s) [%s]' % (issue['severity'], issue['id']))
-        items = issue.get('exampleItems')
-        if not items:
-          print('    No example items.')
-          continue
-        print('    Have %d examples from %d affected items:' %
-              (len(items), issue['numItems']))
-        for example in items:
-          print('    - %s: %s' % (example['itemId'], example['title']))
+      issue_count = 0
+      if 'products' in status:
+        for product in status['products']:
+          issues = product['itemLevelIssues']
+          for issue in issues:
+            issue_count += 1
+            print('  - Issue: [%s] "%s" affecting %s items' %
+                  (issue['code'],
+                   issue.setdefault('detail', ''),
+                   issue['numItems']))
+      print('Total num of data quality issues: %d' % issue_count)
     request = service.accountstatuses().list_next(request, result)
 
 

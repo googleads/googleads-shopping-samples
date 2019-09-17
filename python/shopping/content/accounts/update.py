@@ -34,9 +34,14 @@ def main(argv):
   account_id = flags.account_id
   common.check_mca(config, True)
 
+  account = service.accounts().get(
+      merchantId=merchant_id, accountId=account_id).execute()
+
   new_name = 'updated-account%s' % common.get_unique_id()
-  request = service.accounts().patch(
-      merchantId=merchant_id, accountId=account_id, body={'name': new_name})
+  account['name'] = new_name
+
+  request = service.accounts().update(
+      merchantId=merchant_id, accountId=account_id, body=account)
 
   result = request.execute()
   print('Account with id %s was updated with new name "%s".' %

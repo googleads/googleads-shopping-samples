@@ -44,7 +44,10 @@ def main(argv):
       merchantId=merchant_id, productId=product_id).execute()
 
   # Let's fix the warning about product_type and update the product.
-  product['productType'] = 'English/Classics'
+  product['productTypes'] = ['English/Classics']
+
+  # Remove the unsupported field 'source' in an INSERT operation
+  product.pop('source', None)
 
   # Notice that we use insert. The products service does not have an update
   # method. Inserting a product with an ID that already exists means the same
@@ -52,8 +55,7 @@ def main(argv):
   request = service.products().insert(merchantId=merchant_id, body=product)
 
   result = request.execute()
-  print('Product with offerId "%s" and productType "%s" was updated.' %
-        (result['offerId'], result['productType']))
+  print('Product with offerId "%s" was updated.' % (result['offerId']))
 
 
 if __name__ == '__main__':

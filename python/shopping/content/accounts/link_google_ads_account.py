@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Links the specified AdWords account to the specified merchant center account.
+"""Links the specified Google Ads account to the specified merchant center account.
 """
 
 from __future__ import print_function
@@ -26,27 +26,28 @@ def main(argv):
   # Authenticate and construct service.
   service, config, _ = common.init(argv, __doc__)
   merchant_id = config['merchantId']
-  adwords_id = config.get('accountSampleAdWordsCID')
-  if not adwords_id:
-    print('Must specify the AdWords CID to link in the samples configuration.')
+  google_ads_id = config.get('accountSampleAdWordsCID')
+  if not google_ads_id:
+    print(
+        'Must specify the Google Ads CID to link in the samples configuration.')
     sys.exit(1)
 
-  # First we need to retrieve the existing set of AdWords links.
+  # First we need to retrieve the existing set of Google Ads links.
   response = service.accounts().get(
-      merchantId=merchant_id, accountId=merchant_id,
-      fields='adwordsLinks').execute()
+      merchantId=merchant_id, accountId=merchant_id).execute()
 
   account = response
 
-  # Add new AdWords link to existing AdWords link list.
-  adwords_link = {'adwordsId': adwords_id, 'status': 'active'}
-  account.setdefault('adwordsLinks', []).append(adwords_link)
+  # Add new Google Ads link to existing Google Ads link list.
+  google_ads_link = {'adsId': google_ads_id, 'status': 'active'}
+  account.setdefault('adsLinks', []).append(google_ads_link)
 
-  # Patch account with new AdWords link list.
-  response = service.accounts().patch(
+  # Patch account with new Google Ads link list.
+  response = service.accounts().update(
       merchantId=merchant_id, accountId=merchant_id, body=account).execute()
 
-  print('AdWords ID %d was added to merchant ID %d' % (adwords_id, merchant_id))
+  print('Google Ads ID %d was added to merchant ID %d' %
+        (google_ads_id, merchant_id))
 
 
 if __name__ == '__main__':
