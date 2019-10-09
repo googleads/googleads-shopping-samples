@@ -41,6 +41,7 @@ class ContentConfig
 
   attr_accessor :path
   attr_accessor :merchant_id
+  attr_accessor :no_website
   attr_accessor :account_sample_user
   attr_accessor :account_sample_adwords_cid
 
@@ -61,7 +62,7 @@ class ContentConfig
   end
 
   def website_url()
-    if @website_url.nil?
+    if @website_url.nil? && (@no_website == false)
       puts "Attempted to use website_url field of config before initialization."
       puts "Please see config.rb for more information."
       raise "Use of website_url config field before completing service_setup"
@@ -74,6 +75,7 @@ class ContentConfig
     @file = file
     unless options.nil?
       @merchant_id = options["merchantId"]
+      @no_website = options["no_website"]
       @account_sample_user = options["accountSampleUser"]
       @account_sample_adwords_cid = options["accountSampleAdWordsCID"]
     end
