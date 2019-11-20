@@ -8,6 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.commons.cli.CommandLine;
 import shopping.common.BaseOption;
+import shopping.content.v2_1.samples.accounts.AccountWorkflow;
+import shopping.content.v2_1.samples.accountstatuses.AccountstatusesWorkflow;
+import shopping.content.v2_1.samples.accounttax.AccounttaxWorkflow;
+import shopping.content.v2_1.samples.shippingsettings.ShippingsettingsWorkflow;
 
 /** Runs through all the non-Orders services in a single sample. */
 public class NonOrdersWorkflow extends ContentWorkflowSample {
@@ -17,7 +21,13 @@ public class NonOrdersWorkflow extends ContentWorkflowSample {
     }
 
     public void execute() throws IOException {
-        // Currently no Non-Orders Workflows for Shopping Samples v2.1
+        // Account services
+        AccountWorkflow.run(content, sandbox, config);
+        AccountstatusesWorkflow.run(content, sandbox, config);
+        AccounttaxWorkflow.run(content, sandbox, config);
+        // Other services
+        ShippingsettingsWorkflow.run(content, sandbox, config);
+
         System.out.println("---------------------------------");
         System.out.println("All workflows complete.");
     }

@@ -19,8 +19,14 @@ public class AccountsListSample extends ContentSample {
       throws IOException {
     System.out.printf("Listing sub-accounts for Merchant Center %s:%n", merchantId);
     ShoppingContent.Accounts.List listAccounts = content.accounts().list(merchantId);
+
+    AccountsListResponse page = null;
+
     do {
-      AccountsListResponse page = listAccounts.execute();
+      if (page != null) {
+        listAccounts.setPageToken(page.getNextPageToken());
+      }
+      page = listAccounts.execute();
       if (page.getResources() == null) {
         System.out.println("No accounts found.");
         return;
@@ -28,11 +34,8 @@ public class AccountsListSample extends ContentSample {
       for (Account account : page.getResources()) {
         AccountUtils.printAccount(account);
       }
-      if (page.getNextPageToken() == null) {
-        break;
-      }
-      listAccounts.setPageToken(page.getNextPageToken());
-    } while (true);
+    } while (page.getNextPageToken() != null);
+
   }
 
   @Override
