@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\CommonSettings.xml" />
+  
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>Orders</RootNamespace>
+    <AssemblyName>Google.Shopping.Orders.Samples</AssemblyName>
+    <Description>Samples for Order services in the Google Content API for Shopping</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\source\Authenticator.cs" />
+    <Compile Include="..\source\OrdersSample.cs" />
+    <Compile Include="..\source\MerchantConfig.cs" />
+    <Compile Include="..\source\BaseConfig.cs" />
+    <Compile Include="..\source\BaseSample.cs" />
+    <Compile Include="..\source\OrdersRunner.cs" />
+    <Compile Include="..\source\BaseContentSample.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="1.9.71" />
+    <PackageReference Include="Google.Apis.Core" Version="1.42.0" />
+    <PackageReference Include="Google.Apis.ShoppingContent.v2" Version="1.33.1.1222" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+</Project>

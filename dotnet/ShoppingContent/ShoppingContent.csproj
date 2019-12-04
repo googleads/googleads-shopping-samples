@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\CommonSettings.xml" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>ShoppingContent</RootNamespace>
+    <AssemblyName>Google.Shopping.Samples</AssemblyName>
+    <Description>Samples for Google Content API for Shopping</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\source\ShoppingContentSample.cs" />
+    <Compile Include="..\source\ShoppingUtil.cs" />
+    <Compile Include="..\source\ProductsSample.cs" />
+    <Compile Include="..\source\DatafeedsSample.cs" />
+    <Compile Include="..\source\AccountsSample.cs" />
+    <Compile Include="..\source\MultiClientAccountSample.cs" />
+    <Compile Include="..\source\Authenticator.cs" />
+    <Compile Include="..\source\AccountstatusesSample.cs" />
+    <Compile Include="..\source\ProductstatusesSample.cs" />
+    <Compile Include="..\source\AccounttaxSample.cs" />
+    <Compile Include="..\source\ShippingsettingsSample.cs" />
+    <Compile Include="..\source\MerchantConfig.cs" />
+    <Compile Include="..\source\BaseConfig.cs" />
+    <Compile Include="..\source\BaseSample.cs" />
+    <Compile Include="..\source\ContentSamplesRunner.cs" />
+    <Compile Include="..\source\BaseContentSample.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="1.9.71" />
+    <PackageReference Include="Google.Apis.Core" Version="1.42.0" />
+    <PackageReference Include="Google.Apis.ShoppingContent.v2" Version="1.33.1.1222" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+</Project>
