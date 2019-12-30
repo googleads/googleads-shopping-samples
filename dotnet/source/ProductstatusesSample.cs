@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Google.Apis.ShoppingContent.v2;
-using Google.Apis.ShoppingContent.v2.Data;
+using Google.Apis.ShoppingContent.v2_1;
+using Google.Apis.ShoppingContent.v2_1.Data;
 
 namespace ShoppingSamples.Content
 {
@@ -94,15 +94,13 @@ namespace ShoppingSamples.Content
 
         private void PrintStatus(ProductStatus status)
         {
-            Console.WriteLine("Information for product %s:\n", status.ProductId);
+            Console.WriteLine("Information for product {0}:", status.ProductId);
             Console.WriteLine("- Title: {0}", status.Title);
 
             Console.WriteLine("- Destination statuses:");
             foreach (var stat in status.DestinationStatuses)
             {
-                Console.WriteLine("  - {0}: {1}{2}",
-                    stat.Destination, stat.ApprovalStatus,
-                    stat.ApprovalPending.GetValueOrDefault(false) ? " (still pending)" : "");
+                Console.WriteLine("  - {0}: {1}", stat.Destination, stat.Status);
             }
 
             if (status.ItemLevelIssues == null)

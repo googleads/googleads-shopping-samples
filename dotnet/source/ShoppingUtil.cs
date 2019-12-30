@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Google.Apis.Requests;
-using Google.Apis.ShoppingContent.v2.Data;
+using Google.Apis.ShoppingContent.v2_1.Data;
 
 namespace ShoppingSamples.Content
 {
@@ -31,19 +31,6 @@ namespace ShoppingSamples.Content
             foreach (SingleError err in errors)
             {
                 Console.WriteLine(" - [" + err.Reason + "] " + err.Message);
-            }
-        }
-
-        /// <summary>
-        /// Prints out a list of warning results from the Content API.
-        /// </summary>
-        internal void PrintWarnings(IList<Error> warnings)
-        {
-            if (warnings == null) return;
-            Console.WriteLine("Received the following warnings:");
-            foreach (Error warn in warnings)
-            {
-                Console.WriteLine(" - [" + warn.Reason + "] " + warn.Message);
             }
         }
 

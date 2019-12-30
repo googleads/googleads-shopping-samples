@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Google.Apis.ShoppingContent.v2;
-using Google.Apis.ShoppingContent.v2.Data;
+using Google.Apis.ShoppingContent.v2_1;
+using Google.Apis.ShoppingContent.v2_1.Data;
 
 namespace ShoppingSamples.Content
 {
@@ -29,7 +29,7 @@ namespace ShoppingSamples.Content
 
         /// <summary>Runs multiple requests against the Content API for Shopping.</summary>
         internal void RunCalls(
-            ulong merchantId, string emailAddress = null, ulong? adWordsAccountId = null)
+            ulong merchantId, string emailAddress = null, ulong? googleAdsAccountId = null)
         {
             // Can get information about your own account if non-MCA.
             GetAccount(merchantId);
@@ -41,11 +41,11 @@ namespace ShoppingSamples.Content
                 RemoveUser(merchantId, merchantId, user.EmailAddress);
             }
 
-            // Primary account, AdWords account link
-            if (adWordsAccountId != null && adWordsAccountId.Value != 0L)
+            // Primary account, Google Ads account link
+            if (googleAdsAccountId != null && googleAdsAccountId.Value != 0L)
             {
-                LinkAdWordsAccount(merchantId, adWordsAccountId.Value);
-                UnlinkAdWordsAccount(merchantId, adWordsAccountId.Value);
+                LinkGoogleAdsAccount(merchantId, googleAdsAccountId.Value);
+                UnlinkGoogleAdsAccount(merchantId, googleAdsAccountId.Value);
             }
 
         }
@@ -75,13 +75,18 @@ namespace ShoppingSamples.Content
             newAccountUser.EmailAddress = emailAddress;
             newAccountUser.Admin = false;
 
+            if (account.Users == null)
+            {
+                account.Users = new List<AccountUser>();
+            }
+
             account.Users.Add(newAccountUser);
 
-            // Set ETag to null as Patch() will reject it otherwise.
+            // Set ETag to null as Update() will reject it otherwise.
             account.ETag = null;
 
-            // Patch the new list of accounts.
-            Account response = service.Accounts.Patch(account, merchantId, accountId).Execute();
+            // Update the new list of accounts.
+            Account response = service.Accounts.Update(account, merchantId, accountId).Execute();
 
             Console.WriteLine("User \"{0}\" was added to account {1}.", emailAddress, response.Id);
             Console.WriteLine();
@@ -103,71 +108,71 @@ namespace ShoppingSamples.Content
 
             body.Users.Remove(body.Users.Where(x => x.EmailAddress == emailAddress).First());
 
-            // Set ETag to null as Patch() will reject it otherwise.
+            // Set ETag to null as Update() will reject it otherwise.
             body.ETag = null;
 
-            // Patch the new list of accounts.
-            Account response = service.Accounts.Patch(body, merchantId, accountId).Execute();
+            // Update the new list of accounts.
+            Account response = service.Accounts.Update(body, merchantId, accountId).Execute();
 
             Console.WriteLine("User \"{0}\" was deleted from account {1}.", emailAddress, response.Id);
             Console.WriteLine();
         }
 
         /// <summary>
-        /// Links the specified AdWords account to the specified merchant center account.
+        /// Links the specified Google Ads account to the specified merchant center account.
         /// </summary>
         /// <returns>The account that was linked.</returns>
-        private AccountAdwordsLink LinkAdWordsAccount(ulong merchantId, ulong adWordsAccountId)
+        private AccountAdsLink LinkGoogleAdsAccount(ulong merchantId, ulong googleAdsAccountId)
         {
             Console.WriteLine("=================================================================");
-            Console.WriteLine(String.Format("Linking AdWords account {0}", adWordsAccountId));
+            Console.WriteLine(String.Format("Linking Google Ads account {0}", googleAdsAccountId));
             Console.WriteLine("=================================================================");
 
-            // First, retrieve list of AdWords accounts.
+            // First, retrieve list of Google Ads accounts.
             Account account = service.Accounts.Get(merchantId, merchantId).Execute();
-            var newAccountAdWords = new AccountAdwordsLink();
-            newAccountAdWords.AdwordsId = adWordsAccountId;
-            newAccountAdWords.Status = "active";
+            var newAccountLink = new AccountAdsLink();
+            newAccountLink.AdsId = googleAdsAccountId;
+            newAccountLink.Status = "active";
 
-            if (account.AdwordsLinks == null)
+            if (account.AdsLinks == null)
             {
-                account.AdwordsLinks = new List<AccountAdwordsLink>();
+                account.AdsLinks = new List<AccountAdsLink>();
             }
-            account.AdwordsLinks.Add(newAccountAdWords);
+            account.AdsLinks.Add(newAccountLink);
 
-            // Set ETag to null as Patch() will reject it otherwise.
+            // Set ETag to null as Update() will reject it otherwise.
             account.ETag = null;
 
-            // Patch the new list of links.
-            Account response = service.Accounts.Patch(account, merchantId, merchantId).Execute();
+            // Update the new list of links.
+            Account response = service.Accounts.Update(account, merchantId, merchantId).Execute();
 
-            Console.WriteLine("AdWords account \"{0}\" was added to account {1}.", adWordsAccountId, response.Id);
+            Console.WriteLine("GoogleAds account \"{0}\" was added to account {1}.", googleAdsAccountId, response.Id);
             Console.WriteLine();
 
-            return newAccountAdWords;
+            return newAccountLink;
         }
 
         /// <summary>
-        /// Unlinks the specified AdWords account to the specified merchant center.
+        /// Unlinks the specified Google Ads account to the specified merchant center.
         /// </summary>
-        private void UnlinkAdWordsAccount(ulong merchantId, ulong adWordsAccountId)
+        private void UnlinkGoogleAdsAccount(ulong merchantId, ulong googleAdsAccountId)
         {
             Console.WriteLine("=================================================================");
-            Console.WriteLine(String.Format("Unlinking AdWords account {0}", adWordsAccountId));
+            Console.WriteLine(String.Format("Unlinking Google Ads account {0}", googleAdsAccountId));
             Console.WriteLine("=================================================================");
 
-            // First, retrieve list of AdWords accounts.
+            // First, retrieve list of Google Ads accounts.
             Account body = service.Accounts.Get(merchantId, merchantId).Execute();
 
-            body.AdwordsLinks.Remove(body.AdwordsLinks.Where(x => x.AdwordsId == adWordsAccountId).First());
+            body.AdsLinks.Remove(body.AdsLinks.Where(x => x.AdsId == googleAdsAccountId).First());
 
-            // Set ETag to null as Patch() will reject it otherwise.
+            // Set ETag to null as Update() will reject it otherwise.
             body.ETag = null;
 
-            // Patch the new list of links.
-            Account response = service.Accounts.Patch(body, merchantId, merchantId).Execute();
+            // Update the new list of links.
+            Account response = service.Accounts.Update(body, merchantId, merchantId).Execute();
 
-            Console.WriteLine("AdWords account \"{0}\" was unlinked from account {1}.", adWordsAccountId, response.Id);
+            Console.WriteLine("Google Ads account \"{0}\" was unlinked from account {1}.", googleAdsAccountId, response.Id);
             Console.WriteLine();
         }
     }

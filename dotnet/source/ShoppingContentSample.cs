@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
-using Google.Apis.ShoppingContent.v2;
+using Google.Apis.ShoppingContent.v2_1;
 using CommandLine;
 
 namespace ShoppingSamples.Content
@@ -36,7 +36,7 @@ namespace ShoppingSamples.Content
                 datafeedsSample.RunCalls(merchantId);
                 accountstatusesSample.RunCalls(merchantId);
                 accountsSample.RunCalls(
-                    merchantId, config.AccountSampleUser, config.AccountSampleAdWordsCID);
+                    merchantId, config.AccountSampleUser, config.AccountSampleGoogleAdsCID);
                 accounttaxSample.RunCalls(merchantId);
                 shippingsettingsSample.RunCalls(merchantId);
             }

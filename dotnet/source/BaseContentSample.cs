@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Google.Apis.ShoppingContent.v2;
+using Google.Apis.ShoppingContent.v2_1;
 using Google.Apis.Services;
 using System.IO;
 
@@ -66,11 +66,11 @@ namespace ShoppingSamples.Content
             var pathParts = service.BasePath
                 .Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
             var basename = pathParts.Last();
-            if (basename == "v2")
+            if (basename == "v2.1")
             {
                 var newPath = "/"
                     + String.Join("/", pathParts.Take(pathParts.Count() - 1))
-                    + "/v2sandbox/";
+                    + "/v2.1sandbox/";
                 sandboxService = new ShoppingContentServiceWithBaseUri(init, new Uri(u, newPath));
             }
             else

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using Google.Apis.ShoppingContent.v2;
-using Google.Apis.ShoppingContent.v2.Data;
+using Google.Apis.ShoppingContent.v2_1;
+using Google.Apis.ShoppingContent.v2_1.Data;
 
 namespace ShoppingSamples.Content
 {
@@ -18,7 +18,7 @@ namespace ShoppingSamples.Content
     /// <description>Datafeeds.insert</description>
     /// </item>
     /// <item>
-    /// <description>Datafeeds.patch</description>
+    /// <description>Datafeeds.update</description>
     /// </item>
     /// <item>
     /// <description>Datafeeds.delete</description>
@@ -87,7 +87,7 @@ namespace ShoppingSamples.Content
         }
 
         /// <summary>
-        /// Updates a datafeed using the Datafeeds.patch method.
+        /// Updates a datafeed using the Datafeeds.update method.
         /// </summary>
         private void UpdateDatafeed(ulong merchantId, ulong datafeedId)
         {
@@ -95,11 +95,13 @@ namespace ShoppingSamples.Content
             Console.WriteLine(String.Format("Updating datafeed {0}", datafeedId));
             Console.WriteLine("=================================================================");
 
-            Datafeed datafeed = new Datafeed();
-            datafeed.FetchSchedule = new DatafeedFetchSchedule();
+            Datafeed datafeed = service.Datafeeds.Get(merchantId, datafeedId).Execute();
             datafeed.FetchSchedule.Hour = 7;
 
-            var request = service.Datafeeds.Patch(datafeed, merchantId, datafeedId);
+            // Set ETag to null as Update() will reject it otherwise.
+            datafeed.ETag = null;
+
+            var request = service.Datafeeds.Update(datafeed, merchantId, datafeedId);
             Datafeed response = shoppingUtil.ExecuteWithRetries(request, retryCodes);
             Console.WriteLine(
                 "Datafeed updated with ID \"{0}\" and name \"{1}\".",
@@ -151,11 +153,7 @@ namespace ShoppingSamples.Content
             datafeed.Name = name;
             datafeed.ContentType = "products";
             datafeed.AttributeLanguage = "en";
-            datafeed.ContentLanguage = "EN";
-            datafeed.IntendedDestinations = new List<String>();
-            datafeed.IntendedDestinations.Add("Shopping");
             datafeed.FileName = name;
-            datafeed.TargetCountry = "US";
             datafeed.FetchSchedule = new DatafeedFetchSchedule();
             datafeed.FetchSchedule.Weekday = "monday";
             datafeed.FetchSchedule.Hour = 6;
@@ -165,6 +163,13 @@ namespace ShoppingSamples.Content
             datafeed.Format.FileEncoding = "utf-8";
             datafeed.Format.ColumnDelimiter = "tab";
             datafeed.Format.QuotingMode = "value quoting";
+            datafeed.Targets = new List<DatafeedTarget>();
+            var target = new DatafeedTarget();
+            target.Country = "US";
+            target.Language = "EN";
+            target.IncludedDestinations = new List<String>();
+            target.IncludedDestinations.Add("Shopping");
+            datafeed.Targets.Add(target);
 
             return datafeed;
         }

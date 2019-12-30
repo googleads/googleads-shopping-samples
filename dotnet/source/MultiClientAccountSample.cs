@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using Google.Apis.ShoppingContent.v2;
-using Google.Apis.ShoppingContent.v2.Data;
+using Google.Apis.ShoppingContent.v2_1;
+using Google.Apis.ShoppingContent.v2_1.Data;
 
 namespace ShoppingSamples.Content
 {
@@ -78,10 +78,14 @@ namespace ShoppingSamples.Content
             Console.WriteLine(String.Format("Updating account {0}", accountId));
             Console.WriteLine("=================================================================");
 
-            Account account = new Account();
+            var accountGetRequest = service.Accounts.Get(merchantId, accountId);
+            Account account = shoppingUtil.ExecuteWithRetries(accountGetRequest, retryCodes);
             account.Name = "updated-account" + shoppingUtil.GetUniqueId();
 
-            var request = service.Accounts.Patch(account, merchantId, accountId);
+            // Set ETag to null as Update() will reject it otherwise.
+            account.ETag = null;
+
+            var request = service.Accounts.Update(account, merchantId, accountId);
             Account response = shoppingUtil.ExecuteWithRetries(request, retryCodes);
             Console.WriteLine(
                 "Account updated with ID \"{0}\" and name \"{1}\".",

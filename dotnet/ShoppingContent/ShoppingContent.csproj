@@ -29,7 +29,7 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
     <PackageReference Include="Google.Apis.Core" Version="1.42.0" />
-    <PackageReference Include="Google.Apis.ShoppingContent.v2" Version="1.33.1.1222" />
+    <PackageReference Include="Google.Apis.ShoppingContent.v2_1" Version="1.42.0.1790" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>

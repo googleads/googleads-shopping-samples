@@ -1,6 +1,6 @@
 ﻿using System;
-using Google.Apis.ShoppingContent.v2;
-using Google.Apis.ShoppingContent.v2.Data;
+using Google.Apis.ShoppingContent.v2_1;
+using Google.Apis.ShoppingContent.v2_1.Data;
 using System.Collections.Generic;
 
 namespace ShoppingSamples.Content

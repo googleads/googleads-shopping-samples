@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Google.Apis.ShoppingContent.v2;
-using Google.Apis.ShoppingContent.v2.Data;
+using System.Net;
+using Google.Apis.ShoppingContent.v2_1;
+using Google.Apis.ShoppingContent.v2_1.Data;
 
 namespace ShoppingSamples.Content
 {
     /// <summary>
     /// A sample consumer that runs multiple requests against the Products
-    /// and Inventory service in the Content API for Shopping.
+    /// service in the Content API for Shopping.
     /// <para>These include:
     /// <list type="bullet">
     /// <item>
@@ -26,9 +27,6 @@ namespace ShoppingSamples.Content
     /// <item>
     /// <description>Products.delete</description>
     /// </item>
-    /// <item>
-    /// <description>Inventory.set</description>
-    /// </item>
     /// </list></para>
     /// </summary>
     public class ProductsSample
@@ -36,10 +34,11 @@ namespace ShoppingSamples.Content
         private ShoppingContentService service;
         private int maxListPageSize;
         ShoppingUtil shoppingUtil = new ShoppingUtil();
+        IEnumerable<HttpStatusCode> retryCodes = new HttpStatusCode[] {HttpStatusCode.NotFound};
 
         /// <summary>Initializes a new instance of the <see cref="ProductsSample"/> class.</summary>
         /// <param name="service">Content service object on which to run the requests.</param>
-        /// <param name="maxListPageSize">The maximum page size to retrieve.</param> 
+        /// <param name="maxListPageSize">The maximum page size to retrieve.</param>
         public ProductsSample(ShoppingContentService service, int maxListPageSize)
         {
             this.service = service;
@@ -61,7 +60,6 @@ namespace ShoppingSamples.Content
             GetAllProducts(merchantId);
 
             UpdateProduct(merchantId, newProduct.Id);
-            UpdateProductUsingInventory(merchantId, newProduct.Id);
 
             // To show the inserted (single) product has changed.
             GetAllProducts(merchantId);
@@ -98,7 +96,6 @@ namespace ShoppingSamples.Content
                             "Product with ID \"{0}\" and title \"{1}\" was found.",
                             product.Id,
                             product.Title);
-                        shoppingUtil.PrintWarnings(product.Warnings);
                     }
                 }
                 else {
@@ -123,44 +120,25 @@ namespace ShoppingSamples.Content
             Console.WriteLine(String.Format("Updating product {0}", productId));
             Console.WriteLine("=================================================================");
             // First we need to retrieve the full object, since there are no partial updates for the
-            // products collection in Content API v2.
+            // products collection in Content API v2.1.
 
-            Product product = service.Products.Get(merchantId, productId).Execute();
+            var request = service.Products.Get(merchantId, productId);
+            Product product = shoppingUtil.ExecuteWithRetries(request, retryCodes);
 
             // Set ETag to null as Insert() will reject it otherwise.
             product.ETag = null;
 
-            product.ProductType = "English/Classics";
+            product.ProductTypes = new List<String>();
+            product.ProductTypes.Add("English/Classics");
+
+            // Before inserting, product.Source needs to be cleared.
+            product.Source = null;
 
             Product response = service.Products.Insert(product, merchantId).Execute();
             Console.WriteLine(
                 "Product updated with ID \"{0}\" and title \"{1}\".",
                 response.Id,
                 response.Title);
-            shoppingUtil.PrintWarnings(response.Warnings);
-            Console.WriteLine();
-        }
-
-        /// <summary>
-        /// Updates the specified product on the specified account using the inventory collection.
-        /// <para>If you're updating any of the supported properties in a product, be sure to use the inventory.set
-        /// method, for performance reasons.</para>
-        /// </summary>
-        private void UpdateProductUsingInventory(ulong merchantId, String productId)
-        {
-            Console.WriteLine("=================================================================");
-            Console.WriteLine(String.Format("Updating product using Inventory {0}", productId));
-            Console.WriteLine("=================================================================");
-
-            InventorySetRequest body = new InventorySetRequest();
-            body.Availability = "out of stock";
-            body.Price = new Price();
-
-            body.Price.Currency = "USD";
-            body.Price.Value = "3.00";
-
-            service.Inventory.Set(body, merchantId, productId.Split(':').First(), productId).Execute();
-            Console.WriteLine("Product updated with ID \"{0}\".", productId);
             Console.WriteLine();
         }
 
@@ -180,7 +158,6 @@ namespace ShoppingSamples.Content
                 "Product inserted with ID \"{0}\" and title \"{1}\".",
                 response.Id,
                 response.Title);
-            shoppingUtil.PrintWarnings(response.Warnings);
             Console.WriteLine();
             return response;
         }
@@ -237,7 +214,6 @@ namespace ShoppingSamples.Content
                         "Product inserted with ID \"{0}\" and title \"{1}\".",
                         product.OfferId,
                         product.Title);
-                    shoppingUtil.PrintWarnings(product.Warnings);
                 }
             }
             else {

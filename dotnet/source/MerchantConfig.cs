@@ -20,8 +20,8 @@ namespace ShoppingSamples.Content
         [Newtonsoft.Json.JsonPropertyAttribute("accountSampleUser")]
         public string AccountSampleUser { get; set; }
 
-        [Newtonsoft.Json.JsonPropertyAttribute("accountSampleAdWordsCID")]
-        public ulong? AccountSampleAdWordsCID { get; set; }
+        [Newtonsoft.Json.JsonPropertyAttribute("accountSampleGoogleAdsCID")]
+        public ulong? AccountSampleGoogleAdsCID { get; set; }
 
         // The following fields are retrieved via the API after service setup in
         // BaseContentSample#initializeService().

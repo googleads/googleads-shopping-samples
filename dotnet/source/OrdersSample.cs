@@ -1,7 +1,7 @@
 ﻿using System;
-using Google.Apis.ShoppingContent.v2;
+using Google.Apis.ShoppingContent.v2_1;
 using Google.Apis.Services;
-using Google.Apis.ShoppingContent.v2.Data;
+using Google.Apis.ShoppingContent.v2_1.Data;
 using System.Collections.Generic;
 using CommandLine;
 
@@ -139,7 +139,7 @@ namespace ShoppingSamples.Content
             // Turns out one of the first items was broken when the customer received it, so
             // they returned it.  Let's make sure Google knows about it and why.
             {
-                var req = new OrdersReturnLineItemRequest();
+                var req = new OrdersReturnRefundLineItemRequest();
                 req.LineItemId = currentOrder.LineItems[0].Id;
                 req.Quantity = 1;
                 req.Reason = "productArrivedDamaged";
@@ -293,9 +293,12 @@ namespace ShoppingSamples.Content
             itemShip.Quantity = item.QuantityPending;
 
             var req = new OrdersShipLineItemsRequest();
-            req.Carrier = item.ShippingDetails.Method.Carrier;
-            req.ShipmentId = prng.Next().ToString();
-            req.TrackingId = prng.Next().ToString();
+            var shipmentInfo = new OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo();
+            shipmentInfo.Carrier = item.ShippingDetails.Method.Carrier;
+            shipmentInfo.ShipmentId = prng.Next().ToString();
+            shipmentInfo.TrackingId = prng.Next().ToString();
+            req.ShipmentInfos = new List<OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo>();
+            req.ShipmentInfos.Add(shipmentInfo);
             req.LineItems = new List<OrderShipmentLineItemShipment>();
             req.LineItems.Add(itemShip);
             req.OperationId = NewOperationId();
@@ -319,9 +322,9 @@ namespace ShoppingSamples.Content
             Console.WriteLine("=================================================================");
 
             var req = new OrdersUpdateShipmentRequest();
-            req.Carrier = ship.Carrier;
-            req.TrackingId = ship.TrackingId;
-            req.ShipmentId = ship.ShipmentId;
+            req.Carrier = ship.ShipmentInfos[0].Carrier;
+            req.TrackingId = ship.ShipmentInfos[0].TrackingId;
+            req.ShipmentId = ship.ShipmentInfos[0].ShipmentId;
             req.Status = "delivered";
             req.OperationId = NewOperationId();
 
@@ -332,14 +335,14 @@ namespace ShoppingSamples.Content
         }
 
         private void LineItemReturned(ulong merchantId, string orderId,
-            OrdersReturnLineItemRequest req)
+            OrdersReturnRefundLineItemRequest req)
         {
             Console.WriteLine("=================================================================");
             Console.WriteLine("Returned {0} of item {1}", req.Quantity,
                 req.LineItemId);
             Console.WriteLine("=================================================================");
 
-            var resp = sandboxService.Orders.Returnlineitem(req, merchantId, orderId).Execute();
+            var resp = sandboxService.Orders.Returnrefundlineitem(req, merchantId, orderId).Execute();
 
             Console.WriteLine("Finished with status {0}.", resp.ExecutionStatus);
             Console.WriteLine();
@@ -355,23 +358,18 @@ namespace ShoppingSamples.Content
             {
                 Console.WriteLine("- Customer information:");
                 Console.WriteLine("  - Full name: {0}", order.Customer.FullName);
-                Console.WriteLine("  - Email: {0}", order.Customer.Email);
+                if (order.Customer.MarketingRightsInfo != null)
+                {
+                    Console.WriteLine("  - Email: {0}", order.Customer.MarketingRightsInfo.MarketingEmailAddress);
+                }
             }
             Console.WriteLine("- Placed on date: {0}", order.PlacedDate);
-            if (order.NetAmount != null)
+            if (order.NetPriceAmount != null)
             {
-                Console.WriteLine("- Net amount: {0} {1}", order.NetAmount.Value,
-                    order.NetAmount.Currency);
+                Console.WriteLine("- Net amount: {0} {1}", order.NetPriceAmount.Value,
+                    order.NetPriceAmount.Currency);
             }
             Console.WriteLine("- Payment status: {0}", order.PaymentStatus);
-            if (order.PaymentMethod != null)
-            {
-                Console.WriteLine("- Payment method:");
-                Console.WriteLine("  - Type: {0}", order.PaymentMethod.Type);
-                Console.WriteLine("  - Expiration date: {0}/{1}",
-                    order.PaymentMethod.ExpirationMonth,
-                    order.PaymentMethod.ExpirationYear);
-            }
             Console.WriteLine("- Acknowledged: {0}", order.Acknowledged == true ? "yes" : "no");
             if (order.LineItems != null && order.LineItems.Count > 0)
             {
@@ -381,7 +379,6 @@ namespace ShoppingSamples.Content
                     PrintOrderLineItem(item);
                 }
             }
-            Console.WriteLine("- Shipping option: {0}", order.ShippingOption);
             if (order.ShippingCost != null)
             {
                 Console.WriteLine("- Shipping cost: {0} {1}", order.ShippingCost.Value,

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Google.Apis.ShoppingContent.v2;
-using Google.Apis.ShoppingContent.v2.Data;
+using Google.Apis.ShoppingContent.v2_1;
+using Google.Apis.ShoppingContent.v2_1.Data;
 
 namespace ShoppingSamples.Content
 {
@@ -105,25 +105,31 @@ namespace ShoppingSamples.Content
         private void PrintAccountStatus(AccountStatus status)
         {
             Console.WriteLine("Account {0} found.", status.AccountId);
-            IList<AccountStatusDataQualityIssue> issues = status.DataQualityIssues;
+            IList<AccountStatusProducts> products = status.Products;
 
-            if (issues == null)
+            if (products == null)
             {
                 Console.WriteLine("- No data quality issues.");
             }
             else
             {
-                Console.WriteLine("{0} data quality issues found:", issues.Count);
+                int issueCount = 0;
 
-                foreach (var issue in issues)
+                foreach (var product in products)
                 {
-                    Console.WriteLine("- ({0}) [{1}]", issue.Severity, issue.Id);
-                    Console.WriteLine("  Affects {0} items, {1} examples follow:", issue.NumItems, issue.ExampleItems.Count);
-                    foreach (var example in issue.ExampleItems)
+                    if (product.ItemLevelIssues == null)
                     {
-                        Console.WriteLine("  - {0}: {1}", example.ItemId, example.Title);
+                        break;
+                    }
+                    foreach (var issue in product.ItemLevelIssues)
+                    {
+                        issueCount++;
+                        Console.WriteLine("- Issue Code {0} [{1}]", issue.Code, issue.Detail);
+                        Console.WriteLine("  Affects {0} items.", issue.NumItems);
                     }
                 }
+
+                Console.WriteLine("{0} data quality issues found.", issueCount);
             }
         }
     }
