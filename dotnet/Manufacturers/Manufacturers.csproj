@@ -3,11 +3,12 @@
   <Import Project="..\CommonSettings.xml" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;net472</TargetFrameworks>
     <RootNamespace>Manufacturers</RootNamespace>
     <AssemblyName>Google.Manufacturers.Samples</AssemblyName>
     <Description>Samples for Google Manufacturer Center API</Description>
     <Product>Google Manufacturers Samples</Product>
+    <StartupObject>ShoppingSamples.Manufacturers.ShoppingManufacturerSample</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\source\BaseConfig.cs" />
@@ -18,7 +19,7 @@
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
     <PackageReference Include="Google.Apis.Core" Version="1.42.0" />
     <PackageReference Include="Google.Apis.ManufacturerCenter.v1" Version="1.33.0.1204" />
-    <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 </Project>
