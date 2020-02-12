@@ -75,7 +75,7 @@ namespace ShoppingSamples
             var init = new BaseClientService.Initializer()
             {
                 HttpClientInitializer = initializer,
-                ApplicationName = ApiName + " Samples",
+                ApplicationName = $"{ApiName} Samples",
             };
 
             if (Environment.GetEnvironmentVariable(endpointEnvVar) == null)

@@ -80,7 +80,7 @@ namespace ShoppingSamples.Content
 
             var accountGetRequest = service.Accounts.Get(merchantId, accountId);
             Account account = shoppingUtil.ExecuteWithRetries(accountGetRequest, retryCodes);
-            account.Name = "updated-account" + shoppingUtil.GetUniqueId();
+            account.Name = $"updated-account{shoppingUtil.GetUniqueId()}";
 
             // Set ETag to null as Update() will reject it otherwise.
             account.ETag = null;

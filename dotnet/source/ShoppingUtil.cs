@@ -30,7 +30,7 @@ namespace ShoppingSamples.Content
             Console.WriteLine("Received the following errors:");
             foreach (SingleError err in errors)
             {
-                Console.WriteLine(" - [" + err.Reason + "] " + err.Message);
+                Console.WriteLine($" - [{err.Reason}] {err.Message}");
             }
         }
 

@@ -34,7 +34,7 @@ namespace ShoppingSamples.Content
             var contentPath = Path.Combine(configPath, "content");
             if (!Directory.Exists(contentPath))
             {
-                Console.WriteLine("Could not find configuration directory at " + contentPath);
+                Console.WriteLine($"Could not find configuration directory at {contentPath}");
                 Console.WriteLine("Please read the included README for instructions.");
                 throw new FileNotFoundException("Missing configuration directory");
             }
@@ -42,7 +42,7 @@ namespace ShoppingSamples.Content
             var contentFile = Path.Combine(contentPath, "merchant-info.json");
             if (!File.Exists(contentFile))
             {
-                Console.WriteLine("No configuration file at " + contentFile);
+                Console.WriteLine($"No configuration file at {contentFile}");
                 Console.WriteLine("Assuming default configuration for authenticated user.");
                 config = new MerchantConfig();
                 config.ConfigDir = contentPath;

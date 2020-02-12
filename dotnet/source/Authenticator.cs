@@ -43,7 +43,7 @@ namespace ShoppingSamples
             String serviceAccountPath = Path.Combine(config.ConfigDir, "service-account.json");
             if (File.Exists(serviceAccountPath))
             {
-                Console.WriteLine("Loading service account credentials from " + serviceAccountPath);
+                Console.WriteLine($"Loading service account credentials from {serviceAccountPath}");
                 using (FileStream stream = new FileStream(
                     serviceAccountPath, FileMode.Open, FileAccess.Read))
                 {
@@ -53,7 +53,7 @@ namespace ShoppingSamples
             }
             else if (File.Exists(oauthFilePath))
             {
-                Console.WriteLine("Loading OAuth2 credentials from " + oauthFilePath);
+                Console.WriteLine($"Loading OAuth2 credentials from {oauthFilePath}");
                 using (FileStream oauthFile =
                     File.Open(oauthFilePath, FileMode.Open, FileAccess.Read))
                 {
@@ -94,8 +94,8 @@ namespace ShoppingSamples
             }
             Console.WriteLine("Could not find authentication credentials. Checked:");
             Console.WriteLine(" - Google Application Default Credentials");
-            Console.WriteLine(" - " + serviceAccountPath);
-            Console.WriteLine(" - " + oauthFilePath);
+            Console.WriteLine($" - {serviceAccountPath}");
+            Console.WriteLine($" - {oauthFilePath}");
             Console.WriteLine("Please read the included README for instructions.");
             return null;
         }

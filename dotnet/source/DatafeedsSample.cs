@@ -158,7 +158,7 @@ namespace ShoppingSamples.Content
             datafeed.FetchSchedule.Weekday = "monday";
             datafeed.FetchSchedule.Hour = 6;
             datafeed.FetchSchedule.TimeZone = "America/Los_Angeles";
-            datafeed.FetchSchedule.FetchUrl = "http://feeds.my-shop.com/" + name;
+            datafeed.FetchSchedule.FetchUrl = $"http://feeds.my-shop.com/{name}";
             datafeed.Format = new DatafeedFormat();
             datafeed.Format.FileEncoding = "utf-8";
             datafeed.Format.ColumnDelimiter = "tab";

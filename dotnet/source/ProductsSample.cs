@@ -277,8 +277,8 @@ namespace ShoppingSamples.Content
             product.OfferId = String.Format("product#{0}", shoppingUtil.GetUniqueId());
             product.Title = "A Tale of Two Cities";
             product.Description = "A classic novel about the French Revolution";
-            product.Link = websiteUrl + "/tale-of-two-cities.html";
-            product.ImageLink = websiteUrl + "/tale-of-two-cities.jpg";
+            product.Link = $"{websiteUrl}/tale-of-two-cities.html";
+            product.ImageLink = $"{websiteUrl}/tale-of-two-cities.jpg";
             product.ContentLanguage = "EN";
             product.TargetCountry = "US";
             product.Channel = "online";
