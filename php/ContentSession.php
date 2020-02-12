@@ -299,8 +299,29 @@ class ContentSession {
     return rtrim($home, '\\/');
   }
 
+  private function getToken(Google_Client $client) {
+    $client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
+    $client->setScopes('https://www.googleapis.com/auth/content');
+    $client->setAccessType('offline'); // So that we get a refresh token
+
+    printf("Visit the following URL and log in:\n\n\t%s\n\n",
+        $client->createAuthUrl());
+    print ('Then type the resulting code here: ');
+    $code = trim(fgets(STDIN));
+    $client->authenticate($code);
+
+    return $client->getAccessToken();
+  }
+
   protected function cacheToken(Google_Client $client) {
-    throw new Exception('This example currently only supports the service account flow..');
+    print (str_repeat('*', 40) . "\n");
+    print ("Your token was missing or invalid, fetching a new one\n");
+    $token = $this->getToken($client);
+    $tokenFile = join(DIRECTORY_SEPARATOR,
+        [$this->configDir, self::OAUTH_TOKEN_FILE_NAME]);
+    file_put_contents($tokenFile, json_encode($token, JSON_PRETTY_PRINT));
+    printf("Token saved to %s\n", $tokenFile);
+    print (str_repeat('*', 40) . "\n");
   }
 
   /**
