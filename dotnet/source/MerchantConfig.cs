@@ -44,8 +44,9 @@ namespace ShoppingSamples.Content
             {
                 Console.WriteLine($"No configuration file at {contentFile}");
                 Console.WriteLine("Assuming default configuration for authenticated user.");
-                config = new MerchantConfig();
-                config.ConfigDir = contentPath;
+                config = new MerchantConfig {
+                  ConfigDir = contentPath
+                };
                 return config;
             }
             using (StreamReader reader = File.OpenText(contentFile))

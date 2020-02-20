@@ -71,9 +71,10 @@ namespace ShoppingSamples.Content
 
             // First, retrieve list of users.
             Account account = service.Accounts.Get(merchantId, accountId).Execute();
-            AccountUser newAccountUser = new AccountUser();
-            newAccountUser.EmailAddress = emailAddress;
-            newAccountUser.Admin = false;
+            AccountUser newAccountUser = new AccountUser {
+              EmailAddress = emailAddress,
+              Admin = false
+            };
 
             if (account.Users == null)
             {
@@ -130,9 +131,10 @@ namespace ShoppingSamples.Content
 
             // First, retrieve list of Google Ads accounts.
             Account account = service.Accounts.Get(merchantId, merchantId).Execute();
-            var newAccountLink = new AccountAdsLink();
-            newAccountLink.AdsId = googleAdsAccountId;
-            newAccountLink.Status = "active";
+            var newAccountLink = new AccountAdsLink {
+              AdsId = googleAdsAccountId,
+              Status = "active"
+            };
 
             if (account.AdsLinks == null)
             {

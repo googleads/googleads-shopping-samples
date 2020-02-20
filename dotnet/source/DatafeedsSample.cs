@@ -149,27 +149,31 @@ namespace ShoppingSamples.Content
         internal Datafeed GenerateDatafeed()
         {
             String name = String.Format("datafeed{0}", shoppingUtil.GetUniqueId());
-            Datafeed datafeed = new Datafeed();
-            datafeed.Name = name;
-            datafeed.ContentType = "products";
-            datafeed.AttributeLanguage = "en";
-            datafeed.FileName = name;
-            datafeed.FetchSchedule = new DatafeedFetchSchedule();
-            datafeed.FetchSchedule.Weekday = "monday";
-            datafeed.FetchSchedule.Hour = 6;
-            datafeed.FetchSchedule.TimeZone = "America/Los_Angeles";
-            datafeed.FetchSchedule.FetchUrl = $"http://feeds.my-shop.com/{name}";
-            datafeed.Format = new DatafeedFormat();
-            datafeed.Format.FileEncoding = "utf-8";
-            datafeed.Format.ColumnDelimiter = "tab";
-            datafeed.Format.QuotingMode = "value quoting";
-            datafeed.Targets = new List<DatafeedTarget>();
-            var target = new DatafeedTarget();
-            target.Country = "US";
-            target.Language = "EN";
-            target.IncludedDestinations = new List<String>();
-            target.IncludedDestinations.Add("Shopping");
-            datafeed.Targets.Add(target);
+            Datafeed datafeed = new Datafeed
+            {
+              Name = name,
+              ContentType = "products",
+              AttributeLanguage = "en",
+              FileName = name,
+              FetchSchedule = new DatafeedFetchSchedule {
+                Weekday = "monday",
+                Hour = 6,
+                TimeZone = "America/Los_Angeles",
+                FetchUrl = $"http://feeds.my-shop.com/{name}"
+              },
+              Format = new DatafeedFormat {
+                FileEncoding = "utf-8",
+                ColumnDelimiter = "tab",
+                QuotingMode = "value quoting"
+              },
+              Targets = new List<DatafeedTarget> {
+                new DatafeedTarget {
+                  Country = "US",
+                  Language = "EN",
+                  IncludedDestinations = new List<String> { "Shopping" }
+                }
+              }
+            };
 
             return datafeed;
         }

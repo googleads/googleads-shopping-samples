@@ -54,7 +54,7 @@ namespace ShoppingSamples.Content
             PrintShippingSettings(settings);
             Console.WriteLine();
 
-            return settings;            
+            return settings;
         }
 
         private void UpdateShippingSettings(ulong merchantId, ulong accountId, ShippingSettings settings)
@@ -71,26 +71,29 @@ namespace ShoppingSamples.Content
         {
             RateGroup rateUSPS = new RateGroup();
             rateUSPS.ApplicableShippingLabels = new List<string>();
-            rateUSPS.SingleValue = new Value();
-            rateUSPS.SingleValue.FlatRate = new Price();
-            rateUSPS.SingleValue.FlatRate.Value = "5.00";
-            rateUSPS.SingleValue.FlatRate.Currency = "USD";
+            rateUSPS.SingleValue = new Value() {
+              FlatRate = new Price() {
+                Value = "5.00",
+                Currency = "USD"
+              }
+            };
 
-            Service serviceUSPS = new Service();
-            serviceUSPS.Name = "USPS";
-            serviceUSPS.Currency = "USD";
-            serviceUSPS.DeliveryCountry = "US";
-            serviceUSPS.DeliveryTime = new DeliveryTime();
-            serviceUSPS.DeliveryTime.MinTransitTimeInDays = 3;
-            serviceUSPS.DeliveryTime.MaxTransitTimeInDays = 7;
-            serviceUSPS.RateGroups = new List<RateGroup>();
-            serviceUSPS.RateGroups.Add(rateUSPS);
-            serviceUSPS.Active = true;
+            Service serviceUSPS = new Service() {
+              Name = "USPS",
+              Currency = "USD",
+              DeliveryCountry = "US",
+              DeliveryTime = new DeliveryTime() {
+                MinTransitTimeInDays = 3,
+                MaxTransitTimeInDays = 7,
+              },
+              RateGroups = new List<RateGroup> { rateUSPS },
+              Active = true
+            };
 
-            ShippingSettings settings = new ShippingSettings();
-            settings.PostalCodeGroups = new List<PostalCodeGroup>();
-            settings.Services = new List<Service>();
-            settings.Services.Add(serviceUSPS);
+            ShippingSettings settings = new ShippingSettings() {
+              PostalCodeGroups = new List<PostalCodeGroup>(),
+              Services = new List<Service> { serviceUSPS }
+            };
             return settings;
         }
 

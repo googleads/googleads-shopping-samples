@@ -70,15 +70,16 @@ namespace ShoppingSamples.Content
 
         private AccountTax SampleTaxSettings(ulong accountId)
         {
-            AccountTaxTaxRule taxNY = new AccountTaxTaxRule();
-            taxNY.Country = "US";
-            taxNY.LocationId = 21167;
-            taxNY.UseGlobalRate = true;
+            AccountTaxTaxRule taxNY = new AccountTaxTaxRule {
+              Country = "US",
+              LocationId = 21167,
+              UseGlobalRate = true
+            };
 
-            AccountTax settings = new AccountTax();
-            settings.AccountId = accountId;
-            settings.Rules = new List<AccountTaxTaxRule>();
-            settings.Rules.Add(taxNY);
+            AccountTax settings = new AccountTax() {
+              AccountId = accountId,
+              Rules = new List<AccountTaxTaxRule> { taxNY }
+            };
             return settings;
         }
 

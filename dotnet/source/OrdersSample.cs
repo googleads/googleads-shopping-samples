@@ -46,8 +46,9 @@ namespace ShoppingSamples.Content
 
             string orderId;
             {
-                var req = new OrdersCreateTestOrderRequest();
-                req.TemplateName = "template1";
+                var req = new OrdersCreateTestOrderRequest() {
+                  TemplateName = "template1"
+                };
                 var resp = sandboxService.Orders.Createtestorder(req, merchantId).Execute();
                 orderId = resp.OrderId;
             }
@@ -80,12 +81,13 @@ namespace ShoppingSamples.Content
 
             // Oops, not enough stock for all the Chromecasts ordered, so we cancel one of them.
             {
-                var req = new OrdersCancelLineItemRequest();
-                req.LineItemId = currentOrder.LineItems[0].Id;
-                req.Quantity = 1;
-                req.Reason = "noInventory";
-                req.ReasonText = "Ran out of inventory while fulfilling request.";
-                req.OperationId = NewOperationId();
+                var req = new OrdersCancelLineItemRequest() {
+                  LineItemId = currentOrder.LineItems[0].Id,
+                  Quantity = 1,
+                  Reason = "noInventory",
+                  ReasonText = "Ran out of inventory while fulfilling request.",
+                  OperationId = NewOperationId()
+                };
 
                 CancelLineItem(merchantId, orderId, req);
             }
@@ -243,8 +245,9 @@ namespace ShoppingSamples.Content
             Console.WriteLine("Acknowledging Order {0}", orderId);
             Console.WriteLine("=================================================================");
 
-            var req = new OrdersAcknowledgeRequest();
-            req.OperationId = NewOperationId();
+            var req = new OrdersAcknowledgeRequest() {
+              OperationId = NewOperationId()
+            };
             var resp = sandboxService.Orders.Acknowledge(req, merchantId, orderId).Execute();
 
             Console.WriteLine("Finished with status {0}.", resp.ExecutionStatus);
@@ -257,9 +260,10 @@ namespace ShoppingSamples.Content
             Console.WriteLine("Updating Merchant Order ID to {0}", merchantOrderId);
             Console.WriteLine("=================================================================");
 
-            var req = new OrdersUpdateMerchantOrderIdRequest();
-            req.OperationId = NewOperationId();
-            req.MerchantOrderId = merchantOrderId;
+            var req = new OrdersUpdateMerchantOrderIdRequest() {
+              OperationId = NewOperationId(),
+              MerchantOrderId = merchantOrderId
+            };
             var resp = sandboxService.Orders
                 .Updatemerchantorderid(req, merchantId, orderId)
                 .Execute();
@@ -288,20 +292,22 @@ namespace ShoppingSamples.Content
             Console.WriteLine("Shipping {0} of item {1}", item.QuantityPending, item.Id);
             Console.WriteLine("=================================================================");
 
-            var itemShip = new OrderShipmentLineItemShipment();
-            itemShip.LineItemId = item.Id;
-            itemShip.Quantity = item.QuantityPending;
+            var itemShip = new OrderShipmentLineItemShipment() {
+              LineItemId = item.Id,
+              Quantity = item.QuantityPending
+            };
 
-            var req = new OrdersShipLineItemsRequest();
-            var shipmentInfo = new OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo();
-            shipmentInfo.Carrier = item.ShippingDetails.Method.Carrier;
-            shipmentInfo.ShipmentId = prng.Next().ToString();
-            shipmentInfo.TrackingId = prng.Next().ToString();
-            req.ShipmentInfos = new List<OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo>();
-            req.ShipmentInfos.Add(shipmentInfo);
-            req.LineItems = new List<OrderShipmentLineItemShipment>();
-            req.LineItems.Add(itemShip);
-            req.OperationId = NewOperationId();
+            var shipmentInfo = new OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo() {
+              Carrier = item.ShippingDetails.Method.Carrier,
+              ShipmentId = prng.Next().ToString(),
+              TrackingId = prng.Next().ToString(),
+            };
+
+            var req = new OrdersShipLineItemsRequest {
+              ShipmentInfos = new List<OrdersCustomBatchRequestEntryShipLineItemsShipmentInfo> { shipmentInfo },
+              LineItems = new List<OrderShipmentLineItemShipment> { itemShip },
+              OperationId = NewOperationId()
+            };
 
             var resp = sandboxService.Orders.Shiplineitems(req, merchantId, orderId).Execute();
 
@@ -321,12 +327,13 @@ namespace ShoppingSamples.Content
                 ship.LineItems[0].LineItemId);
             Console.WriteLine("=================================================================");
 
-            var req = new OrdersUpdateShipmentRequest();
-            req.Carrier = ship.ShipmentInfos[0].Carrier;
-            req.TrackingId = ship.ShipmentInfos[0].TrackingId;
-            req.ShipmentId = ship.ShipmentInfos[0].ShipmentId;
-            req.Status = "delivered";
-            req.OperationId = NewOperationId();
+            var req = new OrdersUpdateShipmentRequest() {
+              Carrier = ship.ShipmentInfos[0].Carrier,
+              TrackingId = ship.ShipmentInfos[0].TrackingId,
+              ShipmentId = ship.ShipmentInfos[0].ShipmentId,
+              Status = "delivered",
+              OperationId = NewOperationId()
+            };
 
             var resp = sandboxService.Orders.Updateshipment(req, merchantId, orderId).Execute();
 

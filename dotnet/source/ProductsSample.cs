@@ -273,35 +273,38 @@ namespace ShoppingSamples.Content
 
         internal Product GenerateProduct(string websiteUrl)
         {
-            Product product = new Product();
-            product.OfferId = String.Format("product#{0}", shoppingUtil.GetUniqueId());
-            product.Title = "A Tale of Two Cities";
-            product.Description = "A classic novel about the French Revolution";
-            product.Link = $"{websiteUrl}/tale-of-two-cities.html";
-            product.ImageLink = $"{websiteUrl}/tale-of-two-cities.jpg";
-            product.ContentLanguage = "EN";
-            product.TargetCountry = "US";
-            product.Channel = "online";
-            product.Availability = "in stock";
-            product.Condition = "new";
-            product.GoogleProductCategory = "Media > Books";
-            product.Gtin = "9780007350896";
-            product.Price = new Price();
-            product.Price.Currency = "USD";
-            product.Price.Value = "2.50";
-
-            ProductShipping shipping = new ProductShipping();
-            shipping.Country = "US";
-            shipping.Service = "Standard shipping";
-            product.Shipping = new List<ProductShipping>();
-            shipping.Price = new Price();
-            shipping.Price.Currency = "USD";
-            shipping.Price.Value = "0.99";
-            product.Shipping.Add(shipping);
-
-            product.ShippingWeight = new ProductShippingWeight();
-            product.ShippingWeight.Unit = "grams";
-            product.ShippingWeight.Value = 200;
+              Product product = new Product() {
+              OfferId = String.Format("product#{0}", shoppingUtil.GetUniqueId()),
+              Title = "A Tale of Two Cities",
+              Description = "A classic novel about the French Revolution",
+              Link = $"{websiteUrl}/tale-of-two-cities.html",
+              ImageLink = $"{websiteUrl}/tale-of-two-cities.jpg",
+              ContentLanguage = "EN",
+              TargetCountry = "US",
+              Channel = "online",
+              Availability = "in stock",
+              Condition = "new",
+              GoogleProductCategory = "Media > Books",
+              Gtin = "9780007350896",
+              Price = new Price() {
+                Currency = "USD",
+                Value = "2.50"
+              },
+              Shipping = new List<ProductShipping> {
+                new ProductShipping() {
+                  Country = "US",
+                  Service = "Standard shipping",
+                  Price = new Price() {
+                    Currency = "USD",
+                    Value = "0.99"
+                  }
+                }
+              },
+              ShippingWeight = new ProductShippingWeight() {
+                Unit = "grams",
+                Value = 200
+              }
+            };
 
             return product;
         }

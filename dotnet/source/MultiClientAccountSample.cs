@@ -133,9 +133,10 @@ namespace ShoppingSamples.Content
         internal Account GenerateAccount()
         {
             String name = String.Format("account{0}", shoppingUtil.GetUniqueId());
-            Account account = new Account();
-            account.Name = name;
-            account.WebsiteUrl = String.Format("https://{0}.example.com/", name);
+            Account account = new Account {
+              Name = name,
+              WebsiteUrl = String.Format("https://{0}.example.com/", name)
+            };
             return account;
         }
     }
