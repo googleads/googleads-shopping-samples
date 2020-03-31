@@ -34,9 +34,11 @@ public abstract class BaseSample {
     }
     httpTransport = createHttpTransport();
     authenticator = loadAuthentication();
-    initializer = BaseOption.installLogging(createCredential(), parsedArgs);
+    // Chaining HttpRequestInitializers together to increase timeout duration and implement logging
+    initializer = new TimeoutHttpRequestInitializer(
+        BaseOption.installLogging(createCredential(), parsedArgs));
   }
-
+    
   protected HttpTransport createHttpTransport() throws IOException {
     try {
       return GoogleNetHttpTransport.newTrustedTransport();
