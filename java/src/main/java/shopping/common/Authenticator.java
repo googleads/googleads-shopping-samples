@@ -69,7 +69,7 @@ public class Authenticator {
       } catch (IOException e) {
         throw new IOException(
             "Could not retrieve service account credentials from the file "
-                + serviceAccountFile.getCanonicalPath());
+                + serviceAccountFile.getCanonicalPath(), e);
       }
     }
     File clientSecretsFile = new File(config.getPath(), "client-secrets.json");
