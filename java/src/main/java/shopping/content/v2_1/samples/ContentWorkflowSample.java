@@ -47,7 +47,8 @@ public abstract class ContentWorkflowSample extends BaseWorkflowSample {
     Credential credential = authenticator.authenticate();
 
     return new ShoppingContent.Builder(
-            httpTransport, jsonFactory, BaseOption.installLogging(credential, parsedArgs))
+            httpTransport, jsonFactory, BaseOption.increaseTimeout(
+                BaseOption.installLogging(credential, parsedArgs)))
         .setApplicationName("Content API for Shopping Samples");
   }
 

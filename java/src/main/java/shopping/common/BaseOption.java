@@ -147,4 +147,9 @@ public enum BaseOption {
     logger.addHandler(handler);
     return new LoggingHttpRequestInitializer(initializer);
   }
+
+  public static HttpRequestInitializer increaseTimeout(
+      HttpRequestInitializer initializer) throws IOException {
+        return new TimeoutHttpRequestInitializer(initializer);
+  }
 }

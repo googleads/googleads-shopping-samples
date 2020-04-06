@@ -26,7 +26,7 @@ public class TimeoutHttpRequestInitializer implements HttpRequestInitializer {
     if (wrapped != null) {
       wrapped.initialize(request);
     }
-    request.setConnectTimeout(3 * 60000);  // Raises default timeout to 60 seconds from 20 seconds
-    request.setReadTimeout(3 * 60000);  // Raises default timeout to 60 seconds from 20 seconds
+    request.setConnectTimeout(1 * 60000);  // Raises default timeout to 60 seconds from 20 seconds
+    request.setReadTimeout(1 * 60000);  // Raises default timeout to 60 seconds from 20 seconds
   }
 }
