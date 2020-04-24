@@ -46,7 +46,7 @@ class DatafeedsSample extends BaseSample {
     // be deleted. In general use it would be unusual to do so anyway, but for
     // the purposes of this example we retry with back off.
     $this->session->retry($this, 'deleteDatafeed', $exampleDatafeedId);
-    $this->deleteDatafeedBatch($exampleDatafeedBatchIDs);
+    $this->session->retry($this, 'deleteDatafeedBatch', $exampleDatafeedBatchIDs);
   }
 
   public function insertDatafeed(

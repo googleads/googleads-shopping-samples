@@ -57,7 +57,7 @@ class MultiClientAccountsSample extends BaseSample {
     $this->session->retry($this, 'updateAccount', $exampleAccount);
     $this->session->retry($this, 'deleteAccount', $exampleAccountId);
 
-    $this->deleteAccountBatch($exampleAccountBatchIds);
+    $this->session->retry($this, 'deleteAccountBatch', $exampleAccountBatchIds);
   }
 
   public function insertAccount(
