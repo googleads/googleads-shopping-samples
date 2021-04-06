@@ -16,6 +16,10 @@ public class LiaConfig extends ContentConfig {
   private static final String CONTENT_DIR = "content";
   private static final String FILE_NAME = "merchant-info.json";
 
+  @Key private boolean createSubAccount;
+
+  @Key private String subAccountConfigPath;
+
   @Key private String gmbEmail;
 
   public static LiaConfig load(File basePath) throws IOException {
@@ -43,6 +47,22 @@ public class LiaConfig extends ContentConfig {
               + " file in the "
               + "samples root as a template.");
     }
+  }
+
+  public boolean getCreateSubAccount() {
+    return createSubAccount;
+  }
+
+  public void setCreateSubAccount(boolean createSubAccount) {
+    this.createSubAccount = createSubAccount;
+  }
+
+  public String getSubAccountConfigPath() {
+    return subAccountConfigPath;
+  }
+
+  public void setSubAccountConfigPath(String subAccountConfigPath) {
+    this.subAccountConfigPath = subAccountConfigPath;
   }
 
   public String getGmbEmail() {

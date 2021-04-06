@@ -15,7 +15,7 @@ public class AccountsListSample extends ContentSample {
     super(args);
   }
 
-  static void listAccountsForMerchant(BigInteger merchantId, ShoppingContent content)
+  public static void listAccountsForMerchant(BigInteger merchantId, ShoppingContent content)
       throws IOException {
     System.out.printf("Listing sub-accounts for Merchant Center %s:%n", merchantId);
     ShoppingContent.Accounts.List listAccounts = content.accounts().list(merchantId);

@@ -42,8 +42,7 @@ public class AccountWorkflow extends ContentWorkflowSample {
 
     AccountsListSample.listAccountsForMerchant(config.getMerchantId(), content);
 
-    Account subaccount = new Account();
-    subaccount.setName(AccountUtils.SAMPLE_ACCOUNT_NAME);
+    Account subaccount = AccountUtils.getDefaultAccount();
 
     System.out.println("Creating new sub-account.");
     Account result = content.accounts().insert(config.getMerchantId(), subaccount).execute();
