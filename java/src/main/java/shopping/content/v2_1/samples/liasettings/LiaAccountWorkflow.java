@@ -17,7 +17,7 @@ import shopping.content.v2_1.samples.accounts.AccountsListSample;
 
 /** Sample that runs through an entire example workflow using the Accounts service. */
 public class LiaAccountWorkflow extends ContentWorkflowSample {
-  private LiaAccountWorkflow(ShoppingContent content, ShoppingContent sandbox, LiaConfig config) {
+  public LiaAccountWorkflow(ShoppingContent content, ShoppingContent sandbox, LiaConfig config) {
     super(content, sandbox, config);
   }
 

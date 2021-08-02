@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import shopping.content.v2_1.samples.ContentConfig;
 
 /**
@@ -19,6 +20,10 @@ public class LiaConfig extends ContentConfig {
   @Key private boolean createSubAccount;
 
   @Key private String subAccountConfigPath;
+
+  // ID of the newly created account. Should not be in the config json but filled by the
+  // LiaAccountWorkflow.
+  @Key private BigInteger accountId;
 
   @Key private String gmbEmail;
 
@@ -63,6 +68,14 @@ public class LiaConfig extends ContentConfig {
 
   public void setSubAccountConfigPath(String subAccountConfigPath) {
     this.subAccountConfigPath = subAccountConfigPath;
+  }
+
+  public BigInteger getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(BigInteger accountId) {
+    this.accountId = accountId;
   }
 
   public String getGmbEmail() {
