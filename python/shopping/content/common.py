@@ -236,7 +236,7 @@ def check_mca(config, should_be_mca, msg=None):
       print(msg)
     else:
       print('For this sample, you must%s use a multi-client account.' %
-            '' if should_be_mca else ' not')
+            ('' if should_be_mca else ' not'))
     sys.exit(1)
 
 
