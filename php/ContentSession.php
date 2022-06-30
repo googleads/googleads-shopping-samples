@@ -300,7 +300,6 @@ class ContentSession {
   }
 
   private function getToken(Google_Client $client) {
-    $client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
     $client->setScopes('https://www.googleapis.com/auth/content');
     $client->setAccessType('offline'); // So that we get a refresh token
 
@@ -314,6 +313,7 @@ class ContentSession {
   }
 
   protected function cacheToken(Google_Client $client) {
+    throw new Exception('This example currently only supports the service account flow..');
     print (str_repeat('*', 40) . "\n");
     print ("Your token was missing or invalid, fetching a new one\n");
     $token = $this->getToken($client);
