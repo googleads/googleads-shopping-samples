@@ -11,7 +11,7 @@ the Google Content API for Shopping and/or the Manufacturer Center API.
 Please make sure that you're running Java 7+. If you use Maven, you can use
 the included `pom.xml` to install the required dependencies.  Otherwise,
 install the
-[Content API for Shopping Client Library for Java](https://developers.google.com/api-client-library/java/apis/content/v2)
+[Content API for Shopping Client Library for Java](https://developers.google.com/api-client-library/java/apis/content/v2.1)
 and/or the
 [Manufacturer Center API Client Library for Java](https://developers.google.com/api-client-library/java/apis/manufacturers/v1).
 

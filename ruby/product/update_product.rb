@@ -24,8 +24,9 @@
 require_relative "product_common"
 
 def update_product(content_api, merchant_id, product_id)
-  # First we need to retrieve the full object, since there are no partial
-  # updates for the products collection in Content API v2.
+  # This is a full update without supplemental feeds. First we need to retrieve
+  # the full object so we can overwrite the fields we want to change before
+  # re-inserting the product.
   response = content_api.get_product(merchant_id, product_id) do |res, err|
     if err
       if err.status == 404
