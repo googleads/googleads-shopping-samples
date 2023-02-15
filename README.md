@@ -15,7 +15,7 @@ and the
 Before getting started, check the Getting Started section of the
 [Content API for Shopping documentation](https://developers.google.com/shopping-content/v2/quickstart).
 You may want to use
-[service accounts](https://developers.google.com/shopping-content/guides/how-tos/service-accounts)
+[service accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
 instead to simplify the authentication flow. These samples also support using
 [Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
 
