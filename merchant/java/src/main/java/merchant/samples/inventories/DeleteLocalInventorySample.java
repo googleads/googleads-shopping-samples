@@ -16,10 +16,10 @@ package merchant.samples.inventories;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.shopping.merchant.inventories.v1.DeleteLocalInventoryRequest;
-import com.google.shopping.merchant.inventories.v1.LocalInventoryName;
-import com.google.shopping.merchant.inventories.v1.LocalInventoryServiceClient;
-import com.google.shopping.merchant.inventories.v1.LocalInventoryServiceSettings;
+import com.google.shopping.merchant.inventories.v1beta.DeleteLocalInventoryRequest;
+import com.google.shopping.merchant.inventories.v1beta.LocalInventoryName;
+import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceClient;
+import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceSettings;
 import merchant.samples.utils.Authenticator;
 import merchant.samples.utils.Config;
 
