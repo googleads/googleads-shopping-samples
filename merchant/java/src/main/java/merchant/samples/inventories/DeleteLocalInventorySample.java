@@ -26,6 +26,7 @@ import merchant.samples.utils.Config;
 /** This class demonstrates how to delete a Local inventory for a given product */
 public class DeleteLocalInventorySample {
 
+  // [START delete_local_inventory]
   public static void deleteLocalInventory(Config config, String productId, String storeCode)
       throws Exception {
     GoogleCredentials credential = new Authenticator().authenticate();
@@ -58,6 +59,7 @@ public class DeleteLocalInventorySample {
       System.out.println(e);
     }
   }
+  // [END delete_local_inventory]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
