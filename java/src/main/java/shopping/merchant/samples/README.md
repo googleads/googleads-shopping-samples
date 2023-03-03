@@ -33,7 +33,7 @@ If the code compiles succesfully, then run `mvn exec`. Use the following syntax
 to run the `InsertRegionalInventorySample` file.
 
 ```
-mvn exec:java -Dexec.mainClass="merchant.samples.inventories.InsertRegionalInventorySample"
+mvn exec:java -Dexec.mainClass="shopping.merchant.samples.inventories.InsertRegionalInventorySample"
 ```
 
 Examine your shell output, be inspired and start working on an amazing new app!

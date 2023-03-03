@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package merchant.samples.utils;
+package shopping.merchant.samples.utils;
 
 import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.JsonToken;
@@ -33,11 +33,7 @@ public class Config {
       new File(System.getProperty("user.home"), "shopping-samples");
   private static final String CONTENT_DIR = "content";
   private static final String FILE_NAME = "merchant-info.json";
-  // TODO(brothman): Remove endpoint and associated methods in classes that use this
-  // field before publishing
-  private static final String ENDPOINT = "staging-merchantapi.sandbox.googleapis.com:443";
 
-  // TODO(brothman): Confirm whether this should be int64 or BigInteger
   private BigInteger merchantId;
 
   private String accountSampleUser;
@@ -45,10 +41,6 @@ public class Config {
   private BigInteger accountSampleAdsCID;
 
   private File path;
-
-  public String getEndpoint() {
-    return ENDPOINT;
-  }
 
   public File getPath() {
     return path;

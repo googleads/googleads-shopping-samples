@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package merchant.samples.inventories;
+package shopping.merchant.samples.inventories;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -21,8 +21,8 @@ import com.google.shopping.merchant.inventories.v1beta.InsertRegionalInventoryRe
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventory;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceClient;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceSettings;
-import merchant.samples.utils.Authenticator;
-import merchant.samples.utils.Config;
+import shopping.merchant.samples.utils.Authenticator;
+import shopping.merchant.samples.utils.Config;
 
 /** This class demonstrates how to insert a regional inventory for a given product */
 public class InsertRegionalInventorySample {
@@ -39,7 +39,6 @@ public class InsertRegionalInventorySample {
     RegionalInventoryServiceSettings regionalInventoryServiceSettings =
         RegionalInventoryServiceSettings.newBuilder()
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
-            .setEndpoint(config.getEndpoint())
             .build();
 
     String parent = getParent(config.getMerchantId().toString(), productId);
