@@ -31,6 +31,7 @@ public class InsertRegionalInventorySample {
     return String.format("accounts/%s/products/%s", merchantId, productId);
   }
 
+  // [START insert_regional_inventory]
   public static void insertRegionalInventory(Config config, String productId, String regionId)
       throws Exception {
     GoogleCredentials credential = new Authenticator().authenticate();
@@ -67,6 +68,7 @@ public class InsertRegionalInventorySample {
       System.out.println(e);
     }
   }
+  // [END insert_regional_inventory]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
