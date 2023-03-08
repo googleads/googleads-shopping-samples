@@ -16,11 +16,11 @@ package shopping.merchant.samples.inventories;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.shopping.merchant.common.v1beta.Price;
 import com.google.shopping.merchant.inventories.v1beta.InsertRegionalInventoryRequest;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventory;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceClient;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceSettings;
+import com.google.shopping.type.Price;
 import shopping.merchant.samples.utils.Authenticator;
 import shopping.merchant.samples.utils.Config;
 
@@ -46,7 +46,7 @@ public class InsertRegionalInventorySample {
     try (RegionalInventoryServiceClient regionalInventoryServiceClient =
         RegionalInventoryServiceClient.create(regionalInventoryServiceSettings)) {
 
-      Price price = Price.newBuilder().setAmountMicros(33450000).setCurrencyCode("USD").build();
+      Price price = Price.newBuilder().setAmountMicros(33_450_000).setCurrencyCode("USD").build();
 
       InsertRegionalInventoryRequest request =
           InsertRegionalInventoryRequest.newBuilder()

@@ -74,8 +74,6 @@ public class Config {
         }
         if ("accountSampleAdWordsCID".equals(fieldname)) {
           jParser.nextToken();
-          // TODO(brothman): UPDATE TO CHANGE MERCHANT-INFO CONFIG FILE NAME in README
-          // From Adwords to Ads
           config.setAccountSampleAdsCID(new BigInteger(jParser.getText()));
         }
       }
