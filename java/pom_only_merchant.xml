@@ -78,7 +78,17 @@
   <dependencies>
     <dependency>
       <groupId>com.google.cloud</groupId>
-      <artifactId>gapic-google-cloud-merchant-inventories-v1-java</artifactId>
+      <artifactId>gapic-merchant-inventories-v1beta-java</artifactId>
+      <version>0.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.api.grpc</groupId>
+      <artifactId>proto-merchant-inventories-v1beta-java</artifactId>
+      <version>0.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.api.grpc</groupId>
+      <artifactId>grpc-merchant-inventories-v1beta-java</artifactId>
       <version>0.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
