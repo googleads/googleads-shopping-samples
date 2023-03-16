@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shopping.merchant.samples.inventories;
+package shopping.merchant.samples.inventories.v1beta;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.shopping.merchant.inventories.v1beta.DeleteRegionalInventoryRequest;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryName;
+import com.google.shopping.merchant.inventories.v1beta.InsertRegionalInventoryRequest;
+import com.google.shopping.merchant.inventories.v1beta.RegionalInventory;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceClient;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceSettings;
+import com.google.shopping.type.Price;
 import shopping.merchant.samples.utils.Authenticator;
 import shopping.merchant.samples.utils.Config;
 
-/** This class demonstrates how to delete a regional inventory for a given product */
-public class DeleteRegionalInventorySample {
+/** This class demonstrates how to insert a regional inventory for a given product */
+public class InsertRegionalInventorySample {
 
-  // [START delete_regional_inventory]
-  public static void deleteRegionalInventory(Config config, String productId, String regionId)
+  private static String getParent(String merchantId, String productId) {
+    return String.format("accounts/%s/products/%s", merchantId, productId);
+  }
+
+  // [START insert_regional_inventory]
+  public static void insertRegionalInventory(Config config, String productId, String regionId)
       throws Exception {
-    // TODO(brothman): Please add more line comments to explain what each significant step is doing.
-    // For example:
-    // Obtains OAuth tokens based on the configuration.
-    // Creates service settings using the credentials above. Etc
-
     GoogleCredentials credential = new Authenticator().authenticate();
 
     RegionalInventoryServiceSettings regionalInventoryServiceSettings =
@@ -41,30 +41,33 @@ public class DeleteRegionalInventorySample {
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
             .build();
 
-    String name =
-        RegionalInventoryName.newBuilder()
-            .setAccount(config.getMerchantId().toString())
-            .setProduct(productId)
-            .setRegion(regionId)
-            .build()
-            .toString();
+    String parent = getParent(config.getMerchantId().toString(), productId);
 
     try (RegionalInventoryServiceClient regionalInventoryServiceClient =
         RegionalInventoryServiceClient.create(regionalInventoryServiceSettings)) {
-      DeleteRegionalInventoryRequest request =
-          DeleteRegionalInventoryRequest.newBuilder().setName(name).build();
 
-      System.out.println("Sending deleteRegionalInventory request");
-      regionalInventoryServiceClient.deleteRegionalInventory(
-          request); // no response returned on success
-      System.out.println(
-          "Delete successful, note that it may take up to 30 minutes for the delete to update in"
-              + " the system.");
+      Price price = Price.newBuilder().setAmountMicros(33_450_000).setCurrencyCode("USD").build();
+
+      InsertRegionalInventoryRequest request =
+          InsertRegionalInventoryRequest.newBuilder()
+              .setParent(parent)
+              .setRegionalInventory(
+                  RegionalInventory.newBuilder()
+                      .setAvailability("out of stock")
+                      .setRegion(regionId)
+                      .setPrice(price)
+                      .build())
+              .build();
+
+      System.out.println("Sending insert RegionalInventory request");
+      RegionalInventory response = regionalInventoryServiceClient.insertRegionalInventory(request);
+      System.out.println("Inserted RegionalInventory Name below");
+      System.out.println(response.getName());
     } catch (Exception e) {
       System.out.println(e);
     }
   }
-  // [END delete_regional_inventory]
+  // [END insert_regional_inventory]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
@@ -73,7 +76,6 @@ public class DeleteRegionalInventorySample {
     String productId = "online:en:label:1111111111";
     // The ID uniquely identifying each region.
     String regionId = "1111111";
-
-    deleteRegionalInventory(config, productId, regionId);
+    insertRegionalInventory(config, productId, regionId);
   }
 }

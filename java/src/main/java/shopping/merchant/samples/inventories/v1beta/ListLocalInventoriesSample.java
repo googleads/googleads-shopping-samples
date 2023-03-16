@@ -12,28 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shopping.merchant.samples.inventories;
+package shopping.merchant.samples.inventories.v1beta;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.shopping.merchant.inventories.v1beta.InsertLocalInventoryRequest;
+import com.google.shopping.merchant.inventories.v1beta.ListLocalInventoriesRequest;
 import com.google.shopping.merchant.inventories.v1beta.LocalInventory;
 import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceClient;
+import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceClient.ListLocalInventoriesPagedResponse;
 import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceSettings;
-import com.google.shopping.type.Price;
 import shopping.merchant.samples.utils.Authenticator;
 import shopping.merchant.samples.utils.Config;
 
-/** This class demonstrates how to insert a Local inventory for a given product */
-public class InsertLocalInventorySample {
+/** This class demonstrates how to list all the Local inventories on a given product */
+public class ListLocalInventoriesSample {
 
   private static String getParent(String merchantId, String productId) {
     return String.format("accounts/%s/products/%s", merchantId, productId);
   }
 
-  // [START insert_local_inventory]
-  public static void insertLocalInventory(Config config, String productId, String storeCode)
-      throws Exception {
+  // [START list_local_inventories]
+  public static void listLocalInventories(Config config, String productId) throws Exception {
     GoogleCredentials credential = new Authenticator().authenticate();
 
     LocalInventoryServiceSettings localInventoryServiceSettings =
@@ -46,36 +45,35 @@ public class InsertLocalInventorySample {
     try (LocalInventoryServiceClient localInventoryServiceClient =
         LocalInventoryServiceClient.create(localInventoryServiceSettings)) {
 
-      Price price = Price.newBuilder().setAmountMicros(33_450_000).setCurrencyCode("USD").build();
+      //  The parent product has the format: accounts/{account}/products/{product}
+      ListLocalInventoriesRequest request =
+          ListLocalInventoriesRequest.newBuilder().setParent(parent).build();
 
-      InsertLocalInventoryRequest request =
-          InsertLocalInventoryRequest.newBuilder()
-              .setParent(parent)
-              .setLocalInventory(
-                  LocalInventory.newBuilder()
-                      .setAvailability("out of stock")
-                      .setStoreCode(storeCode)
-                      .setPrice(price)
-                      .build())
-              .build();
+      System.out.println("Sending list Local inventory request:");
+      ListLocalInventoriesPagedResponse response =
+          localInventoryServiceClient.listLocalInventories(request);
 
-      System.out.println("Sending insert LocalInventory request");
-      LocalInventory response = localInventoryServiceClient.insertLocalInventory(request);
-      System.out.println("Inserted LocalInventory Name below");
-      System.out.println(response.getName());
+      int count = 0;
+
+      // Iterates over all rows in all pages and prints the Local inventory
+      // in each row.
+      for (LocalInventory element : response.iterateAll()) {
+        System.out.println(element);
+        count++;
+      }
+      System.out.print("The following count of elements were returned: ");
+      System.out.println(count);
     } catch (Exception e) {
       System.out.println(e);
     }
   }
-  // [END insert_local_inventory]
+  // [END list_local_inventories]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
     // An ID assigned to a product by Google. In the format
     // channel:contentLanguage:feedLabel:offerId
     String productId = "local:en:label:1111111111";
-    // The code uniquely identifying each store.
-    String storeCode = "Example1";
-    insertLocalInventory(config, productId, storeCode);
+    listLocalInventories(config, productId);
   }
 }
