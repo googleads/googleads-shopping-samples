@@ -12,70 +12,70 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shopping.merchant.samples.inventories;
+package shopping.merchant.samples.inventories.v1beta;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.shopping.merchant.inventories.v1beta.InsertRegionalInventoryRequest;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventory;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceClient;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceSettings;
+import com.google.shopping.merchant.inventories.v1beta.InsertLocalInventoryRequest;
+import com.google.shopping.merchant.inventories.v1beta.LocalInventory;
+import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceClient;
+import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceSettings;
 import com.google.shopping.type.Price;
 import shopping.merchant.samples.utils.Authenticator;
 import shopping.merchant.samples.utils.Config;
 
-/** This class demonstrates how to insert a regional inventory for a given product */
-public class InsertRegionalInventorySample {
+/** This class demonstrates how to insert a Local inventory for a given product */
+public class InsertLocalInventorySample {
 
   private static String getParent(String merchantId, String productId) {
     return String.format("accounts/%s/products/%s", merchantId, productId);
   }
 
-  // [START insert_regional_inventory]
-  public static void insertRegionalInventory(Config config, String productId, String regionId)
+  // [START insert_local_inventory]
+  public static void insertLocalInventory(Config config, String productId, String storeCode)
       throws Exception {
     GoogleCredentials credential = new Authenticator().authenticate();
 
-    RegionalInventoryServiceSettings regionalInventoryServiceSettings =
-        RegionalInventoryServiceSettings.newBuilder()
+    LocalInventoryServiceSettings localInventoryServiceSettings =
+        LocalInventoryServiceSettings.newBuilder()
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
             .build();
 
     String parent = getParent(config.getMerchantId().toString(), productId);
 
-    try (RegionalInventoryServiceClient regionalInventoryServiceClient =
-        RegionalInventoryServiceClient.create(regionalInventoryServiceSettings)) {
+    try (LocalInventoryServiceClient localInventoryServiceClient =
+        LocalInventoryServiceClient.create(localInventoryServiceSettings)) {
 
       Price price = Price.newBuilder().setAmountMicros(33_450_000).setCurrencyCode("USD").build();
 
-      InsertRegionalInventoryRequest request =
-          InsertRegionalInventoryRequest.newBuilder()
+      InsertLocalInventoryRequest request =
+          InsertLocalInventoryRequest.newBuilder()
               .setParent(parent)
-              .setRegionalInventory(
-                  RegionalInventory.newBuilder()
+              .setLocalInventory(
+                  LocalInventory.newBuilder()
                       .setAvailability("out of stock")
-                      .setRegion(regionId)
+                      .setStoreCode(storeCode)
                       .setPrice(price)
                       .build())
               .build();
 
-      System.out.println("Sending insert RegionalInventory request");
-      RegionalInventory response = regionalInventoryServiceClient.insertRegionalInventory(request);
-      System.out.println("Inserted RegionalInventory Name below");
+      System.out.println("Sending insert LocalInventory request");
+      LocalInventory response = localInventoryServiceClient.insertLocalInventory(request);
+      System.out.println("Inserted LocalInventory Name below");
       System.out.println(response.getName());
     } catch (Exception e) {
       System.out.println(e);
     }
   }
-  // [END insert_regional_inventory]
+  // [END insert_local_inventory]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
     // An ID assigned to a product by Google. In the format
     // channel:contentLanguage:feedLabel:offerId
-    String productId = "online:en:label:1111111111";
-    // The ID uniquely identifying each region.
-    String regionId = "1111111";
-    insertRegionalInventory(config, productId, regionId);
+    String productId = "local:en:label:1111111111";
+    // The code uniquely identifying each store.
+    String storeCode = "Example1";
+    insertLocalInventory(config, productId, storeCode);
   }
 }

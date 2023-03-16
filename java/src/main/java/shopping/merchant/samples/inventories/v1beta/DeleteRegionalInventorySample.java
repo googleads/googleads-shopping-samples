@@ -12,27 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shopping.merchant.samples.inventories;
+package shopping.merchant.samples.inventories.v1beta;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.shopping.merchant.inventories.v1beta.ListRegionalInventoriesRequest;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventory;
+import com.google.shopping.merchant.inventories.v1beta.DeleteRegionalInventoryRequest;
+import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryName;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceClient;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceClient.ListRegionalInventoriesPagedResponse;
 import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceSettings;
 import shopping.merchant.samples.utils.Authenticator;
 import shopping.merchant.samples.utils.Config;
 
-/** This class demonstrates how to list all the regional inventories on a given product */
-public class ListRegionalInventoriesSample {
+/** This class demonstrates how to delete a regional inventory for a given product */
+public class DeleteRegionalInventorySample {
 
-  private static String getParent(String merchantId, String productId) {
-    return String.format("accounts/%s/products/%s", merchantId, productId);
-  }
+  // [START delete_regional_inventory]
+  public static void deleteRegionalInventory(Config config, String productId, String regionId)
+      throws Exception {
+    // TODO(brothman): Please add more line comments to explain what each significant step is doing.
+    // For example:
+    // Obtains OAuth tokens based on the configuration.
+    // Creates service settings using the credentials above. Etc
 
-  // [START list_regional_inventories]
-  public static void listRegionalInventories(Config config, String productId) throws Exception {
     GoogleCredentials credential = new Authenticator().authenticate();
 
     RegionalInventoryServiceSettings regionalInventoryServiceSettings =
@@ -40,40 +41,39 @@ public class ListRegionalInventoriesSample {
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
             .build();
 
-    String parent = getParent(config.getMerchantId().toString(), productId);
+    String name =
+        RegionalInventoryName.newBuilder()
+            .setAccount(config.getMerchantId().toString())
+            .setProduct(productId)
+            .setRegion(regionId)
+            .build()
+            .toString();
 
     try (RegionalInventoryServiceClient regionalInventoryServiceClient =
         RegionalInventoryServiceClient.create(regionalInventoryServiceSettings)) {
+      DeleteRegionalInventoryRequest request =
+          DeleteRegionalInventoryRequest.newBuilder().setName(name).build();
 
-      //  The parent product has the format: accounts/{account}/products/{product}
-      ListRegionalInventoriesRequest request =
-          ListRegionalInventoriesRequest.newBuilder().setParent(parent).build();
-
-      System.out.println("Sending list regional inventory request:");
-      ListRegionalInventoriesPagedResponse response =
-          regionalInventoryServiceClient.listRegionalInventories(request);
-
-      int count = 0;
-
-      // Iterates over all rows in all pages and prints the regional inventory
-      // in each row.
-      for (RegionalInventory element : response.iterateAll()) {
-        System.out.println(element);
-        count++;
-      }
-      System.out.print("The following count of elements were returned: ");
-      System.out.println(count);
+      System.out.println("Sending deleteRegionalInventory request");
+      regionalInventoryServiceClient.deleteRegionalInventory(
+          request); // no response returned on success
+      System.out.println(
+          "Delete successful, note that it may take up to 30 minutes for the delete to update in"
+              + " the system.");
     } catch (Exception e) {
       System.out.println(e);
     }
   }
-  // [END list_regional_inventories]
+  // [END delete_regional_inventory]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
     // An ID assigned to a product by Google. In the format
     // channel:contentLanguage:feedLabel:offerId
     String productId = "online:en:label:1111111111";
-    listRegionalInventories(config, productId);
+    // The ID uniquely identifying each region.
+    String regionId = "1111111";
+
+    deleteRegionalInventory(config, productId, regionId);
   }
 }
