@@ -15,6 +15,7 @@ and the
 > as a preview. You have to be allowlisted to use the Merchant API. Merchant API  
 > samples are only available on the 'merchant' branch. Code examples are
 available in the following programming languages:
+>
 > * Java
 
 
