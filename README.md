@@ -11,9 +11,11 @@ and the
 [Manufacturer Center API](https://developers.google.com/manufacturers/).
 
 > **Note**
-> The Merchant API is in beta format, and you have to be allowlisted
-> to use the Merchant API. Merchant API samples are only available on the 
-> 'merchant' branch.
+> The Merchant API is a redesign of the Content API for Shopping, released
+> as a preview. You have to be allowlisted to use the Merchant API. Merchant API  
+> samples are only available on the 'merchant' branch. Code examples are
+available in the following programming languages:
+> * Java
 
 
 ## Choose Your Method of Authentication
