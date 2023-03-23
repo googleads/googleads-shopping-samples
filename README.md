@@ -12,9 +12,9 @@ and the
 
 > **Note**
 > The Merchant API is a redesign of the Content API for Shopping, released
-> as a preview. You have to be allowlisted to use the Merchant API. Merchant API  
-> samples are only available on the 'merchant' branch. Code examples are
-> available in the following programming languages:
+> as a preview. You have to be allowlisted to use the Merchant API. **Merchant API  
+> samples are only available on the 'merchant' branch.** 
+> Code examples are available in the following programming languages:
 > * Java
 
 
