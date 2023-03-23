@@ -10,6 +10,12 @@ For more information on the APIs, please refer to the documentation for the
 and the
 [Manufacturer Center API](https://developers.google.com/manufacturers/).
 
+> **Note**
+> The Merchant API is in beta format, and you have to be allowlisted
+> to use the Merchant API. Merchant API samples are only available on the 
+> 'merchant' branch.
+
+
 ## Choose Your Method of Authentication
 
 Before getting started, check the Getting Started section of the
