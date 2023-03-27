@@ -115,7 +115,7 @@ Console. Both APIs can be selected if you wish to try samples for both APIs.
 Now that you've configured both the common sample configuration file and set up
 your authentication credentials, it's time to build and run any of the included
 samples.  As mentioned before, there are language-specific instructions in
-the `README`s located in each language subdirectory.
+the `README`s located in each language subdirectory. Have fun!
 
 ## Possible Issues
 
