@@ -1,6 +1,8 @@
 # Merchant API code samples
 
 The Merchant API is a redesign of the Content API for Shopping. 
+All code samples for the Merchant API are located in this directory.
+
 Code examples are available in the following programming languages:
 
 * Java

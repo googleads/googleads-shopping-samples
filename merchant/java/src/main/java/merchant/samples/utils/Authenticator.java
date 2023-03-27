@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shopping.merchant.samples.utils;
+package merchant.samples.utils;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import java.io.File;

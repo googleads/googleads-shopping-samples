@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package shopping.merchant.samples.inventories;
+package merchant.samples.inventories;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -20,8 +20,8 @@ import com.google.shopping.merchant.inventories.v1beta.DeleteLocalInventoryReque
 import com.google.shopping.merchant.inventories.v1beta.LocalInventoryName;
 import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceClient;
 import com.google.shopping.merchant.inventories.v1beta.LocalInventoryServiceSettings;
-import shopping.merchant.samples.utils.Authenticator;
-import shopping.merchant.samples.utils.Config;
+import merchant.samples.utils.Authenticator;
+import merchant.samples.utils.Config;
 
 /** This class demonstrates how to delete a Local inventory for a given product */
 public class DeleteLocalInventorySample {
@@ -34,6 +34,7 @@ public class DeleteLocalInventorySample {
     LocalInventoryServiceSettings localInventoryServiceSettings =
         LocalInventoryServiceSettings.newBuilder()
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
+            .setEndpoint(config.getEndpoint())
             .build();
 
     String name =
