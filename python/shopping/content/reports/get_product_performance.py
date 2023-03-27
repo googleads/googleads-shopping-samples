@@ -20,63 +20,59 @@ import sys
 
 from shopping.content import common
 
+# You can use relative date ranges or custom date ranges. This example
+# uses a relative date range.
+_DATE_RANGE = "LAST_30_DAYS"
+
+# Choose the programs for which you want to get performance metrics.
+_PROGRAMS = "('FREE_PRODUCT_LISTING','SHOPPING_ADS')"
+
 
 def main(argv):
   # Authenticate and construct service.
   service, config, _ = common.init(argv, __doc__)
-  merchant_id = config['merchantId']
-
-  # You can use relative date ranges or custom date ranges. This example
-  # uses a relative date range.
-  date_range = 'LAST_30_DAYS'
-
-  # Choose the programs for which you want to get performance metrics.
-  programs = "('FREE_PRODUCT_LISTING','SHOPPING_ADS')"
-
-  query = f"""
-          SELECT
-            segments.title,
-            segments.offer_id,
-            metrics.impressions,
-            metrics.clicks
-          FROM MerchantPerformanceView
-          WHERE segments.date DURING {date_range}
-          AND segments.program IN {programs}
-          ORDER BY metrics.clicks DESC
-          """
+  merchant_id = config["merchantId"]
 
   req_body = {
-      'query': query
+      "query": f"""
+        SELECT
+          segments.title,
+          segments.offer_id,
+          metrics.impressions,
+          metrics.clicks
+        FROM MerchantPerformanceView
+        WHERE segments.date DURING {_DATE_RANGE}
+        AND segments.program IN {_PROGRAMS}
+        ORDER BY metrics.clicks DESC
+        """
   }
 
-  # Build request
+  # Build request.
   request = service.reports().search(
       merchantId=merchant_id,
       body=req_body)
 
-  # Send request
+  # Send request.
   result = request.execute()
 
-  # Check to ensure the result is not an empty object
-  if bool(result):
-    results = result['results']
+  # Check to ensure the result is not an empty object.
+  if result:
+    results = result["results"]
     product_data = []
 
-    # Extract product data from the request results
+    # Extract product data from the request results.
     for row in results:
-      data = {}
-      data['offer_id'] = row['segments'].get('offerId')
-      data['title'] = row['segments'].get('title')
-      data['impressions'] = row['metrics'].get('impressions')
-      data['clicks'] = row['metrics'].get('clicks')
+      data = {
+          "prod_id": row["segments"]["offerId"],
+          "prod_title": row["segments"]["title"],
+          "impressions": row["metrics"]["impressions"],
+          "clicks": row["metrics"]["clicks"]
+      }
       product_data.append(data)
 
-    # Convert product_data to a JSON string
-    json_product_data = json.dumps(product_data)
-    print('product_data:')
-    print(json_product_data)
+    print(f'product_data: "{json.dumps(product_data)}".')
   else:
-    print('Your search query returned no results.')
+    print("Your search query returned no results.")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
   main(sys.argv)
