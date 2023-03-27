@@ -22,11 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Class that contains all the authentication logic. Currently only supports service account
- * credentials.
+ * Class that contains all the authentication logic, only service account credentials for now.
+ * TODO(brothman): Add OAuth2 client credentials flow.
  */
 public class Authenticator {
 
+  // TODO(brothman): this should take a Config object as a parameter
   public GoogleCredentials authenticate() throws IOException {
     Config config = Config.load();
     File serviceAccountFile = new File(config.getPath(), "service-account.json");
