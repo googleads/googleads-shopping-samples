@@ -16,11 +16,11 @@ package merchant.samples.inventories;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.shopping.merchant.common.v1beta.Price;
-import com.google.shopping.merchant.inventories.v1beta.InsertRegionalInventoryRequest;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventory;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceClient;
-import com.google.shopping.merchant.inventories.v1beta.RegionalInventoryServiceSettings;
+import com.google.shopping.merchant.common.v1.Price;
+import com.google.shopping.merchant.inventories.v1.InsertRegionalInventoryRequest;
+import com.google.shopping.merchant.inventories.v1.RegionalInventory;
+import com.google.shopping.merchant.inventories.v1.RegionalInventoryServiceClient;
+import com.google.shopping.merchant.inventories.v1.RegionalInventoryServiceSettings;
 import merchant.samples.utils.Authenticator;
 import merchant.samples.utils.Config;
 
