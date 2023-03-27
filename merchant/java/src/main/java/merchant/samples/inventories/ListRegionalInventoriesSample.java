@@ -31,7 +31,6 @@ public class ListRegionalInventoriesSample {
     return String.format("accounts/%s/products/%s", merchantId, productId);
   }
 
-  // [START list_regional_inventories]
   public static void listRegionalInventories(Config config, String productId) throws Exception {
     GoogleCredentials credential = new Authenticator().authenticate();
 
@@ -68,7 +67,6 @@ public class ListRegionalInventoriesSample {
       System.out.println(e);
     }
   }
-  // [END list_regional_inventories]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();

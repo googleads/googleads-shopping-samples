@@ -26,7 +26,6 @@ import merchant.samples.utils.Config;
 /** This class demonstrates how to delete a regional inventory for a given product */
 public class DeleteRegionalInventorySample {
 
-  // [START delete_regional_inventory]
   public static void deleteRegionalInventory(Config config, String productId, String regionId)
       throws Exception {
     // TODO(brothman): Please add more line comments to explain what each significant step is doing.
@@ -65,7 +64,6 @@ public class DeleteRegionalInventorySample {
       System.out.println(e);
     }
   }
-  // [END delete_regional_inventory]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();

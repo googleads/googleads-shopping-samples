@@ -31,7 +31,6 @@ public class InsertLocalInventorySample {
     return String.format("accounts/%s/products/%s", merchantId, productId);
   }
 
-  // [START insert_local_inventory]
   public static void insertLocalInventory(Config config, String productId, String storeCode)
       throws Exception {
     GoogleCredentials credential = new Authenticator().authenticate();
@@ -68,7 +67,6 @@ public class InsertLocalInventorySample {
       System.out.println(e);
     }
   }
-  // [END insert_local_inventory]
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
