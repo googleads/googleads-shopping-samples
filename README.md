@@ -1,4 +1,5 @@
-# Samples for the Content API for Shopping and Manufacturer Center API
+# Samples for the Content API for Shopping, Manufacturer Center API and 
+# Merchant  API
 
 These code samples are organized by platform or language. Each language
 directory contains a `README` with more information about how to run the
@@ -6,9 +7,17 @@ samples for that particular language.  Here, we cover setting up
 authentication and the common configuration file used by all the samples.
 
 For more information on the APIs, please refer to the documentation for the
-[Content API for Shopping](https://developers.google.com/shopping-content/)
-and the
-[Manufacturer Center API](https://developers.google.com/manufacturers/).
+[Content API for Shopping](https://developers.google.com/shopping-content/),
+[Manufacturer Center API](https://developers.google.com/manufacturers/)
+and the [Merchant API](https://developers.google.com/merchant/api/overview).
+
+> **Note**
+> The Merchant API is a redesign of the Content API for Shopping, released
+> as a preview. You have to be allowlisted to use the Merchant API. 
+> **Merchant API samples are only available on the 'merchant' branch.** Code
+> examples are available in the following programming languages:
+> * Java
+
 
 ## Choose Your Method of Authentication
 
@@ -19,9 +28,17 @@ You may want to use
 instead to simplify the authentication flow. These samples also support using
 [Google Application Default Credentials](https://developers.google.com/identity/protocols/application-default-credentials).
 
-Setting up authentication for the Manufacturer Center API is similar to the
-Content API. Just make sure to select the Manufacturer Center API in the API
-Console. Both APIs can be selected if you wish to try samples for both APIs.
+Setting up authentication for the Manufacturer Center API and Merchant API 
+is similar to the Content API. Just make sure to enable the Manufacturer Center
+API or Merchant API in the API Console. All three APIs can be selected if you
+wish to try samples for all three APIs.
+
+> **Note**
+> The Merchant API sample code currently only demonstrates using service
+> accounts for authentication. You can also use other 
+> [OAuth](https://developers.google.com/shopping-content/guides/how-tos/authorizing)
+> methods to authenticate, but those ways are not explicitly demonstrated in
+> the Merchant API samples.
 
 ## Setting up Authentication and Sample Configuration
 
@@ -36,7 +53,7 @@ Console. Both APIs can be selected if you wish to try samples for both APIs.
     Within this directory, also create the following subdirectories, depending
     on which API you would like to try:
 
-    * `content` for the Content API for Shopping
+    * `content` for the Content API for Shopping and Merchant API
     * `manufacturers` for the Manufacturer Center API
 
     Place the files described below in the appropriate subdirectory for the API
