@@ -32,6 +32,15 @@ If you have not already done so, please read the top-level `README` to discover
 how to set up both authentication and the common sample configuration.  The rest
 of this document assumes you have performed both tasks.
 
+Note that for the non-service account OAuth2 flow, the application will read
+and store the created OAuth2 credentials from `$(HOME)/shopping-samples/content`
+in a file called `token.json`.
+
+If your refresh token is 
+[revoked or expired for any reason](https://developers.google.com/identity/protocols/oauth2#expiration),
+you can try deleting the `token.json` file, then re-running the sample code
+to create and save a new refresh token to see if it fixes your error.
+
 ## Running the Samples
 
 We are assuming you've checked out the code and are reading this from a local
