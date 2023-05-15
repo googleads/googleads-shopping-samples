@@ -1,5 +1,4 @@
-# Samples for the Content API for Shopping, Manufacturer Center API and 
-# Merchant  API
+# Samples for Content API for Shopping, Manufacturer Center API and Merchant API
 
 These code samples are organized by platform or language. Each language
 directory contains a `README` with more information about how to run the
