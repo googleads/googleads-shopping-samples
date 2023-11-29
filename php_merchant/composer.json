@@ -1,0 +1,25 @@
+{
+  "name": "googleads/shopping-merchant-samples",
+  "description": "Samples for the Merchant API",
+  "type": "project",
+  "homepage": "https://developers.google.com/merchant/api",
+  "license": "Apache-2.0",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/googleads/googleads-shopping-samples/"
+    }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "react/http": "^1.2.0",
+    "google/shopping-common-protos": "^0.1",
+    "google/shopping-merchant-inventories": "^0.1.1"
+  },
+  "authors": [
+    {
+      "name": "Google",
+      "homepage": "https://github.com/googleads/googleads-shopping-samples/graphs/contributors"
+    }
+  ]
+}
