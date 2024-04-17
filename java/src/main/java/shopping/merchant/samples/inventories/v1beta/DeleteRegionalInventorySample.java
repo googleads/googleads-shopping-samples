@@ -43,7 +43,7 @@ public class DeleteRegionalInventorySample {
 
     String name =
         RegionalInventoryName.newBuilder()
-            .setAccount(config.getMerchantId().toString())
+            .setAccount(config.getAccountId().toString())
             .setProduct(productId)
             .setRegion(regionId)
             .build()

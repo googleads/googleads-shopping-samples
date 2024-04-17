@@ -27,8 +27,8 @@ import shopping.merchant.samples.utils.Config;
 /** This class demonstrates how to list all the regional inventories on a given product */
 public class ListRegionalInventoriesSample {
 
-  private static String getParent(String merchantId, String productId) {
-    return String.format("accounts/%s/products/%s", merchantId, productId);
+  private static String getParent(String accountId, String productId) {
+    return String.format("accounts/%s/products/%s", accountId, productId);
   }
 
   // [START list_regional_inventories]
@@ -40,7 +40,7 @@ public class ListRegionalInventoriesSample {
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
             .build();
 
-    String parent = getParent(config.getMerchantId().toString(), productId);
+    String parent = getParent(config.getAccountId().toString(), productId);
 
     try (RegionalInventoryServiceClient regionalInventoryServiceClient =
         RegionalInventoryServiceClient.create(regionalInventoryServiceSettings)) {

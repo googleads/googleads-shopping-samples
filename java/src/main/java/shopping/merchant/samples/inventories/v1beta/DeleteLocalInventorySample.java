@@ -38,7 +38,7 @@ public class DeleteLocalInventorySample {
 
     String name =
         LocalInventoryName.newBuilder()
-            .setAccount(config.getMerchantId().toString())
+            .setAccount(config.getAccountId().toString())
             .setProduct(productId)
             .setStoreCode(storeCode)
             .build()

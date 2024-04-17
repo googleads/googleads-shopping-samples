@@ -27,8 +27,8 @@ import shopping.merchant.samples.utils.Config;
 /** This class demonstrates how to insert a Local inventory for a given product */
 public class InsertLocalInventorySample {
 
-  private static String getParent(String merchantId, String productId) {
-    return String.format("accounts/%s/products/%s", merchantId, productId);
+  private static String getParent(String accountId, String productId) {
+    return String.format("accounts/%s/products/%s", accountId, productId);
   }
 
   // [START insert_local_inventory]
@@ -41,7 +41,7 @@ public class InsertLocalInventorySample {
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
             .build();
 
-    String parent = getParent(config.getMerchantId().toString(), productId);
+    String parent = getParent(config.getAccountId().toString(), productId);
 
     try (LocalInventoryServiceClient localInventoryServiceClient =
         LocalInventoryServiceClient.create(localInventoryServiceSettings)) {

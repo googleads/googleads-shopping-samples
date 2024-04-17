@@ -34,7 +34,7 @@ public class Config {
   private static final String CONTENT_DIR = "content";
   private static final String FILE_NAME = "merchant-info.json";
 
-  private BigInteger merchantId;
+  private BigInteger accountId;
 
   private String accountSampleUser;
 
@@ -66,7 +66,7 @@ public class Config {
         String fieldname = jParser.getCurrentName();
         if ("merchantId".equals(fieldname)) {
           jParser.nextToken();
-          config.setMerchantId(new BigInteger(jParser.getText()));
+          config.setAccountId(new BigInteger(jParser.getText()));
         }
         if ("accountSampleUser".equals(fieldname)) {
           jParser.nextToken();
@@ -91,12 +91,12 @@ public class Config {
     }
   }
 
-  public BigInteger getMerchantId() {
-    return merchantId;
+  public BigInteger getAccountId() {
+    return accountId;
   }
 
-  public void setMerchantId(BigInteger merchantId) {
-    this.merchantId = merchantId;
+  public void setAccountId(BigInteger accountId) {
+    this.accountId = accountId;
   }
 
   public String getAccountSampleUser() {
@@ -116,6 +116,6 @@ public class Config {
   }
 
   public String getMerchantURL() {
-    return ("accounts/" + this.merchantId + "/");
+    return ("accounts/" + this.accountId + "/");
   }
 }
