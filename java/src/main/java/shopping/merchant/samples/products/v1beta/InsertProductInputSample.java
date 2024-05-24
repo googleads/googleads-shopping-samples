@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@ package shopping.merchant.samples.products.v1beta;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.shopping.merchant.products.v1beta.Attributes;
 import com.google.shopping.merchant.products.v1beta.InsertProductInputRequest;
 import com.google.shopping.merchant.products.v1beta.ProductInput;
-import com.google.shopping.merchant.products.v1beta.ProductInputServiceClient;
-import com.google.shopping.merchant.products.v1beta.ProductInputServiceSettings;
-import com.google.shopping.merchant.products.v1beta.ProductShipping;
+import com.google.shopping.merchant.products.v1beta.ProductInputsServiceClient;
+import com.google.shopping.merchant.products.v1beta.ProductInputsServiceSettings;
+import com.google.shopping.merchant.products.v1beta.Shipping;
+import com.google.shopping.type.Channel.ChannelEnum;
 import com.google.shopping.type.Price;
-import java.util.ArrayList;
 import shopping.merchant.samples.utils.Authenticator;
 import shopping.merchant.samples.utils.Config;
 
@@ -30,7 +31,7 @@ import shopping.merchant.samples.utils.Config;
 public class InsertProductInputSample {
 
   private static String getParent(String accountId) {
-    return String.format("accounts/%s/", accountId);
+    return String.format("accounts/%s", accountId);
   }
 
   // [START insert_product_input]
@@ -40,8 +41,8 @@ public class InsertProductInputSample {
     GoogleCredentials credential = new Authenticator().authenticate();
 
     // Creates service settings using the credentials retrieved above.
-    ProductInputServiceSettings productInputServiceSettings =
-        ProductInputServiceSettings.newBuilder()
+    ProductInputsServiceSettings productInputsServiceSettings =
+        ProductInputsServiceSettings.newBuilder()
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
             .build();
 
@@ -49,57 +50,67 @@ public class InsertProductInputSample {
     String parent = getParent(config.getAccountId().toString());
 
     // Calls the API and catches and prints any network failures/errors.
-    try (ProductInputServiceClient productInputServiceClient =
-        ProductInputServiceClient.create(productInputServiceSettings)) {
+    try (ProductInputsServiceClient productInputsServiceClient =
+        ProductInputsServiceClient.create(productInputsServiceSettings)) {
 
       // Price to be used for shipping ($33.45).
       Price price = Price.newBuilder().setAmountMicros(33_450_000).setCurrencyCode("USD").build();
 
-      // Creates an array to store shipping data, then populate that array with shipping data.
-      ArrayList<ProductShipping> shipping = new ArrayList<ProductShipping>();
-      shipping.add(
-          new ProductShipping().setPrice(price).setCountry("GB").setService("1st class post"));
-      // TODO(brothman) Test to confirm this is right syntax for shipping when products bundle
-      // is in devel.
+      Shipping shipping =
+          Shipping.newBuilder()
+              .setPrice(price)
+              .setCountry("GB")
+              .setService("1st class post")
+              .build();
 
-      // The datasource can be either a primary or supplemental datasource w
+      Shipping shipping2 =
+          Shipping.newBuilder()
+              .setPrice(price)
+              .setCountry("FR")
+              .setService("1st class post")
+              .build();
+
+      Attributes attributes =
+          Attributes.newBuilder()
+              .setTitle("A Tale of Two Cities")
+              .setDescription("A classic novel about the French Revolution")
+              .setLink("https://exampleWebsite.com/tale-of-two-cities.html")
+              .setImageLink("https://exampleWebsite.com/tale-of-two-cities.jpg")
+              .setAvailability("in stock")
+              .setCondition("new")
+              .setGoogleProductCategory("Media > Books")
+              .setGtin("9780007350896")
+              .addShipping(shipping)
+              .addShipping(shipping2)
+              .build();
+
+      // The datasource can be either a primary or supplemental datasource.
       InsertProductInputRequest request =
           InsertProductInputRequest.newBuilder()
               .setParent(parent)
               // You can only insert products into datasource types of Input "API" and "FILE", and
               // of Type "Primary" or "Supplemental."
-              .setDataSource(dataSource) // ToDo(brothman): Test to confirm whether this can take
-              // a `name` for datasource, instead of just the ID field.
-              // Also Jakub's suggestion to test if it can be called: `setDataSourceName`
+              // This field takes the `name` field of the datasource.
+              .setDataSource(dataSource)
               // If this product is already owned by another datasource, when re-inserting, the
               // new datasource will take ownership of the product.
               .setProductInput(
                   ProductInput.newBuilder()
-                      .setChannel("online")
+                      .setChannel(ChannelEnum.ONLINE)
                       .setContentLanguage("en")
                       .setFeedLabel("label")
                       .setOfferId("sku123")
-                      .setTitle("A Tale of Two Cities")
-                      .setDescription("A classic novel about the French Revolution")
-                      .setLink(websiteUrl + "/tale-of-two-cities.html")
-                      .setImageLink(websiteUrl + "/tale-of-two-cities.jpg")
-                      .setAvailability("in stock")
-                      .setCondition("new")
-                      .setGoogleProductCategory("Media > Books")
-                      .setGtin("9780007350896")
-                      .setShipping(shipping)
+                      .setAttributes(attributes)
                       .build())
               .build();
 
       System.out.println("Sending insert ProductInput request");
-      ProductInput response = productInputServiceClient.insertProductInput(request);
+      ProductInput response = productInputsServiceClient.insertProductInput(request);
       System.out.println("Inserted ProductInput Name below");
       // The last part of the product name will be the product ID assigned to a product by Google.
       // Product ID has the format `channel~contentLanguage~feedLabel~offerId`
       System.out.println(response.getName());
-
       System.out.println("Inserted Product Name below");
-      // TODO(brothman) - confirm if this is the correct syntax to get the final product name
       System.out.println(response.getProduct());
     } catch (Exception e) {
       System.out.println(e);
@@ -110,8 +121,8 @@ public class InsertProductInputSample {
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
-    // Identifies the data source that will own the product input
-    String dataSource = "/accounts/{INSERT_ACCOUNT}/datasources/{INSERT_DATASOURCE_ID}";
+    // Identifies the data source that will own the product input.
+    String dataSource = "accounts/" + config.getAccountId() + "/dataSources/{INSERT_DATASOURCE_ID}";
 
     insertProductInput(config, dataSource);
   }

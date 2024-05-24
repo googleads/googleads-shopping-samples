@@ -1,5 +1,5 @@
-// Copyright 2023 Google LLC
-//
+// Copyright 2024 Google LLC
+
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -18,9 +18,8 @@ import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.shopping.merchant.products.v1beta.GetProductRequest;
 import com.google.shopping.merchant.products.v1beta.Product;
-import com.google.shopping.merchant.products.v1beta.ProductName;
-import com.google.shopping.merchant.products.v1beta.ProductServiceClient;
-import com.google.shopping.merchant.products.v1beta.ProductServiceSettings;
+import com.google.shopping.merchant.products.v1beta.ProductsServiceClient;
+import com.google.shopping.merchant.products.v1beta.ProductsServiceSettings;
 import shopping.merchant.samples.utils.Authenticator;
 import shopping.merchant.samples.utils.Config;
 
@@ -28,34 +27,26 @@ import shopping.merchant.samples.utils.Config;
 public class GetProductSample {
 
   // [START get_product]
-  public static void getProduct(Config config, String productId) throws Exception {
+  public static void getProduct(Config config, String product) throws Exception {
 
     // Obtains OAuth token based on the user's configuration.
     GoogleCredentials credential = new Authenticator().authenticate();
 
     // Creates service settings using the credentials retrieved above.
-    ProductServiceSettings productServiceSettings =
-        ProductServiceSettings.newBuilder()
+    ProductsServiceSettings productsServiceSettings =
+        ProductsServiceSettings.newBuilder()
             .setCredentialsProvider(FixedCredentialsProvider.create(credential))
             .build();
 
-    // Creates product name to identify product.
-    String name =
-        ProductName.newBuilder()
-            .setAccount(config.getAccountId().toString())
-            .setProduct(productId)
-            .build()
-            .toString();
-
     // Calls the API and catches and prints any network failures/errors.
-    try (ProductServiceClient productServiceClient =
-        ProductServiceClient.create(productServiceSettings)) {
+    try (ProductsServiceClient productsServiceClient =
+        ProductsServiceClient.create(productsServiceSettings)) {
 
-      // The name has the format: accounts/{account}/products/{product}
-      GetProductRequest request = GetProductRequest.newBuilder().setName(name).build();
+      // The name has the format: accounts/{account}/products/{productId}
+      GetProductRequest request = GetProductRequest.newBuilder().setName(product).build();
 
       System.out.println("Sending get product request:");
-      Product response = ProductServiceClient.getProduct(request);
+      Product response = productsServiceClient.getProduct(request);
 
       System.out.println("Retrieved Product below");
       System.out.println(response);
@@ -68,10 +59,10 @@ public class GetProductSample {
 
   public static void main(String[] args) throws Exception {
     Config config = Config.load();
-    // An ID assigned to a product by Google. In the format
-    // channel~contentLanguage~feedLabel~offerId
-    String productId = "online~en~label~sku123";
+    // The name of the `product`, returned after a `Product.insert` request. We recommend
+    // having stored this value in your database to use for all future requests.
+    String product = "accounts/{datasource}/products/{productId}";
 
-    getProduct(config, productId);
+    getProduct(config, product);
   }
 }
