@@ -22,7 +22,8 @@ require_once __DIR__ . '/../Authentication/Authentication.php';
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
 use Google\Shopping\Merchant\Inventories\V1beta\LocalInventory;
-use Google\Shopping\Merchant\Inventories\V1beta\LocalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\Client\LocalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\ListLocalInventoriesRequest;
 
 /**
  * Class to list the `LocalInventory` resources for the given product in your
@@ -59,6 +60,10 @@ class ListLocalInventories
         // Creates a client.
         $localInventoryServiceClient = new LocalInventoryServiceClient($options);
 
+        // Prepare the request message.
+        $request = (new ListLocalInventoriesRequest())
+            ->setParent($parent);
+
         // Calls the API and catches and prints any network failures/errors.
         try {
             // Page size is set to the default value. If you are returned more
@@ -69,7 +74,7 @@ class ListLocalInventories
 
             /** @var PagedListResponse $response */
             $response =
-                $localInventoryServiceClient->listLocalInventories($parent, $parameters);
+                $localInventoryServiceClient->listLocalInventories($request, $parameters);
 
             /** @var LocalInventory $element */
             foreach ($response as $element) {

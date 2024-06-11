@@ -21,9 +21,9 @@ require_once __DIR__ . '/../Authentication/Authentication.php';
 
 use Google\ApiCore\ApiException;
 use Google\Shopping\Merchant\Inventories\V1beta\LocalInventory;
-use Google\Shopping\Merchant\Inventories\V1beta\LocalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\Client\LocalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\InsertLocalInventoryRequest;
 use Google\Shopping\Type\Price;
-
 
 /**
  * Class to insert a `LocalInventory` to a given product in your
@@ -84,13 +84,14 @@ class InsertLocalInventory
             ->setAvailability("in stock")
             ->setPrice($price);
 
+        $request = (new InsertLocalInventoryRequest())
+            ->setParent($parent)
+            ->setLocalInventory($localInventory);
+
         // Calls the API and catches and prints any network failures/errors.
         try {
             /** @var LocalInventory $response */
-            $response = $localInventoryServiceClient->insertLocalInventory(
-                $parent,
-                $localInventory
-            );
+            $response = $localInventoryServiceClient->insertLocalInventory($request);
             printf('Response data: %s%s', $response->serializeToJsonString(), PHP_EOL);
         } catch (ApiException $ex) {
             printf('Call failed with message: %s%s', $ex->getMessage(), PHP_EOL);

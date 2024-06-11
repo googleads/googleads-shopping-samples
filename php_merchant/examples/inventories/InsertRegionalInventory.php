@@ -21,9 +21,9 @@ require_once __DIR__ . '/../Authentication/Authentication.php';
 
 use Google\ApiCore\ApiException;
 use Google\Shopping\Merchant\Inventories\V1beta\RegionalInventory;
-use Google\Shopping\Merchant\Inventories\V1beta\RegionalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\Client\RegionalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\InsertRegionalInventoryRequest;
 use Google\Shopping\Type\Price;
-
 
 /**
  * Class to insert a `RegionalInventory` to a given product in your
@@ -82,13 +82,14 @@ class InsertRegionalInventory
             ->setAvailability("in stock")
             ->setPrice($price);
 
+        $request = (new InsertRegionalInventoryRequest())
+            ->setParent($parent)
+            ->setRegionalInventory($regionalInventory);
+
         // Calls the API and catches and prints any network failures/errors.
         try {
             /** @var RegionalInventory $response */
-            $response = $regionalInventoryServiceClient->insertRegionalInventory(
-                $parent,
-                $regionalInventory
-            );
+            $response = $regionalInventoryServiceClient->insertRegionalInventory($request);
             printf('Response data: %s%s', $response->serializeToJsonString(), PHP_EOL);
         } catch (ApiException $ex) {
             printf('Call failed with message: %s%s', $ex->getMessage(), PHP_EOL);

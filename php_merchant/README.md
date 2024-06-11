@@ -52,11 +52,11 @@ local machine. Once you have the `token.json` file or if you're using a service
 account to authenticate, proceed to the next step.
 
 1. Run one of the following samples on the command line from the root directory.
-Below is an example of how to run the `insert_regional_inventory.php` code
+Below is an example of how to run the `InsertRegionalInventory.php` code
 sample file.
 
     ```
-    $ php examples/inventories/insert_regional_inventory.php # Runs a program to insert a regional inventory.
+    $ php examples/inventories/InsertRegionalInventory.php # Runs a program to insert a regional inventory.
     ```
 
 1. Examine your shell output, be inspired and start hacking an amazing new app!

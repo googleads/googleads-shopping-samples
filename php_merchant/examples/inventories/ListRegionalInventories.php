@@ -22,7 +22,8 @@ require_once __DIR__ . '/../Authentication/Authentication.php';
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
 use Google\Shopping\Merchant\Inventories\V1beta\RegionalInventory;
-use Google\Shopping\Merchant\Inventories\V1beta\RegionalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\Client\RegionalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\ListRegionalInventoriesRequest;
 
 /**
  * Class to list the `RegionalInventory` resources for the given product in your
@@ -59,6 +60,10 @@ class ListRegionalInventories
         // Creates a client.
         $regionalInventoryServiceClient = new RegionalInventoryServiceClient($options);
 
+        // Prepare the request message.
+        $request = (new ListRegionalInventoriesRequest())
+            ->setParent($parent);
+
         // Calls the API and catches and prints any network failures/errors.
         try {
             // Page size is set to the default value. If you are returned more
@@ -69,7 +74,7 @@ class ListRegionalInventories
 
             /** @var PagedListResponse $response */
             $response =
-                $regionalInventoryServiceClient->listRegionalInventories($parent, $parameters);
+                $regionalInventoryServiceClient->listRegionalInventories($request, $parameters);
 
             /** @var RegionalInventory $element */
             foreach ($response as $element) {

@@ -20,7 +20,8 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../Authentication/Authentication.php';
 
 use Google\ApiCore\ApiException;
-use Google\Shopping\Merchant\Inventories\V1beta\LocalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\Client\LocalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\DeleteLocalInventoryRequest;
 
 /**
  * Deletes the specified `LocalInventory` resource from the given product
@@ -60,9 +61,13 @@ class DeleteLocalInventory
          // Creates a client.
          $localInventoryServiceClient = new LocalInventoryServiceClient($options);
 
+        // Prepare the request message.
+        $request = (new DeleteLocalInventoryRequest())
+            ->setName($formattedName);
+
          // Calls the API and catches and prints any network failures/errors.
          try {
-             $localInventoryServiceClient->deleteLocalInventory($formattedName);
+             $localInventoryServiceClient->deleteLocalInventory($request);
              print 'Delete call completed successfully.' . PHP_EOL;
          } catch (ApiException $ex) {
              printf('Call failed with message: %s%s', $ex->getMessage(), PHP_EOL);
