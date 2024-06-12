@@ -19,7 +19,7 @@ import shopping.merchant.samples.products.v1beta.InsertProductInputSample;
 import shopping.merchant.samples.utils.Config;
 
 /** This class demonstrates how to create a datasource and insert a product in the datasource. */
-public class CreateDataSourceAndInsertFirstProductSample {
+public class CreateDatasourceAndInsertFirstProductSample {
 
   // [START create_datasource_and_insert_first_product]
   public static void createDatasourceAndInsertFirstProduct(Config config, String displayName)

@@ -16,7 +16,6 @@ package shopping.merchant.samples.accounts.regions.v1beta;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.protobuf.StringValue;
 import com.google.shopping.merchant.accounts.v1beta.CreateRegionRequest;
 import com.google.shopping.merchant.accounts.v1beta.Region;
 import com.google.shopping.merchant.accounts.v1beta.Region.PostalCodeArea;
@@ -58,7 +57,7 @@ public class CreateRegionSample {
               .setRegionId(regionId)
               .setRegion(
                   Region.newBuilder()
-                      .setDisplayName(StringValue.of("New York"))
+                      .setDisplayName("New York")
                       .setPostalCodeArea(
                           PostalCodeArea.newBuilder()
                               .setRegionCode("US")

@@ -78,6 +78,6 @@ public class DeleteProductInputSample {
     // feed.
     String dataSource = "accounts/{account}/dataSources/{dataSource}";
 
-    deleteProductInput(config, productId);
+    deleteProductInput(config, productId, dataSource);
   }
 }

@@ -57,7 +57,9 @@ public class DeleteRegionSample {
     Config config = Config.load();
 
     // Creates Region name to identify the Region you want to delete.
-    // Format: `accounts/{account}/region/{region}`
+    // Format: `accounts/{account}/region/{regionId}`
+    String regionId = "{INSERT_REGION_HERE}";
+
     String region =
         RegionName.newBuilder()
             .setAccount(config.getAccountId().toString())
