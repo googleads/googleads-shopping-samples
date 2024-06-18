@@ -53,7 +53,7 @@ public class ListSubAccountsSample {
       // The parent has the format: accounts/{account}
       ListSubAccountsRequest request =
           ListSubAccountsRequest.newBuilder().setProvider(parent).build();
-      System.out.println(parent);
+      System.out.println("Sending list subaccounts request:");
 
       ListSubAccountsPagedResponse response = accountsServiceClient.listSubAccounts(request);
 
