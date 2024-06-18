@@ -87,8 +87,6 @@ Just make sure to enable the Merchant API in the API Console.
     | Field                     | Type   | Description                                    |
     |---------------------------|--------|------------------------------------------------|
     | `merchantId`              | number | The Merchant Center ID to run samples against. |
-    | `accountSampleUser`       | string | If non-empty, the email address for the user to add/remove in samples for the `Accounts` service. |
-    | `accountSampleAdWordsCID` | number | If non-zero, the AdWords Customer ID to link/unlink in samples for the `Accounts` service. |
 
     If using OAuth2 client credentials, once you have authorized access, your
     token details will be stored in the `token.json` file in the samples
