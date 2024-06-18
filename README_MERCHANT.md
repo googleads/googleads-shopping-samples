@@ -79,10 +79,9 @@ Just make sure to enable the Merchant API in the API Console.
         client](https://developers.google.com/shopping-content/v2/how-tos/authorizing)
         credentials
 
-3.  Each set of samples uses a different configuration file.  For the Merchant
-    API for Shopping, take the example `merchant-info.json` from the repository
+3.  Take the example `merchant-info.json` from the repository
     root and copy it into `$(HOME)/shopping-samples/content`.  Next, change its
-    contents appropriately. It contains a JSON object with the following fields:
+    contents appropriately. It contains a JSON object with the following field:
 
     | Field                     | Type   | Description                                    |
     |---------------------------|--------|------------------------------------------------|

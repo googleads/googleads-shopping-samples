@@ -58,7 +58,7 @@ Use the following syntax
 to run the `InsertRegionalInventorySample` class, for example.
 
 ```
-mvn exec:java -Dexec.mainClass="shopping.merchant.samples.inventories.v1beta.InsertRegionalInventorySample"
+mvn exec:java -Dexec.mainClass="shopping.merchant.samples.products.v1beta.ListProductsSample"
 ```
 
 Examine your shell output, be inspired and start working on an amazing new app!
