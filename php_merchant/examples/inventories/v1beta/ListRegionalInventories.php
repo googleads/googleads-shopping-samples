@@ -16,26 +16,26 @@
  * limitations under the License.
  */
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../Authentication/Authentication.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../Authentication/Authentication.php';
 
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
-use Google\Shopping\Merchant\Inventories\V1beta\LocalInventory;
-use Google\Shopping\Merchant\Inventories\V1beta\Client\LocalInventoryServiceClient;
-use Google\Shopping\Merchant\Inventories\V1beta\ListLocalInventoriesRequest;
+use Google\Shopping\Merchant\Inventories\V1beta\RegionalInventory;
+use Google\Shopping\Merchant\Inventories\V1beta\Client\RegionalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\ListRegionalInventoriesRequest;
 
 /**
- * Class to list the `LocalInventory` resources for the given product in your
+ * Class to list the `RegionalInventory` resources for the given product in your
  * merchant account. The response might contain fewer items than specified by
  * `pageSize`. If `pageToken` was returned in previous request, it can be
  * used to obtain additional results.
  *
- * `LocalInventory` resources are listed per product for a given account.
+ * `RegionalInventory` resources are listed per product for a given account.
  */
 
-// [START list_local_inventories]
-class ListLocalInventories
+// [START list_regional_inventories]
+class ListRegionalInventories
 {
 
     // ENSURE you fill in the merchant account and product ID for the sample to
@@ -43,13 +43,13 @@ class ListLocalInventories
     private const PARENT = 'accounts/[INSERT_ACCOUNT_HERE]/products/[INSERT_PRODUCT_HERE]';
 
     /**
-     * Lists all the local inventories of a given product.
+     * Lists all the regional inventories of a given product.
      *
-     * @param string $parent The `name` of the parent product to list `LocalInventory`
+     * @param string $parent The `name` of the parent product to list `RegionalInventory`
      *     resources for.
      *     Format: `accounts/{account}/products/{product}`
      */
-    function listLocalInventoriesSample(string $parent): void
+    function listRegionalInventoriesSample(string $parent): void
     {
         // Gets the OAuth credentials to make the request.
         $credentials = Authentication::useServiceAccountOrTokenFile();
@@ -58,10 +58,10 @@ class ListLocalInventories
         $options = ['credentials' => $credentials];
 
         // Creates a client.
-        $localInventoryServiceClient = new LocalInventoryServiceClient($options);
+        $regionalInventoryServiceClient = new RegionalInventoryServiceClient($options);
 
         // Prepare the request message.
-        $request = (new ListLocalInventoriesRequest())
+        $request = (new ListRegionalInventoriesRequest())
             ->setParent($parent);
 
         // Calls the API and catches and prints any network failures/errors.
@@ -74,11 +74,11 @@ class ListLocalInventories
 
             /** @var PagedListResponse $response */
             $response =
-                $localInventoryServiceClient->listLocalInventories($request, $parameters);
+                $regionalInventoryServiceClient->listRegionalInventories($request, $parameters);
 
-            /** @var LocalInventory $element */
+            /** @var RegionalInventory $element */
             foreach ($response as $element) {
-                printf('LocalInventory data: %s%s', $element->serializeToJsonString(), PHP_EOL);
+                printf('RegionalInventory data: %s%s', $element->serializeToJsonString(), PHP_EOL);
             }
         } catch (ApiException $ex) {
             printf('Call failed with message: %s%s', $ex->getMessage(), PHP_EOL);
@@ -88,11 +88,11 @@ class ListLocalInventories
     // Helper to execute the sample.
     function callSample(): void
     {
-        // Lists all the local inventories of the parent product.
-        $this->listLocalInventoriesSample($this::PARENT);
+        // Lists all the regional inventories of the parent product.
+        $this->listRegionalInventoriesSample($this::PARENT);
     }
 }
-// [END list_local_inventories]
+// [END list_regional_inventories]
 
-$sample = new ListLocalInventories();
+$sample = new ListRegionalInventories();
 $sample->callSample();

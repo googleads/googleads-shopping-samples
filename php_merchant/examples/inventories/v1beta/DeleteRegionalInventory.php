@@ -16,41 +16,41 @@
  * limitations under the License.
  */
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../Authentication/Authentication.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../Authentication/Authentication.php';
 
 use Google\ApiCore\ApiException;
-use Google\Shopping\Merchant\Inventories\V1beta\Client\LocalInventoryServiceClient;
-use Google\Shopping\Merchant\Inventories\V1beta\DeleteLocalInventoryRequest;
+use Google\Shopping\Merchant\Inventories\V1beta\Client\RegionalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\DeleteRegionalInventoryRequest;
 
 /**
- * Deletes the specified `LocalInventory` resource from the given product
+ * Deletes the specified `RegionalInventory` resource from the given product
  * in your merchant account.  It might take up to an hour for the
- * `LocalInventory` to be deleted from the specific product.
+ * `RegionalInventory` to be deleted from the specific product.
  * Once you have received a successful delete response, wait for that
  * period before attempting a delete again.
  */
 
-// [START delete_local_inventory]
-class DeleteLocalInventory
+// [START delete_regional_inventory]
+class DeleteRegionalInventory
 {
 
     // ENSURE you fill in the merchant account, product, and region ID for the
     // sample to work.
     private const ACCOUNT = 'INSERT_ACCOUNT_ID_HERE';
     private const PRODUCT = 'INSERT_PRODUCT_ID_HERE';
-    private const STORE_CODE = 'INSERT_STORE_CODE_HERE';
+    private const REGION = 'INSERT_REGION_ID_HERE';
 
     /**
-     * Deletes a specific local inventory of a given product.
+     * Deletes a specific regional inventory of a given product.
      *
-     * @param string $formattedName The name of the `LocalInventory` resource
+     * @param string $formattedName The name of the `RegionalInventory` resource
      * to delete.
-     *     Format: `accounts/{account}/products/{product}/localInventories/{store_code}`
-     *     Please see {@see LocalInventoryServiceClient::localInventoryName()}
+     *     Format: `accounts/{account}/products/{product}/regionalInventories/{region}`
+     *     Please see {@see RegionalInventoryServiceClient::regionalInventoryName()}
      *     for help formatting this field.
      */
-    function deleteLocalInventorySample(string $formattedName): void
+    function deleteRegionalInventorySample(string $formattedName): void
     {
          // Gets the OAuth credentials to make the request.
          $credentials = Authentication::useServiceAccountOrTokenFile();
@@ -59,15 +59,16 @@ class DeleteLocalInventory
          $options = ['credentials' => $credentials];
 
          // Creates a client.
-         $localInventoryServiceClient = new LocalInventoryServiceClient($options);
+         $regionalInventoryServiceClient = new RegionalInventoryServiceClient($options);
 
-        // Prepare the request message.
-        $request = (new DeleteLocalInventoryRequest())
+
+         // Prepare the request message.
+         $request = (new DeleteRegionalInventoryRequest())
             ->setName($formattedName);
 
          // Calls the API and catches and prints any network failures/errors.
          try {
-             $localInventoryServiceClient->deleteLocalInventory($request);
+             $regionalInventoryServiceClient->deleteRegionalInventory($request);
              print 'Delete call completed successfully.' . PHP_EOL;
          } catch (ApiException $ex) {
              printf('Call failed with message: %s%s', $ex->getMessage(), PHP_EOL);
@@ -80,17 +81,17 @@ class DeleteLocalInventory
     function callSample(): void
     {
         // These variables are defined at the top of the file.
-        $formattedName = LocalInventoryServiceClient::localInventoryName(
+        $formattedName = RegionalInventoryServiceClient::regionalInventoryName(
             $this::ACCOUNT,
             $this::PRODUCT,
-            $this::STORE_CODE
+            $this::REGION
         );
 
-        // Deletes the specific local inventory of the parent product.
-        $this->deleteLocalInventorySample($formattedName);
+        // Deletes the specific regional inventory of the parent product.
+        $this->deleteRegionalInventorySample($formattedName);
     }
 }
-// [END delete_local_inventory]
+// [END delete_regional_inventory]
 
-$sample = new DeleteLocalInventory();
+$sample = new DeleteRegionalInventory();
 $sample->callSample();

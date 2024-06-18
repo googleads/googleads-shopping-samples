@@ -16,49 +16,51 @@
  * limitations under the License.
  */
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../Authentication/Authentication.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../Authentication/Authentication.php';
 
 use Google\ApiCore\ApiException;
-use Google\Shopping\Merchant\Inventories\V1beta\RegionalInventory;
-use Google\Shopping\Merchant\Inventories\V1beta\Client\RegionalInventoryServiceClient;
-use Google\Shopping\Merchant\Inventories\V1beta\InsertRegionalInventoryRequest;
+use Google\Shopping\Merchant\Inventories\V1beta\LocalInventory;
+use Google\Shopping\Merchant\Inventories\V1beta\Client\LocalInventoryServiceClient;
+use Google\Shopping\Merchant\Inventories\V1beta\InsertLocalInventoryRequest;
 use Google\Shopping\Type\Price;
 
 /**
- * Class to insert a `RegionalInventory` to a given product in your
+ * Class to insert a `LocalInventory` to a given product in your
  * merchant account.
  *
- * Replaces the full `RegionalInventory` resource if an entry with the same
- * [`region`]
- * [google.shopping.merchant.inventories.v1beta.RegionalInventory.region]
+ * Replaces the full `LocalInventory` resource if an entry with the same
+ * [`storeCode`]
+ * [google.shopping.merchant.inventories.v1beta.LocalInventory.storeCode]
  * already exists for the product.
  *
- * It might take up to 30 minutes for the new or updated `RegionalInventory`
+ * It might take up to 30 minutes for the new or updated `LocalInventory`
  * resource to appear in products.
  */
 
-// [START insert_regional_inventory]
-class InsertRegionalInventory
+// [START insert_local_inventory]
+class InsertLocalInventory
 {
     // ENSURE you fill in the merchant account and product ID for the sample to
     // work.
     private const PARENT = 'accounts/[INSERT_ACCOUNT_HERE]/products/[INSERT_PRODUCT_HERE]';
-    // ENSURE you fill in region ID for the sample to work.
-    private const REGIONAL_INVENTORY_REGION = 'INSERT_REGION_HERE';
+    // ENSURE you fill in store code for the sample to work.
+    private const LOCAL_INVENTORY_STORE_CODE = 'INSERT_STORE_CODE_HERE';
 
     /**
-     * Inserts a regional inventory underneath the parent product.
+     * Inserts a local inventory underneath the parent product.
      *
      * @param string $parent The account and product where this inventory will be inserted.
      *     Format: `accounts/{account}/products/{product}`
-     * @param string $regionalInventoryRegion
+     * @param string $localInventoryRegion
      *     ID of the region for this
-     *     `RegionalInventory` resource. See the [Regional availability and
+     *     `LocalInventory` resource. See the [Local availability and
      *     pricing](https://support.google.com/merchants/answer/9698880) for more details.
      */
-    public function insertRegionalInventorySample(string $parent, string $regionalInventoryRegion): void
-    {
+    public function insertLocalInventorySample(
+        string $parent,
+        string $localInventoryStoreCode
+    ): void {
         // Gets the OAuth credentials to make the request.
         $credentials = Authentication::useServiceAccountOrTokenFile();
 
@@ -66,7 +68,7 @@ class InsertRegionalInventory
         $options = ['credentials' => $credentials];
 
         // Creates a client.
-        $regionalInventoryServiceClient = new RegionalInventoryServiceClient($options);
+        $localInventoryServiceClient = new LocalInventoryServiceClient($options);
 
         // Creates a price object.
         $price = new Price(
@@ -76,20 +78,20 @@ class InsertRegionalInventory
             ]
         );
 
-        // Creates a new regional inventory object.
-        $regionalInventory = (new RegionalInventory())
-            ->setRegion($regionalInventoryRegion)
+        // Creates a new local inventory object.
+        $localInventory = (new LocalInventory())
+            ->setStoreCode($localInventoryStoreCode)
             ->setAvailability("in stock")
             ->setPrice($price);
 
-        $request = (new InsertRegionalInventoryRequest())
+        $request = (new InsertLocalInventoryRequest())
             ->setParent($parent)
-            ->setRegionalInventory($regionalInventory);
+            ->setLocalInventory($localInventory);
 
         // Calls the API and catches and prints any network failures/errors.
         try {
-            /** @var RegionalInventory $response */
-            $response = $regionalInventoryServiceClient->insertRegionalInventory($request);
+            /** @var LocalInventory $response */
+            $response = $localInventoryServiceClient->insertLocalInventory($request);
             printf('Response data: %s%s', $response->serializeToJsonString(), PHP_EOL);
         } catch (ApiException $ex) {
             printf('Call failed with message: %s%s', $ex->getMessage(), PHP_EOL);
@@ -101,13 +103,13 @@ class InsertRegionalInventory
      */
     public function callSample(): void
     {
-        // Makes the call to insert the regional inventory to the parent product
+        // Makes the call to insert the local inventory to the parent product
         // for the given region.
-        $this->insertRegionalInventorySample($this::PARENT, $this::REGIONAL_INVENTORY_REGION);
+        $this->insertLocalInventorySample($this::PARENT, $this::LOCAL_INVENTORY_STORE_CODE);
     }
 
 }
-// [END insert_regional_inventory]
+// [END insert_local_inventory]
 
-$sample = new InsertRegionalInventory();
+$sample = new InsertLocalInventory();
 $sample->callSample();
