@@ -19,7 +19,7 @@
   <issueManagement>
     <system>github.com</system>
     <url>
-      https://github.com/googleads/googleads-shopping-samples/issues
+      https://github.com/google/merchant-api-samples/issues
     </url>
   </issueManagement>
 
@@ -34,9 +34,18 @@
   <build>
     <plugins>
       <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>exec-maven-plugin</artifactId>
-      <version>3.0.0</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <source>8</source>
+          <target>8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.5.0</version>
       </plugin>
     </plugins>
   </build>
@@ -44,13 +53,13 @@
 
   <scm>
     <connection>
-      scm:git:https://github.com/googleads/googleads-shopping-samples
+      scm:git:https://github.com/google/merchant-api-samples
     </connection>
     <developerConnection>
-      scm:git:https://github.com/googleads/googleads-shopping-samples
+      scm:git:https://github.com/google/merchant-api-samples
     </developerConnection>
     <url>
-      https://github.com/googleads/googleads-shopping-samples
+      https://github.com/google/merchant-api-samples
     </url>
   </scm>
 
@@ -75,43 +84,60 @@
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.google.api</groupId>
+            <artifactId>gax-bom</artifactId>
+            <version>2.42.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>gapic-merchant-inventories-v1beta-java</artifactId>
-      <version>0.0.0-SNAPSHOT</version>
+      <groupId>com.google.shopping</groupId>
+      <artifactId>google-shopping-merchant-inventories</artifactId>
+      <version>0.21.0</version>
     </dependency>
     <dependency>
-      <groupId>com.google.api.grpc</groupId>
-      <artifactId>proto-merchant-inventories-v1beta-java</artifactId>
-      <version>0.0.0-SNAPSHOT</version>
+      <groupId>com.google.shopping</groupId>
+      <artifactId>google-shopping-merchant-products</artifactId>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
-      <groupId>com.google.api.grpc</groupId>
-      <artifactId>grpc-merchant-inventories-v1beta-java</artifactId>
-      <version>0.0.0-SNAPSHOT</version>
+      <groupId>com.google.shopping</groupId>
+      <artifactId>google-shopping-merchant-datasources</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.shopping</groupId>
+      <artifactId>google-shopping-merchant-accounts</artifactId>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.21.7</version>
+      <version>3.25.3</version>
     </dependency>
     <dependency>
       <groupId>com.google.api</groupId>
       <artifactId>gax</artifactId>
-      <version>2.19.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.auth</groupId>
       <artifactId>google-auth-library-oauth2-http</artifactId>
-      <version>1.9.0</version>
+      <version>1.19.0</version>
     </dependency>
     <dependency>
-        <groupId>com.google.cloud</groupId>
-        <artifactId>google-cloud-shared-dependencies</artifactId>
-        <version>2.6.0</version>
-        <type>pom</type>
-        <scope>import</scope>
+        <groupId>com.google.api</groupId>
+        <artifactId>gax-grpc</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.google.api</groupId>
+        <artifactId>gax-httpjson</artifactId>
     </dependency>
   </dependencies>
 </project>
