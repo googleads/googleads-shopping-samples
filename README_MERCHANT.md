@@ -70,12 +70,10 @@ Just make sure to enable the Merchant API in the API Console.
     but note that the samples will always use the first credentials that can be
     loaded, in the order:
 
-    1.  [Google Application Default
-        Credentials](https://developers.google.com/identity/protocols/application-default-credentials)
-    2.  [Service
+    1.  [Service
         accounts](https://developers.google.com/shopping-content/v2/how-tos/service-accounts)
         credentials
-    3.  [OAuth2
+    2.  [OAuth2
         client](https://developers.google.com/shopping-content/v2/how-tos/authorizing)
         credentials
 
