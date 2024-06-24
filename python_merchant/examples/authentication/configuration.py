@@ -25,7 +25,7 @@ class Configuration(object):
     config_path = os.path.join(os.path.expanduser("~"), "shopping-samples")
     config_dir = os.path.join(config_path, "content")
     service_account_path = os.path.join(config_dir, "service-account.json")
-    client_secrets_path = os.path.join(config_dir, "/client-secrets.json")
+    client_secrets_path = os.path.join(config_dir, "client-secrets.json")
     # Token_path assumes you call your requests from the top level python
     # directory.
     token_path = "token.json"
