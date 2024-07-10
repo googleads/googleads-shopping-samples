@@ -36,10 +36,6 @@ public class Config {
 
   private BigInteger accountId;
 
-  private String accountSampleUser;
-
-  private BigInteger accountSampleAdsCID;
-
   private File path;
 
   public File getPath() {
@@ -67,14 +63,6 @@ public class Config {
         if ("merchantId".equals(fieldname)) {
           jParser.nextToken();
           config.setAccountId(new BigInteger(jParser.getText()));
-        }
-        if ("accountSampleUser".equals(fieldname)) {
-          jParser.nextToken();
-          config.setAccountSampleUser(jParser.getText());
-        }
-        if ("accountSampleAdWordsCID".equals(fieldname)) {
-          jParser.nextToken();
-          config.setAccountSampleAdsCID(new BigInteger(jParser.getText()));
         }
       }
       jParser.close();
