@@ -56,7 +56,7 @@ Below is an example of how to run the `InsertRegionalInventory.php` code
 sample file.
 
     ```
-    $ php examples/inventories/v1beta/InsertRegionalInventory.php # Runs a program to insert a regional inventory.
+    $ php examples/products/v1beta/ListProducts.php # Runs a program to insert a regional inventory.
     ```
 
 1. Examine your shell output, be inspired and start hacking an amazing new app!

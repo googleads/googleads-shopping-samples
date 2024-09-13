@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-require __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 /**
  * A configuration class to provide access to the location on the local machine
@@ -51,10 +51,37 @@ class Config
 
         $tokenFile = __DIR__ . '/../../token.json';
 
+        $merchantInfoFile= join(
+            DIRECTORY_SEPARATOR,
+            [$configDir, 'merchant-info.json']
+        );
+
+        // Read the MerchantInfo JSON file.
+        $jsonData = file_get_contents($merchantInfoFile);
+
+        // Check if the file was read successfully.
+        if ($jsonData === false) {
+            die('Error reading JSON file');
+        }
+
+        // Decode the JSON data into a PHP associative array.
+        $data = json_decode($jsonData, true);
+
+        // Check if the JSON data was decoded successfully.
+        if ($data === null) {
+            die('Error decoding JSON data');
+        }
+
+        // Exit the program if the "merchantId" key doesn't exist.
+        if (!isset($data['merchantId'])) {
+            die('Merchant ID not found in the JSON data');
+        }
+
         $configObject = [
             'serviceAccountFile' => $serviceAccountFile,
             'clientSecretsFile' => $clientSecretsFile,
             'tokenFile' => $tokenFile,
+            'accountId' => $data['merchantId']
         ];
 
         return $configObject;
