@@ -52,7 +52,6 @@ directory. If not, check out the code to a local directory.
 
         $ ./content-api-demo products accounts
 
-   If no demos are selected on the command line, then all demos except for the
-   Orders demo will be run.
+   If no demos are selected on the command line, then all demos will be run.
 
 4. Examine your shell output, be inspired and start hacking an amazing new app!

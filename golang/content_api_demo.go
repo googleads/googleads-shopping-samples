@@ -29,7 +29,6 @@ var demos = map[string](func(context.Context, *content.APIService, *merchantInfo
 	"accounts":         accountDemo,
 	"shippingSettings": shippingSettingsDemo,
 	"accountTax":       accountTaxDemo,
-	"orders":           ordersDemo,
 }
 
 func printDemos(w io.Writer) {
@@ -90,6 +89,7 @@ func main() {
 		}()
 		logClient(client, f)
 	}
+
 	contentService, err := content.New(client)
 	if err != nil {
 		log.Fatal(err)
@@ -113,12 +113,10 @@ func main() {
 	samplesConfig.retrieve(ctx, contentService)
 
 	modules := flag.Args()
-	// If no modules were specified, then run all non-Orders demos.
+	// If no modules were specified, then run all demos.
 	if len(modules) == 0 {
 		for k := range demos {
-			if k != "orders" {
-				modules = append(modules, k)
-			}
+			modules = append(modules, k)
 		}
 	}
 
