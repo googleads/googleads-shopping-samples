@@ -1,3 +1,10 @@
+# Meet Merchant API - the official successor to Content API for Shopping.
+
+Check out the [Merchant API code samples repository](https://github.com/google/merchant-api-samples)
+Get the latest on new [Merchant API](https://developers.google.com/merchant/api) features, bug fixes, and updates.
+[Get started with Merchant API](https://developers.google.com/merchant/api/guides/quickstart) and get access to data, insights, and unique capabilities at scale.
+
+
 # Samples for the Content API for Shopping and Manufacturer Center API
 
 These code samples are organized by platform or language. Each language
