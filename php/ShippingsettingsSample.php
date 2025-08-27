@@ -101,7 +101,7 @@ class ShippingsettingsSample extends BaseSample {
       printf("- There are %d postal code group(s):\n",
           count($settings->getPostalCodeGroups()));
       foreach ($settings->getPostalCodeGroups() as $group) {
-        printf("  Postal group '%s':\n", $group->getName());
+        printf("  Postal group %s:\n", $group->getName());
         printf("  - Country: %s\n", $group->getCountry());
         printf("  - Contains %d postal code range(s).\n",
             count($group->getPostalCodeRanges()));
@@ -113,7 +113,7 @@ class ShippingsettingsSample extends BaseSample {
       printf("- There are %d shipping service(s):\n",
           count($settings->getServices()));
       foreach ($settings->getServices() as $service) {
-        printf("  Service '%s':\n", $service->getName());
+        printf("  Service %s:\n", $service->getName());
         printf("  - Active: %s\n", $service->getActive() ? 'yes' : 'no');
         printf("  - Country: %s\n", $service->getDeliveryCountry());
         printf("  - Currency: %s\n", $service->getCurrency());
