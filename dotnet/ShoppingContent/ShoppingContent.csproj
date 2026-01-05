@@ -3,7 +3,7 @@
   <Import Project="..\CommonSettings.xml" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.0;net472</TargetFrameworks>
+    <TargetFrameworks>netcoreapp8.0;net472</TargetFrameworks>
     <RootNamespace>ShoppingContent</RootNamespace>
     <AssemblyName>Google.Shopping.Samples</AssemblyName>
     <Description>Samples for Google Content API for Shopping</Description>
@@ -28,11 +28,10 @@
     <Compile Include="..\source\BaseContentSample.cs" />
   </ItemGroup>
   <ItemGroup>
-  
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
     <PackageReference Include="Google.Apis.Core" Version="1.42.0" />
     <PackageReference Include="Google.Apis.ShoppingContent.v2_1" Version="1.42.0.1790" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 </Project>
