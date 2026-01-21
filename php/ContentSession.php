@@ -100,31 +100,31 @@ class ContentSession {
         throw new InvalidArgumentException(
             'Expected absolute endpoint URL: ' . $endpoint);
       }
-      $rootUrl =
+      $rootUrlTemplate =
           sprintf('%s://%s', $endpointParts['scheme'], $endpointParts['host']);
       if (array_key_exists('port', $endpointParts)) {
-        $rootUrl .= ':' . $endpointParts['port'];
+        $rootUrlTemplate .= ':' . $endpointParts['port'];
       }
-      $rootUrl .= '/';
+      $rootUrlTemplate .= '/';
       $basePath = '';
       if (array_key_exists('path', $endpointParts)) {
         $basePath = trim($endpointParts['path'], '/') . '/';
       }
 
       $this->service =
-          $this->getServiceWithEndpoint($client, $rootUrl, $basePath);
-      printf("Using non-standard API endpoint: %s%s\n", $rootUrl, $basePath);
+          $this->getServiceWithEndpoint($client, $rootUrlTemplate, $basePath);
+      printf("Using non-standard API endpoint: %s%s\n", $rootUrlTemplate, $basePath);
     } else {
       $this->service = new Google_Service_ShoppingContent($client);
 
-      // Fetch the standard rootUrl and basePath to set things up
+      // Fetch the standard rootUrlTemplate and basePath to set things up
       // for sandbox creation.
       $class = new ReflectionClass('Google_Service_Resource');
-      $rootProperty = $class->getProperty('rootUrl');
+      $rootProperty = $class->getProperty('rootUrlTemplate');
       $rootProperty->setAccessible(true);
       $pathProperty = $class->getProperty('servicePath');
       $pathProperty->setAccessible(true);
-      $rootUrl = $rootProperty->getValue($this->service->accounts);
+      $rootUrlTemplate = $rootProperty->getValue($this->service->accounts);
       $basePath = $pathProperty->getValue($this->service->accounts);
     }
     // Attempt to determine a sandbox endpoint from the given endpoint.
@@ -139,15 +139,15 @@ class ContentSession {
       print 'Using same endpoint for sandbox methods.';
     }
     $this->sandboxService =
-        $this->getServiceWithEndpoint($client, $rootUrl, $basePath);
+        $this->getServiceWithEndpoint($client, $rootUrlTemplate, $basePath);
   }
 
   /**
    * Creates a new Content API service object from the given client
-   * and changes the rootUrl and/or the basePath of the Content API
+   * and changes the rootUrlTemplate and/or the basePath of the Content API
    * service resource objects within.
    */
-  private function getServiceWithEndpoint($client, $rootUrl, $basePath) {
+  private function getServiceWithEndpoint($client, $rootUrlTemplate, $basePath) {
     $service = new Google_Service_ShoppingContent($client);
 
     // First get the fields that are directly defined in
@@ -161,14 +161,14 @@ class ContentSession {
 
     // Prepare the properties we (may) be modifying in these objects.
     $class = new ReflectionClass('Google_Service_Resource');
-    $rootProperty = $class->getProperty('rootUrl');
+    $rootProperty = $class->getProperty('rootUrlTemplate');
     $rootProperty->setAccessible(true);
     $pathProperty = $class->getProperty('servicePath');
     $pathProperty->setAccessible(true);
 
     foreach ($gsscProps as $prop) {
       $resource = $prop->getValue($service);
-      $rootProperty->setValue($resource, $rootUrl);
+      $rootProperty->setValue($resource, $rootUrlTemplate);
       $pathProperty->setValue($resource, $basePath);
     }
 
