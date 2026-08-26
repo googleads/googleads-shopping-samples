@@ -1,5 +1,6 @@
 {
   "merchantId": 12345,
+  "no_website": false,
   "accountSampleUser": "",
   "accountSampleAdWordsCID": 0
 }
